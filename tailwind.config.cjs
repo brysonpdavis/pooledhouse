@@ -4,17 +4,23 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [require("daisyui")],
+  plugins: [require("@tailwindcss/typography"), require("daisyui")],
   daisyui: {
     themes: [
       {
         swatch: {
-          primary: "#e63946",
+          "primary": "#e63946",
           "primary-focus": "#CC3340",
-          secondary: "#a8dadc",
-          accent: "#457b9d",
-          neutral: "#f1faee",
+          "primary-content": "#f1faee",
+          "secondary": "#a8dadc",
+          // "accent": "#457b9d",
+          "accent": "#0d1117",
+          "accent-content": "#f1faee",
+          "neutral": "#f1faee",
           "base-100": "#ffffff",
+          "--rounded-box": "0.25rem",
+          "--rounded-btn": "0.25rem",
+          "--btn-text-case": "lowercase"
         }
       }
     ]

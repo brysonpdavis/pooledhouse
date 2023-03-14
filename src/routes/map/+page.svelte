@@ -3,6 +3,14 @@
     let stuff: string[] = []
 </script>
 
+<!-- <svelte:head>
+    <script 
+        defer 
+        async 
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
+    />
+</svelte:head> -->
+
 <div>
 	<div>{thing}</div>
 	<button class="btn bg-primary text-primary-content" on:click={() => {thing = `${thing}+1`; stuff.push('a ha'); stuff = stuff}}>

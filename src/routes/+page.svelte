@@ -1,5 +1,4 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-
-
-<a class="btn btn-primary" href="/map">go to map</a>
+<div>
+	<h1>welcome to pooledhouse</h1>
+	<a class="hover:btn-primary-focus btn-primary btn" href="/map">go to map</a>
+</div>

@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .dynamic-layout {
+        @apply max-w-7xl flex mx-auto w-full px-4;
+    }
+
+    .btn {
+        @apply no-animation;
+    }
+}
