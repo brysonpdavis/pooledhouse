@@ -1,5 +1,7 @@
 <script lang="ts">
 	import 'iconify-icon';
+	import {page} from '$app/stores'
+	import {signOut} from '@auth/sveltekit/client'
 </script>
 
 <header class="flex h-12 w-full bg-primary md:h-16">
@@ -10,8 +12,11 @@
 				<iconify-icon class="md:text-2xl" icon="material-symbols:menu-rounded" />
 			</button>
 			<ul tabindex="-1" class="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow">
-				<li><a href="/">login</a></li>
-				<li><a href="/users">Item 2</a></li>
+				<li><a href="/protected">protected</a></li>
+				<li><a href="/auth/login">login</a></li>
+				{#if $page.data.session}
+				<li><button on:click={() => signOut()}>logout</button></li>
+				{/if}
 			</ul>
 		</div>
 	</div>
