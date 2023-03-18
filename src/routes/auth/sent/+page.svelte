@@ -1,3 +1,1 @@
-<h1>
-    your email has been sent!
-</h1>
+<h1>your email has been sent!</h1>

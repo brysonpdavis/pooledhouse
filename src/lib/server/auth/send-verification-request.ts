@@ -1,23 +1,23 @@
-import { createTransport } from "nodemailer"
+import { createTransport } from 'nodemailer';
 
-import type {SendVerificationRequestParams} from '@auth/core/providers/email'
+import type { SendVerificationRequestParams } from '@auth/core/providers/email';
 
 export async function sendVerificationRequest(params: SendVerificationRequestParams) {
-  const { identifier, url, provider } = params
-  const { host } = new URL(url)
-  // NOTE: You are not required to use `nodemailer`, use whatever you want.
-  const transport = createTransport(provider.server)
-  const result = await transport.sendMail({
-    to: identifier,
-    from: provider.from,
-    subject: `Sign in to ${host}`,
-    text: text({ url, host }),
-    html: html({ url, host }),
-  })
-  const failed = result.rejected.concat(result.pending).filter(Boolean)
-  if (failed.length) {
-    throw new Error(`Email(s) (${failed.join(", ")}) could not be sent`)
-  }
+	const { identifier, url, provider } = params;
+	const { host } = new URL(url);
+	// NOTE: You are not required to use `nodemailer`, use whatever you want.
+	const transport = createTransport(provider.server);
+	const result = await transport.sendMail({
+		to: identifier,
+		from: provider.from,
+		subject: `Sign in to ${host}`,
+		text: text({ url, host }),
+		html: html({ url, host })
+	});
+	const failed = result.rejected.concat(result.pending).filter(Boolean);
+	if (failed.length) {
+		throw new Error(`Email(s) (${failed.join(', ')}) could not be sent`);
+	}
 }
 
 /**
@@ -28,22 +28,22 @@ export async function sendVerificationRequest(params: SendVerificationRequestPar
  *
  * @note We don't add the email address to avoid needing to escape it, if you do, remember to sanitize it!
  */
-function html(params: { url: string; host: string; }) {
-  const { url, host } = params
+function html(params: { url: string; host: string }) {
+	const { url, host } = params;
 
-  const escapedHost = host.replace(/\./g, "&#8203;.")
+	const escapedHost = host.replace(/\./g, '&#8203;.');
 
-  const brandColor = "#346df1"
-  const color = {
-    background: "#f9f9f9",
-    text: "#444",
-    mainBackground: "#fff",
-    buttonBackground: brandColor,
-    buttonBorder: brandColor,
-    buttonText: "#fff",
-  }
+	const brandColor = '#346df1';
+	const color = {
+		background: '#f9f9f9',
+		text: '#444',
+		mainBackground: '#fff',
+		buttonBackground: brandColor,
+		buttonBorder: brandColor,
+		buttonText: '#fff'
+	};
 
-  return `
+	return `
 <body style="background: ${color.background};">
   <table width="100%" border="0" cellspacing="20" cellpadding="0"
     style="background: ${color.mainBackground}; max-width: 600px; margin: auto; border-radius: 10px;">
@@ -73,10 +73,10 @@ function html(params: { url: string; host: string; }) {
     </tr>
   </table>
 </body>
-`
+`;
 }
 
 /** Email Text body (fallback for email clients that don't render HTML, e.g. feature phones) */
 function text({ url, host }: { url: string; host: string }) {
-  return `Sign in to ${host}\n${url}\n\n`
+	return `Sign in to ${host}\n${url}\n\n`;
 }

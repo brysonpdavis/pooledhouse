@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 @layer components {
-    .dynamic-layout {
-        @apply max-w-7xl flex mx-auto w-full px-4;
-    }
+	.dynamic-layout {
+		@apply mx-auto flex w-full max-w-7xl px-4;
+	}
 
-    .btn {
-        @apply no-animation;
-    }
+	.btn {
+		@apply no-animation;
+	}
 }

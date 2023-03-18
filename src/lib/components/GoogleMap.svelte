@@ -35,7 +35,7 @@
 				}
 			);
 
-			addAllMarkers(map)
+			addAllMarkers(map);
 		});
 	});
 

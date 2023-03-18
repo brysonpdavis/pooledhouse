@@ -1,7 +1,7 @@
 <script lang="ts">
 	import 'iconify-icon';
-	import {page} from '$app/stores'
-	import {signOut} from '@auth/sveltekit/client'
+	import { page } from '$app/stores';
+	import { signOut } from '@auth/sveltekit/client';
 </script>
 
 <header class="flex h-12 w-full bg-primary md:h-16">
@@ -15,7 +15,7 @@
 				<li><a href="/protected">protected</a></li>
 				<li><a href="/auth/login">login</a></li>
 				{#if $page.data.session}
-				<li><button on:click={() => signOut()}>logout</button></li>
+					<li><button on:click={() => signOut()}>logout</button></li>
 				{/if}
 			</ul>
 		</div>

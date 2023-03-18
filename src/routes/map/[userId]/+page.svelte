@@ -5,7 +5,7 @@
 
 <div class="flex flex-col">
 	<h1 class="flex">here are the users</h1>
-	
+
 	<pre>
 		{JSON.stringify(data.users, undefined, 2)}
 	</pre>
