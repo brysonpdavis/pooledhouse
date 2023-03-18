@@ -8,7 +8,7 @@
 	<Header />
 	<main class="mb-auto flex h-fit w-full items-center">
 		<div class="dynamic-layout p-4">
-			<content class="prose">
+			<content class="prose w-full">
 				<slot />
 			</content>
 		</div>

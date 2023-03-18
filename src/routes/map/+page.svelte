@@ -1,6 +1,6 @@
 <script lang="ts">
-	let thing: string = 'something';
-    let stuff: string[] = []
+    import GoogleMap from '$lib/components/GoogleMap.svelte'
+    let show: boolean = false
 </script>
 
 <!-- <svelte:head>
@@ -11,15 +11,15 @@
     />
 </svelte:head> -->
 
-<div>
-	<div>{thing}</div>
-	<button class="btn bg-primary text-primary-content" on:click={() => {thing = `${thing}+1`; stuff.push('a ha'); stuff = stuff}}>
-		click me
-	</button>
-    <ul>
-        {#each stuff as thing, idx}
-            <li>{thing}</li>
-            <a class="btn btn-secondary" href={`map/${idx}`}>user {idx}</a>
-        {/each}
-    </ul>
+<div class="w-full h-96">
+    <h1>it's the map page!</h1>
+    <button class="btn btn-primary" on:click={() => {show = !show}}>
+        {#if show}
+        hide 
+        {:else}
+        show
+        {/if}
+        map
+    </button>
+    {#if show}<GoogleMap />{/if}
 </div>
