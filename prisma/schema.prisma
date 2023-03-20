@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -51,6 +48,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  Place         Place[]
 
   @@map("users")
 }
@@ -65,13 +63,15 @@ model VerificationToken {
 }
 
 model Place {
-  id            String   @id @default(cuid())
-  name          String
-  lat           Float
-  lng           Float
-  googlePlaceId String   @unique @map("google_place_id")
-  address       String
-  reviews       Review[]
+  id              String   @id @default(cuid())
+  name            String
+  lat             Float?
+  lng             Float?
+  googlePlaceId   String?  @unique @map("google_place_id")
+  address         String?
+  reviews         Review[]
+  createdByUserId String   @map("created_by_user_id")
+  createdByUser   User     @relation(fields: [createdByUserId], references: [id])
 
   @@map("places")
 }
@@ -82,4 +82,6 @@ model Review {
   placeId       String @map("place_id")
   place         Place  @relation(fields: [placeId], references: [id])
   description   String
+
+  @@map("reviews")
 }

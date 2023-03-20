@@ -3,6 +3,9 @@
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 </script>
+<svelte:head>
+	<title>pooledhouse</title>
+</svelte:head>
 
 <div class="flex min-h-screen flex-col justify-between">
 	<Header />

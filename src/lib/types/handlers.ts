@@ -1,0 +1,1 @@
+export type Handler<T, R> = (args: T) => Promise<R | "error">
