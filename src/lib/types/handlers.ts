@@ -1,1 +1,1 @@
-export type Handler<T, R> = (args: T) => Promise<R | "error">
+export type Handler<InputType, ReturnType> = (args: InputType) => Promise<ReturnType | "error">

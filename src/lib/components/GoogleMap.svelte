@@ -2,11 +2,19 @@
 	import { onMount } from 'svelte';
 	import { Loader } from '@googlemaps/js-api-loader';
 	import { PUBLIC_GOOGLE_MAPS_API_KEY } from '$env/static/public';
-	import { getPlaces, postPlace } from '$lib/handlers/places';
+	import { postPlace } from '$lib/handlers/places';
+	import { page } from '$app/stores';
+	import type { Place } from '@prisma/client';
 
+	export let places: Place[];
+
+	const optimize = places.length > 50;
+
+	const loggedIn = $page.data.session?.user;
+	let map: google.maps.Map;
 	let currentPlace: google.maps.places.PlaceResult | undefined;
 	let googleApi: typeof google;
-	let uploadSuccess = false
+	let uploadSuccess = false;
 
 	const nycCoordinates = { lat: 40.73, lng: -73.9 };
 
@@ -33,7 +41,7 @@
 				radius: 12000
 			}).getBounds()!;
 
-			const map = new google.maps.Map(document.getElementById('map')!, mapOptions);
+			map = new google.maps.Map(document.getElementById('map')!, mapOptions);
 			const marker = new google.maps.Marker({ map });
 			const input = document.getElementById('pac-input') as HTMLInputElement;
 			const autocomplete = new google.maps.places.Autocomplete(input, {
@@ -48,7 +56,7 @@
 				'dblclick',
 				(event: { latLng: google.maps.LatLngLiteral }) => {
 					addMarker(event.latLng, map);
-					return false
+					return false;
 				}
 			);
 
@@ -77,58 +85,55 @@
 				});
 			});
 
-			addAllMarkers(map);
+			addAllMarkers(map, places);
 		});
 	});
 
-	function addMarker(location: google.maps.LatLngLiteral, map: google.maps.Map) {
+	function addMarker(
+		location: google.maps.LatLngLiteral,
+		map: google.maps.Map,
+		options?: {
+			label: string,
+			title: string 
+		}
+	) {
 		new googleApi.maps.Marker({
 			position: location,
-			label: 'some',
+			...options,
 			map
 		});
 	}
 
-	async function addAllMarkers(map: google.maps.Map) {
-		// get all markers from endpoint
-		// iterate over all markers and add each one to map
-		// change color based on value?
-		const res = await getPlaces()
-
-		if (res === "error") {
-			console.error('oops, something went wrong')
-			window.alert('oops, something broke')
-			return
-		}
-
-		res.forEach((place) => {
+	async function addAllMarkers(map: google.maps.Map, places: Place[]) {
+		// change color of each marker based on value?
+		places.forEach((place) => {
 			const m = new googleApi.maps.Marker({
-				position: {lat: place.lat, lng: place.lng},
-				optimized: true,
+				position: { lat: place.lat, lng: place.lng },
+				optimized: optimize,
 				title: place.name,
 				map
-			})
-			
+			});
+
 			m.addListener('dblclick', () => {
-				map.setCenter({lat: place.lat, lng: place.lng})
-				map.setZoom(17)
-			})
+				map.setCenter({ lat: place.lat, lng: place.lng });
+				map.setZoom(17);
+			});
 
 			m.addListener('mouseover', () => {
 				// pop up info card
-				console.log('mouse over ', place.name)
-			})
+				console.log('mouse over ', place.name);
+			});
 
 			m.addListener('mouseout', () => {
 				// close info card
-				console.log('mouse out ', place.name)
-			})
-		})
+				console.log('mouse out ', place.name);
+			});
+		});
 	}
 
 	async function handleClickAdd() {
 		if (!currentPlace) {
-			return
+			return;
 		}
 
 		const res = await postPlace({
@@ -136,16 +141,31 @@
 			googlePlaceId: currentPlace.place_id!,
 			address: currentPlace.formatted_address || currentPlace.adr_address!,
 			lat: currentPlace.geometry?.location?.lat()!,
-			lng: currentPlace.geometry?.location?.lng()!
+			lng: currentPlace.geometry?.location?.lng()!,
+			createdByUserEmail: $page.data.session?.user?.email!
 		});
 
-		uploadSuccess = res.ok
+		if (res !== 'error') {
+			places.push(res);
+			places = places;
+			addMarker(
+				{
+					lat: currentPlace.geometry?.location?.lat()!,
+					lng: currentPlace.geometry?.location?.lng()!
+				},
+				map
+			);
+		}
+
+		uploadSuccess = res !== 'error';
 	}
 </script>
 
 <div id="map" class="my-4 h-full w-full" />
 <input id="pac-input" class="input-secondary input" type="text" placeholder="Enter a location" />
 {#if currentPlace !== undefined}
-	<button class="btn-primary btn" on:click={() => handleClickAdd()}> add </button>
+	<button disabled={!loggedIn} class="btn-primary btn" on:click={() => handleClickAdd()}>
+		add
+	</button>
 	<p>Google place id: {currentPlace.place_id}</p>
 {/if}

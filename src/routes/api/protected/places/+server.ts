@@ -1,19 +1,24 @@
 import { prisma } from '$lib/server/prisma'
-import type { Prisma } from '@prisma/client'
+import type {PostPlaceInput} from '$lib/handlers/places'
 
 export const POST = async ({ request, locals }) => {
     if (!locals.authorized) {
         return new Response("{}", {status: 403, statusText: 'forbidden'})
     }
 
-    const postedPlace = await request.json() as Prisma.PlaceCreateInput
+    const postedPlace = await request.json() as PostPlaceInput
     const res = await prisma.place.create({
         data: {
             googlePlaceId: postedPlace.googlePlaceId,
             address: postedPlace.address,
             lat: postedPlace.lat,
             lng: postedPlace.lng,
-            name: postedPlace.name
+            name: postedPlace.name,
+            createdByUser: {
+                connect: {
+                    email: postedPlace.createdByUserEmail
+                }
+            }
         }
     })
     console.log('new place', res)

@@ -14,7 +14,8 @@
 				name: 'something',
 				lat: 50,
 				lng: -50,
-				address: '12345 awesome rd'
+				address: '12345 awesome rd',
+				createdByUser: {connect: {email: $page.data.session?.user?.email!}}
 			} satisfies Prisma.PlaceCreateInput)
 		});
 

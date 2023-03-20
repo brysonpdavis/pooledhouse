@@ -1,17 +1,26 @@
 import type { Handler } from "$lib/types/handlers";
-import type { Place, Prisma } from "@prisma/client";
+import type { Place } from "@prisma/client";
 
-export const postPlace = async (placeData: Prisma.PlaceCreateInput) => {
-    const res =  await fetch('/api/protected/places', {
+export type PostPlaceInput = {
+    lat: number,
+    lng: number,
+    name: string,
+    googlePlaceId: string,
+    address: string,
+    createdByUserEmail: string
+}
+
+export const postPlace: Handler<PostPlaceInput, Place> = async (placeData) => {
+    const res = await fetch('/api/protected/places', {
         method: 'POST',
-        body: JSON.stringify({
-            ...placeData
-        })
+        body: JSON.stringify(placeData)
     });
 
-    if (res.ok) {
-        return await res.json()
+    if (!res.ok) {
+        return "error"
     }
+
+    return await res.json() as Place
 };
 
 export const getPlaces: Handler<void, Place[]> = async () => {
@@ -23,4 +32,12 @@ export const getPlaces: Handler<void, Place[]> = async () => {
 
     return await res.json() as Place[]
 
+}
+
+export const deletePlaces: Handler<void, void> = async () => {
+    const res = await fetch('/api/protected/places', { method: 'DELETE' })
+
+    if (!res.ok) {
+        return "error"
+    }
 }

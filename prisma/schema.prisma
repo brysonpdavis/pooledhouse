@@ -65,10 +65,10 @@ model VerificationToken {
 model Place {
   id              String   @id @default(cuid())
   name            String
-  lat             Float?
-  lng             Float?
-  googlePlaceId   String?  @unique @map("google_place_id")
-  address         String?
+  lat             Float
+  lng             Float
+  googlePlaceId   String  @unique @map("google_place_id")
+  address         String
   reviews         Review[]
   createdByUserId String   @map("created_by_user_id")
   createdByUser   User     @relation(fields: [createdByUserId], references: [id])
