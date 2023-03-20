@@ -1,8 +1,11 @@
 <script lang="ts">
 	import type { Place, Prisma } from '@prisma/client';
+	import { page } from '$app/stores';
+
+	const loggedIn = $page.data.session?.user;
 
 	let places: Place[] = [];
-	
+
 	const handlePost = async () => {
 		const res = await fetch('/api/protected/places', {
 			method: 'POST',
@@ -45,9 +48,9 @@
 	<hr />
 
 	<div>
-		<button on:click={fetchPlaces} class="btn-primary btn">get</button>
-		<button on:click={handlePost} class="btn-primary btn">post</button>
-		<button on:click={deletePlaces} class="btn-primary btn">delete</button>
+		<button disabled={!loggedIn} on:click={fetchPlaces} class="btn-primary btn">get</button>
+		<button disabled={!loggedIn} on:click={handlePost} class="btn-primary btn">post</button>
+		<button disabled={!loggedIn} on:click={deletePlaces} class="btn-primary btn">delete</button>
 	</div>
 
 	{#if places.length !== 0}

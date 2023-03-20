@@ -15,7 +15,7 @@ export const postPlace = async (placeData: Prisma.PlaceCreateInput) => {
 };
 
 export const getPlaces: Handler<void, Place[]> = async () => {
-    const res = await fetch('/api/protected/places', { method: 'GET' });
+    const res = await fetch('/api/places', { method: 'GET' });
 
     if (!res.ok) {
         return "error"
