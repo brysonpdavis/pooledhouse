@@ -5,7 +5,7 @@
 	export let data: PageData;
 </script>
 
-<div class="h-96 w-full">
+<div class="h-full w-full">
 	{#if browser}
 		<GoogleMap places={data.places} />
 	{/if}

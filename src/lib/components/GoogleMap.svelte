@@ -51,6 +51,9 @@
 				strictBounds: true
 			});
 
+			// this will position the location input
+			// map.controls[google.maps.ControlPosition.TOP_RIGHT].push(input)
+
 			google.maps.event.addListener(
 				map,
 				'dblclick',
@@ -93,8 +96,8 @@
 		location: google.maps.LatLngLiteral,
 		map: google.maps.Map,
 		options?: {
-			label: string,
-			title: string 
+			label: string;
+			title: string;
 		}
 	) {
 		new googleApi.maps.Marker({
@@ -161,11 +164,8 @@
 	}
 </script>
 
-<div id="map" class="my-4 h-full w-full" />
-<input id="pac-input" class="input-secondary input" type="text" placeholder="Enter a location" />
-{#if currentPlace !== undefined}
-	<button disabled={!loggedIn} class="btn-primary btn" on:click={() => handleClickAdd()}>
-		add
-	</button>
-	<p>Google place id: {currentPlace.place_id}</p>
-{/if}
+<input id="pac-input" class="input-secondary input mb-4" type="text" placeholder="Enter a location" />
+<button disabled={!loggedIn || !currentPlace} class="btn-primary btn" on:click={() => handleClickAdd()}>
+	add
+</button>
+<div id="map" class="flex h-[80vh] w-full" />

@@ -10,4 +10,7 @@
 	.btn {
 		@apply no-animation;
 	}
+	.prose {
+		max-width: none;
+	}
 }
