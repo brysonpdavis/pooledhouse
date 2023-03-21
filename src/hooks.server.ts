@@ -6,7 +6,7 @@ import { sendVerificationRequest } from '$lib/server/auth/send-verification-requ
 import { sequence } from '@sveltejs/kit/hooks';
 
 import { SENDGRID_API_KEY } from '$env/static/private';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 export const handle = sequence(
 	// authenticate
@@ -35,13 +35,18 @@ export const handle = sequence(
 	}),
 	// authorize
 	async ({ event, resolve }) => {
-		const protectedRoute = event.url.pathname.startsWith('/protected') || event.url.pathname.startsWith('/api/protected')
-		const authorized = !protectedRoute || !!(await event.locals.getSession())?.user
-		event.locals.authorized = authorized
-		if (!authorized) {
-			console.log('oh no its an error')
+		const protectedApiRoute = event.url.pathname.startsWith('/api/protected')
+
+		if (protectedApiRoute && !(await event.locals.getSession())?.user) {
+			throw error(401, {message: 'you need to be logged in to access this endpoint'})
+		}
+
+		const protectedPage = event.url.pathname.startsWith('/protected')
+
+		if (protectedPage && !(await event.locals.getSession())?.user) {
 			redirect(302, 'not allowed')
 		}
+
 		return resolve(event)
 	}
 )

@@ -9,7 +9,7 @@
 
 <div class="flex min-h-screen flex-col justify-between">
 	<Header />
-	<main class="mb-auto flex h-fit w-full items-center">
+	<main class="flex w-full flex-grow">
 		<div class="dynamic-layout p-4">
 			<content class="prose w-full">
 				<slot />

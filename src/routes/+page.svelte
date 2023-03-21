@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { Place, Prisma } from '@prisma/client';
+	import type { Place } from '@prisma/client';
+	import type { PostPlaceInput } from '$lib/handlers/places';
 	import { page } from '$app/stores';
 
 	const loggedIn = $page.data.session?.user;
@@ -15,8 +16,8 @@
 				lat: 50,
 				lng: -50,
 				address: '12345 awesome rd',
-				createdByUser: {connect: {email: $page.data.session?.user?.email!}}
-			} satisfies Prisma.PlaceCreateInput)
+				createdByUserEmail: $page.data.session?.user?.email!
+			} satisfies PostPlaceInput)
 		});
 
 		if (res.ok) {
@@ -26,7 +27,7 @@
 	};
 
 	const fetchPlaces = async () => {
-		const res = await fetch('/api/protected/places', { method: 'GET' });
+		const res = await fetch('/api/places', { method: 'GET' });
 
 		if (res.ok) {
 			places = await res.json();
@@ -44,12 +45,12 @@
 
 <div>
 	<h1>welcome to pooledhouse</h1>
-	<a class="hover:btn-primary-focus btn-primary btn" href="/map">go to map</a>
+	<a class="hover:btn-primary-focus btn-primary btn" href="/explore">go to map</a>
 
 	<hr />
 
 	<div>
-		<button disabled={!loggedIn} on:click={fetchPlaces} class="btn-primary btn">get</button>
+		<button on:click={fetchPlaces} class="btn-primary btn">get</button>
 		<button disabled={!loggedIn} on:click={handlePost} class="btn-primary btn">post</button>
 		<button disabled={!loggedIn} on:click={deletePlaces} class="btn-primary btn">delete</button>
 	</div>

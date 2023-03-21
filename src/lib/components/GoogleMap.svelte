@@ -11,17 +11,20 @@
 	const optimize = places.length > 50;
 
 	const loggedIn = $page.data.session?.user;
+
+	let googleApi: typeof google;
 	let map: google.maps.Map;
 	let currentPlace: google.maps.places.PlaceResult | undefined;
-	let googleApi: typeof google;
+	let infoWindow: google.maps.InfoWindow;
+	let infoWindowContent: HTMLElement;
 	let uploadSuccess = false;
 
 	const nycCoordinates = { lat: 40.73, lng: -73.9 };
 
 	const loader = new Loader({
 		apiKey: PUBLIC_GOOGLE_MAPS_API_KEY,
-		version: 'weekly',
-		libraries: ['places']
+		version: 'beta',
+		libraries: ['places', 'marker']
 	});
 
 	const mapOptions: google.maps.MapOptions = {
@@ -29,7 +32,7 @@
 		zoom: 11,
 		clickableIcons: false,
 		disableDefaultUI: true,
-		disableDoubleClickZoom: true
+		mapId: '58085ec09961ed07'
 	};
 
 	onMount(async () => {
@@ -42,7 +45,17 @@
 			}).getBounds()!;
 
 			map = new google.maps.Map(document.getElementById('map')!, mapOptions);
-			const marker = new google.maps.Marker({ map });
+			const marker = new google.maps.marker.AdvancedMarkerView({
+				map,
+				content: new google.maps.marker.PinView({
+					borderColor: '#007FFF',
+					background: '#007FFF',
+					glyphColor: 'white'
+				}).element
+			});
+
+			infoWindowContent = document.getElementById('info-window-content') as HTMLElement;
+			infoWindow = new google.maps.InfoWindow({content: infoWindowContent});
 			const input = document.getElementById('pac-input') as HTMLInputElement;
 			const autocomplete = new google.maps.places.Autocomplete(input, {
 				fields: ['place_id', 'name', 'formatted_address', 'geometry'],
@@ -52,15 +65,8 @@
 			});
 
 			// this will position the location input
-			// map.controls[google.maps.ControlPosition.TOP_RIGHT].push(input)
-
-			google.maps.event.addListener(
-				map,
-				'dblclick',
-				(event: { latLng: google.maps.LatLngLiteral }) => {
-					addMarker(event.latLng, map);
-					return false;
-				}
+			map.controls[google.maps.ControlPosition.TOP_LEFT].push(
+				document.getElementById('pac-input-container')!
 			);
 
 			autocomplete.addListener('place_changed', () => {
@@ -81,11 +87,8 @@
 					map.setZoom(17);
 				}
 
-				// @ts-ignore
-				marker.setPlace({
-					placeId: place.place_id,
-					location: place.geometry.location
-				});
+				marker.position = place.geometry.location;
+				marker.title = place.name;
 			});
 
 			addAllMarkers(map, places);
@@ -124,13 +127,13 @@
 
 			m.addListener('mouseover', () => {
 				// pop up info card
-				console.log('mouse over ', place.name);
+				popUpInfoWindow(place, m);
 			});
 
-			m.addListener('mouseout', () => {
-				// close info card
-				console.log('mouse out ', place.name);
-			});
+			m.addListener('click', () => {
+				popUpInfoWindow(place, m)
+			})
+
 		});
 	}
 
@@ -162,10 +165,47 @@
 
 		uploadSuccess = res !== 'error';
 	}
+
+	type InfoWindowOpenAnchorType = Parameters<(typeof infoWindow)['open']>[1];
+
+	function popUpInfoWindow(place: Place, anchor: InfoWindowOpenAnchorType) {
+		infoWindowContent.children.namedItem('place-name')!.textContent = place.name;
+		infoWindowContent.children.namedItem('place-id')!.textContent = place.id;
+		infoWindowContent.children.namedItem('place-address')!.textContent = place.address;
+
+		infoWindow.open(map, anchor);
+	}
 </script>
 
-<input id="pac-input" class="input-secondary input mb-4" type="text" placeholder="Enter a location" />
-<button disabled={!loggedIn || !currentPlace} class="btn-primary btn" on:click={() => handleClickAdd()}>
-	add
-</button>
-<div id="map" class="flex h-[80vh] w-full" />
+<div id="pac-input-container">
+	<input
+		id="pac-input"
+		class="input-secondary input m-4"
+		type="text"
+		placeholder="Enter a location"
+	/>
+
+	<button
+		disabled={!loggedIn || !currentPlace}
+		class="btn-primary btn"
+		on:click={() => handleClickAdd()}
+	>
+		add
+	</button>
+</div>
+<div id="map" class="flex h-full w-full" />
+<div id="info-window-content">
+	<div id="place-name" class="font-semibold"><!-- --></div>
+	<div id="place-address"><!-- --></div>
+	<div id="place-id"><!-- --></div>
+</div>
+
+<style>
+	#info-window-content {
+		display: none;
+	}
+
+	:global(#map #info-window-content) {
+		display: inline;
+	}
+</style>
