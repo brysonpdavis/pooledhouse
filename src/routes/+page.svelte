@@ -57,19 +57,23 @@
 
 	{#if places.length !== 0}
 		{#each places as place}
-			<h1>
-				name: {place.name}
-			</h1>
-			<p>
-				google id: {place.googlePlaceId}
-			</p>
-			<p>
-				id: {place.id}
-			</p>
-			<p>
-				location: ({place.lat}
-				{place.lng})
-			</p>
+			<div class="card my-4 bg-base-100 p-4 shadow-lg">
+				<h1>
+					{place.name}
+				</h1>
+				<div class="not-prose">
+					<p>
+						google id: {place.googlePlaceId}
+					</p>
+					<p>
+						id: {place.id}
+					</p>
+					<p>
+						location: ({place.lat}
+						{place.lng})
+					</p>
+				</div>
+			</div>
 		{/each}
 	{/if}
 </div>

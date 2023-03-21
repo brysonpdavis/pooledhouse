@@ -18,6 +18,7 @@
 	let infoWindow: google.maps.InfoWindow;
 	let infoWindowContent: HTMLElement;
 	let uploadSuccess = false;
+	let uploadInProgress = false;
 
 	const nycCoordinates = { lat: 40.73, lng: -73.9 };
 
@@ -55,7 +56,7 @@
 			});
 
 			infoWindowContent = document.getElementById('info-window-content') as HTMLElement;
-			infoWindow = new google.maps.InfoWindow({content: infoWindowContent});
+			infoWindow = new google.maps.InfoWindow({ content: infoWindowContent });
 			const input = document.getElementById('pac-input') as HTMLInputElement;
 			const autocomplete = new google.maps.places.Autocomplete(input, {
 				fields: ['place_id', 'name', 'formatted_address', 'geometry'],
@@ -91,7 +92,7 @@
 				marker.title = place.name;
 			});
 
-			addAllMarkers(map, places);
+			addPlaceMarkers(map, places);
 		});
 	});
 
@@ -110,7 +111,7 @@
 		});
 	}
 
-	async function addAllMarkers(map: google.maps.Map, places: Place[]) {
+	async function addPlaceMarkers(map: google.maps.Map, places: Place[]) {
 		// change color of each marker based on value?
 		places.forEach((place) => {
 			const m = new googleApi.maps.Marker({
@@ -131,9 +132,8 @@
 			});
 
 			m.addListener('click', () => {
-				popUpInfoWindow(place, m)
-			})
-
+				popUpInfoWindow(place, m);
+			});
 		});
 	}
 
@@ -141,6 +141,8 @@
 		if (!currentPlace) {
 			return;
 		}
+
+		uploadInProgress = true;
 
 		const res = await postPlace({
 			name: currentPlace.name!,
@@ -163,12 +165,14 @@
 			);
 		}
 
+		uploadInProgress = false;
 		uploadSuccess = res !== 'error';
 	}
 
 	type InfoWindowOpenAnchorType = Parameters<(typeof infoWindow)['open']>[1];
 
 	function popUpInfoWindow(place: Place, anchor: InfoWindowOpenAnchorType) {
+		// TODO: add new info items here
 		infoWindowContent.children.namedItem('place-name')!.textContent = place.name;
 		infoWindowContent.children.namedItem('place-id')!.textContent = place.id;
 		infoWindowContent.children.namedItem('place-address')!.textContent = place.address;
@@ -186,15 +190,19 @@
 	/>
 
 	<button
-		disabled={!loggedIn || !currentPlace}
-		class="btn-primary btn"
+		disabled={!loggedIn ||
+			!currentPlace ||
+			!!places.find((p) => p.googlePlaceId === currentPlace?.place_id)}
+		class="loading btn-primary btn"
+		class:loading={uploadInProgress}
 		on:click={() => handleClickAdd()}
 	>
-		add
+		{#if !uploadInProgress}add{/if}
 	</button>
 </div>
 <div id="map" class="flex h-full w-full" />
 <div id="info-window-content">
+	<!-- TODO: ADD OTHER INFO ITEMS TO DISPLAY -->
 	<div id="place-name" class="font-semibold"><!-- --></div>
 	<div id="place-address"><!-- --></div>
 	<div id="place-id"><!-- --></div>
