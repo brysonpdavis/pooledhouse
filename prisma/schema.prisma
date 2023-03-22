@@ -41,14 +41,18 @@ model Session {
 
 /// auth.js model for a user
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  Place         Place[]
+  id                        String                      @id @default(cuid())
+  name                      String?
+  email                     String?                     @unique
+  emailVerified             DateTime?                   @map("email_verified")
+  image                     String?
+  accounts                  Account[]
+  sessions                  Session[]
+  Places                    Place[]
+  Reviews                   Review[]                    @relation("CreatedByUser")
+  IndustryVerificationToken String?                     @unique
+  Verification              IndustryVerificationToken?  @relation("ConsumedByUser", fields: [IndustryVerificationToken], references: [token])
+  CreatedIndustryTokens     IndustryVerificationToken[] @relation("CreatedByUser")
 
   @@map("users")
 }
@@ -67,7 +71,7 @@ model Place {
   name            String
   lat             Float
   lng             Float
-  googlePlaceId   String  @unique @map("google_place_id")
+  googlePlaceId   String   @unique @map("google_place_id")
   address         String
   reviews         Review[]
   createdByUserId String   @map("created_by_user_id")
@@ -77,11 +81,22 @@ model Place {
 }
 
 model Review {
-  id            String @id @default(cuid())
-  overallRating Int
-  placeId       String @map("place_id")
-  place         Place  @relation(fields: [placeId], references: [id])
-  description   String
+  id              String    @id @default(cuid())
+  overallRating   Int
+  description     String
+  placeId         String    @map("place_id")
+  place           Place     @relation(fields: [placeId], references: [id])
+  createdByUserId String    @map("created_by_user_id")
+  createdByUser   User      @relation("CreatedByUser", fields: [createdByUserId], references: [id])
+  lastEdited      DateTime?
 
   @@map("reviews")
+}
+
+model IndustryVerificationToken {
+  token           String   @unique
+  expires         DateTime
+  createdByUserId String   @map("created_by_user_id")
+  createdByUser   User     @relation("CreatedByUser", fields: [createdByUserId], references: [id])
+  consumedByUser  User?    @relation("ConsumedByUser")
 }
