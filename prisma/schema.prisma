@@ -43,16 +43,17 @@ model Session {
 model User {
   id                        String                      @id @default(cuid())
   name                      String?
-  email                     String?                     @unique
+  email                     String                      @unique
   emailVerified             DateTime?                   @map("email_verified")
+  phone                     String                      @unique
   image                     String?
   accounts                  Account[]
   sessions                  Session[]
-  Places                    Place[]
-  Reviews                   Review[]                    @relation("CreatedByUser")
-  IndustryVerificationToken String?                     @unique
-  Verification              IndustryVerificationToken?  @relation("ConsumedByUser", fields: [IndustryVerificationToken], references: [token])
-  CreatedIndustryTokens     IndustryVerificationToken[] @relation("CreatedByUser")
+  createdPlaces             Place[]
+  createdReviews            Review[]                    @relation("CreatedByUser")
+  industryVerificationToken String?                     @unique
+  verification              IndustryVerificationToken?  @relation("ConsumedByUser", fields: [industryVerificationToken], references: [token])
+  createdIndustryTokens     IndustryVerificationToken[] @relation("CreatedByUser")
 
   @@map("users")
 }
