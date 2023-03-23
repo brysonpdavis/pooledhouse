@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// auth.js model for a user's account
+/// auth.js model for a user's associated provider accounts
 model Account {
   id                String  @id @default(cuid())
   userId            String  @map("user_id")
@@ -21,8 +21,7 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -45,7 +44,7 @@ model User {
   name                      String?
   email                     String                      @unique
   emailVerified             DateTime?                   @map("email_verified")
-  phone                     String                      @unique
+  phone                     String?                      @unique
   image                     String?
   accounts                  Account[]
   sessions                  Session[]
