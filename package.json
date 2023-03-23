@@ -18,6 +18,7 @@
 		"@tailwindcss/typography": "^0.5.9",
 		"@types/google.maps": "^3.52.3",
 		"@types/nodemailer": "^6.4.7",
+		"@types/validator": "^13.7.14",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"autoprefixer": "^10.4.13",
@@ -48,6 +49,8 @@
 		"@sendgrid/mail": "^7.7.0",
 		"iconify-icon": "^1.0.7",
 		"nodemailer": "^6.9.1",
+		"twilio": "^4.9.0",
+		"validator": "^13.9.0",
 		"zod": "^3.21.4"
 	}
 }

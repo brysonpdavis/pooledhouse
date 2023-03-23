@@ -13,9 +13,11 @@
 			</button>
 			<ul tabindex="-1" class="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow">
 				<li><a href="/protected">protected</a></li>
-				<li><a href="/auth/login">login</a></li>
 				{#if $page.data.session}
 					<li><button on:click={() => signOut()}>logout</button></li>
+				{:else}
+					<li><a href="/auth/login">login</a></li>
+					<li><a href="/auth/register">sign up</a></li>
 				{/if}
 			</ul>
 		</div>

@@ -1,34 +1,51 @@
 <script lang="ts">
 	import { signIn } from '@auth/sveltekit/client';
 
-	let email = '';
-	let errorMessage: undefined | string;
+	let identifier = '';
+	let loginMethod: 'email' | 'phone' = 'email';
 
-	const validateEmailAndLogin = async (s: string) => {
-		if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(s)) {
-			errorMessage = 'please enter a valid email';
-			return;
+	function handleSubmit() {
+		if (loginMethod === 'email') {
+			signIn('email', { email: identifier });
+		} else {
+			signIn('credentials', { phoneNumber: identifier, redirect: true });
 		}
-
-		signIn('email', { email: s });
-	};
+	}
 </script>
 
-<h2>would you like to login?</h2>
+<h2>would you like to login by email or phone number?</h2>
 
-<form on:submit={() => validateEmailAndLogin(email)}>
+<form on:submit={() => handleSubmit()} class="flex flex-col">
 	<!-- svelte-ignore a11y-autofocus -->
-	<input
-		required
-		autofocus
-		type="text"
-		name="email"
-		placeholder="email"
-		bind:value={email}
-		class="input-bordered input-primary input w-full"
-	/>
-	<button type="submit" class="hover:btn-primary-focus btn-primary btn mt-4 w-full">log in!</button>
-	{#if errorMessage}
-		<label class="label" for="email"><span class="label-text-alt">{errorMessage}</span></label>
-	{/if}
+	<div class="input-group">
+		{#if loginMethod === 'email'}
+			<input
+				required
+				autofocus
+				type="email"
+				name="email"
+				placeholder="email"
+				bind:value={identifier}
+				class="input-bordered input-primary input w-full max-w-lg"
+			/>
+		{:else}
+			<input
+				disabled
+				required
+				autofocus
+				type="tel"
+				name="phone"
+				placeholder="phone login is currently a work in progress"
+				bind:value={identifier}
+				class="input-bordered input-primary input w-full max-w-lg"
+			/>
+		{/if}
+		<select bind:value={loginMethod} class="select-bordered select">
+			<option value="email">email</option>
+			<option value="phone">phone</option>
+		</select>
+	</div>
+	<button type="submit" class="hover:btn-primary-focus btn-primary btn mt-4 w-full max-w-lg">
+		log in!
+	</button>
 </form>

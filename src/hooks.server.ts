@@ -1,12 +1,14 @@
 import { SvelteKitAuth } from '@auth/sveltekit';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import EmailProvider from '@auth/core/providers/email';
+import CredentialsProvider from '@auth/core/providers/credentials';
 import { prisma } from '$lib/server/prisma';
-import { sendVerificationRequest } from '$lib/server/auth/send-verification-request';
+import { sendVerificationRequest } from '$lib/server/auth/send-email-verification-request';
 import { sequence } from '@sveltejs/kit/hooks';
 
 import { SENDGRID_API_KEY } from '$env/static/private';
 import { error, redirect } from '@sveltejs/kit';
+import { lookupUserByPhoneNumber } from '$lib/server/auth/phone-authorization';
 
 export const handle = sequence(
 	// authenticate
@@ -19,18 +21,49 @@ export const handle = sequence(
 				type: 'email',
 				id: 'email',
 				sendVerificationRequest,
-				name: 'Sign in with Email'
+				name: 'Email'
+			}),
+			CredentialsProvider({
+				id: 'phoneNumber',
+				name: 'Phone Number',
+				type: "credentials",
+				credentials: {
+					phoneNumber: {label: "Phone Number", type: "text"}
+				},
+				authorize: async ({phoneNumber}) => {
+
+					// TODO: implement actual auth
+
+					return lookupUserByPhoneNumber(phoneNumber as string)
+				}
 			})
 		],
 		callbacks: {
 			// TODO: if want to make sign in only possible when user already
 			// has an account, that logic goes here
-			signIn: () => {
-				return true;
-			}
+			signIn: async ({credentials, email, user}) => {
+				
+				if (credentials && credentials.phoneNumber) {
+					if (await prisma.user.findUnique({where: {phone: String(credentials.phoneNumber.value)}})) {
+						return true
+					}
+
+					// check if 
+				}
+
+				if (email && user.email && email.verificationRequest) {
+					if (await prisma.user.findUnique({where: {email: user.email}})) {
+						return true
+					}
+				}
+
+				return false;
+			},
 		},
 		pages: {
-			verifyRequest: '/auth/sent'
+			signIn: '/auth/login',
+			verifyRequest: '/auth/sent',
+			error: '/error'
 		}
 	}),
 	// authorize
