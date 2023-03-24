@@ -3,6 +3,8 @@ import type { PageServerLoad } from './$types';
 import { z } from 'zod'
 import validator from 'validator'
 import { prisma } from '$lib/server/prisma';
+import { twilio } from '$lib/server/twilio';
+import { TWILIO_VERIFY_SID } from '$env/static/private';
 
 export const load = (async ({ locals }) => {
     if ((await locals.getSession())?.user) {
@@ -18,7 +20,7 @@ const credentialsSchema = z.object({
 })
 
 export const actions = {
-    default: async ({ request }) => {
+    register: async ({ request }) => {
         const formData = await request.formData()
 
         const credentials = {
@@ -29,15 +31,28 @@ export const actions = {
         const validatedCredentials = credentialsSchema.safeParse(credentials)
 
         if (validatedCredentials.success) {
-            await prisma.user.create({
-                data: {
-                    email: validatedCredentials.data.email,
-                    phone: validatedCredentials.data.phone,
-                }
-            })
+
+            // const user = await prisma.user.create({
+            //     data: {
+            //         email: validatedCredentials.data.email,
+            //         phone: validatedCredentials.data.phone,
+            //     }
+            // })
+            const user = {id: '12345'}
+
+            console.log('creating new user...')
+
+            await twilio.verify.v2.services(TWILIO_VERIFY_SID).verifications.create({ to: validatedCredentials.data.phone, channel: 'sms'})
+
+            return new Response(JSON.stringify({
+                userId: user.id
+            }), {status: 200})
         } else {
             throw error(400, validatedCredentials.error.issues[0].message)
         }
 
-    }
+    },
+    verify: async ({}) => {
+
+    } 
 }

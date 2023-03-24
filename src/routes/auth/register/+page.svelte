@@ -3,7 +3,7 @@
 </script>
 
 <h3>To create an account, all you need is a phone number and an email.</h3>
-<form class="form-control max-w-md gap-4" method="post">
+<form class="form-control max-w-md gap-4" method="post" action="?/register">
 	<label class="input-group">
 		<input
 			required
