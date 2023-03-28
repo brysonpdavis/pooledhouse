@@ -3,8 +3,8 @@ import type { PageServerLoad } from './$types';
 import { z } from 'zod'
 import validator from 'validator'
 import { prisma } from '$lib/server/prisma';
-import { twilio } from '$lib/server/twilio';
-import { TWILIO_VERIFY_SID } from '$env/static/private';
+import { goto } from '$app/navigation';
+import { createOrFindContactVerification } from '$lib/server/auth/contact-verification';
 
 export const load = (async ({ locals }) => {
     if ((await locals.getSession())?.user) {
@@ -30,29 +30,33 @@ export const actions = {
 
         const validatedCredentials = credentialsSchema.safeParse(credentials)
 
-        if (validatedCredentials.success) {
-
-            // const user = await prisma.user.create({
-            //     data: {
-            //         email: validatedCredentials.data.email,
-            //         phone: validatedCredentials.data.phone,
-            //     }
-            // })
-            const user = {id: '12345'}
-
-            console.log('creating new user...')
-
-            await twilio.verify.v2.services(TWILIO_VERIFY_SID).verifications.create({ to: validatedCredentials.data.phone, channel: 'sms'})
-
-            return new Response(JSON.stringify({
-                userId: user.id
-            }), {status: 200})
-        } else {
+        if (validatedCredentials.success === false) {
             throw error(400, validatedCredentials.error.issues[0].message)
         }
 
-    },
-    verify: async ({}) => {
+        const user = await prisma.user.findFirst({
+            where: {
+                OR:
+                    [
+                        { email: validatedCredentials.data.email },
+                        { phone: validatedCredentials.data.phone }
+                    ]
+            }
+        })
 
-    } 
+        if (user !== null) {
+            console.log(JSON.stringify(user))
+            throw error(409, { message: 'a user already exists with that info' })
+        }
+
+        console.log('creating new verification...')
+
+        const verification = await createOrFindContactVerification(validatedCredentials.data)
+
+        if (verification === null) {
+            throw error(404, 'could not create or find contact verification')
+        } else {
+            throw redirect(303, `/auth/register/contact-verify/${verification.id}`)
+        }
+    }
 }

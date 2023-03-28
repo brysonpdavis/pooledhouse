@@ -44,7 +44,7 @@ model User {
   name                      String?
   email                     String                      @unique
   emailVerified             DateTime?                   @map("email_verified")
-  phone                     String?                      @unique
+  phone                     String                      @unique
   image                     String?
   accounts                  Account[]
   sessions                  Session[]
@@ -99,4 +99,19 @@ model IndustryVerificationToken {
   createdByUserId String   @map("created_by_user_id")
   createdByUser   User     @relation("CreatedByUser", fields: [createdByUserId], references: [id])
   consumedByUser  User?    @relation("ConsumedByUser")
+
+  @@map("industry_verification_tokens")
+}
+
+model ContactVerification {
+  id                          String    @id @default(cuid())
+  email                       String
+  emailVerificationCodeSentAt DateTime? @map("email_verification_code_sent_at")
+  emailVerifiedAt             DateTime? @map("email_verified_at")
+  phone                       String
+  phoneVerificationCodeSentAt DateTime? @map("phone_verification_code_sent_at")
+  phoneVerifiedAt             DateTime? @map("phone_verified_at")
+
+  @@unique([email, phone])
+  @@map("contact_verifications")
 }

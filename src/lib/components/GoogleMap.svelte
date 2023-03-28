@@ -65,10 +65,10 @@
 				strictBounds: true
 			});
 
+			const pacInputContainer = document.getElementById('pac-input-container')!
+
 			// this will position the location input
-			map.controls[google.maps.ControlPosition.TOP_LEFT].push(
-				document.getElementById('pac-input-container')!
-			);
+			map.controls[google.maps.ControlPosition.TOP_LEFT].push(pacInputContainer);
 
 			autocomplete.addListener('place_changed', () => {
 				const place = autocomplete.getPlace();
@@ -181,7 +181,7 @@
 	}
 </script>
 
-<div id="pac-input-container">
+<div id="pac-input-container" class="animate-fade">
 	<input
 		id="pac-input"
 		class="input-secondary input m-4"
@@ -209,11 +209,23 @@
 </div>
 
 <style>
+	/* these css properties will make the elements not  
+	** visible until they have been added to the map 
+	*/
+
 	#info-window-content {
 		display: none;
 	}
 
 	:global(#map #info-window-content) {
+		display: inline;
+	}
+
+	#pac-input-container {
+		display: none;
+	}
+
+	:global(#map #pac-input-container) {
 		display: inline;
 	}
 </style>

@@ -2,7 +2,17 @@
 module.exports = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
-		extend: {}
+		extend: {
+			animation: {
+				fade: 'fadeIn 150ms linear'
+			},
+			keyframes: {
+				fadeIn: {
+					'0%': {opacity: 0},
+					'100%': {opacity: 1}
+				}
+			}
+		}
 	},
 	plugins: [require('@tailwindcss/typography'), require('daisyui')],
 	daisyui: {

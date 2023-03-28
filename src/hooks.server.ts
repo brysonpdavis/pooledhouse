@@ -47,17 +47,17 @@ export const handle = sequence(
 					if (await prisma.user.findUnique({where: {phone: String(credentials.phoneNumber.value)}})) {
 						return true
 					}
-
-					// check if 
 				}
 
 				if (email && user.email && email.verificationRequest) {
 					if (await prisma.user.findUnique({where: {email: user.email}})) {
 						return true
+					} else {
+						return false
 					}
 				}
 
-				return false;
+				return true;
 			},
 		},
 		pages: {
@@ -77,7 +77,7 @@ export const handle = sequence(
 		const protectedPage = event.url.pathname.startsWith('/protected')
 
 		if (protectedPage && !(await event.locals.getSession())?.user) {
-			redirect(302, 'not allowed')
+			redirect(302, '/auth/nope')
 		}
 
 		return resolve(event)
