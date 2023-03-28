@@ -3,7 +3,6 @@ import type { PageServerLoad } from './$types';
 import { z } from 'zod'
 import validator from 'validator'
 import { prisma } from '$lib/server/prisma';
-import { goto } from '$app/navigation';
 import { createOrFindContactVerification } from '$lib/server/auth/contact-verification';
 
 export const load = (async ({ locals }) => {

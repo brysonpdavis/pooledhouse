@@ -1,21 +1,28 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { signIn } from '@auth/sveltekit/client';
 
 	let identifier = '';
 	let loginMethod: 'email' | 'phone' = 'email';
 
-	function handleSubmit() {
+	async function handleSubmit() {
 		if (loginMethod === 'email') {
-			signIn('email', { email: identifier });
+			await signIn('email', { email: identifier });
 		} else {
-			signIn('credentials', { phoneNumber: identifier, redirect: true });
+			await goto(`/auth/login/sms-otp/${identifier}`, { replaceState: true });
 		}
 	}
 </script>
 
 <h2>would you like to login by email or phone number?</h2>
 
-<form on:submit={() => handleSubmit()} class="flex flex-col">
+<form
+	on:submit={async (event) => {
+		event.preventDefault();
+		await handleSubmit();
+	}}
+	class="flex flex-col"
+>
 	<!-- svelte-ignore a11y-autofocus -->
 	<div class="input-group">
 		{#if loginMethod === 'email'}

@@ -1,9 +1,13 @@
+import { differenceInMinutes } from 'date-fns'
 import { error, redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/prisma';
-import { twilio } from '$lib/server/twilio';
+import {
+    sendEmailVerificationCode,
+    sendPhoneVerificationCode,
+    checkEmailVerificationCode,
+    checkPhoneVerificationCode
+} from '$lib/server/auth/contact-verification';
 import type { PageServerLoad, Actions } from './$types';
-import { TWILIO_VERIFY_SID } from '$env/static/private';
-import { differenceInHours } from 'date-fns'
 
 export const load = (async ({ params, locals }) => {
 
@@ -38,26 +42,25 @@ export const load = (async ({ params, locals }) => {
 
     // otherwise, if email and phone have already been verified, create new user with associated info
     if (!!contactVerification.emailVerifiedAt && !!contactVerification.phoneVerifiedAt) {
-        console.log('create a new user and redirect!!')
-        // TODO: create new user
+        console.log('create a new user and redirect')
 
         const createdUser = await prisma.user.create({ data: { email, phone } })
 
-        console.log('created new user: ', createdUser)
+        console.log('created new user: ', createdUser.id)
 
         throw redirect(303, '/auth/login')
     }
 
     if (
         contactVerification.emailVerificationCodeSentAt === null ||
-        differenceInHours(new Date(), contactVerification.emailVerificationCodeSentAt) >= 24
+        differenceInMinutes(new Date(), contactVerification.emailVerificationCodeSentAt) >= 5
     ) {
         sendEmailVerificationCode(contactVerification.email, contactVerification.id)
     }
 
     if (
         contactVerification.phoneVerificationCodeSentAt === null ||
-        differenceInHours(new Date(), contactVerification.phoneVerificationCodeSentAt) >= 24
+        differenceInMinutes(new Date(), contactVerification.phoneVerificationCodeSentAt) >= 5
     ) {
         sendPhoneVerificationCode(contactVerification.phone, contactVerification.id)
     }
@@ -83,17 +86,15 @@ export const actions: Actions = {
 
         const code = (await request.formData()).get('code') as string
 
-        if (code === '') {
+        const verificationSuccessful = await checkPhoneVerificationCode(verification.phone, code)
+
+        if (!verificationSuccessful) {
             return { phoneFailed: true }
         }
 
-        const verificationSuccessful = await checkPhoneVerificationCode(verification.phone, code)
+        const cv = await prisma.contactVerification.update({ where: { id: params.contactVerificationId }, data: { phoneVerifiedAt: new Date() } })
 
-        if (verificationSuccessful) {
-            const cv = await prisma.contactVerification.update({ where: { id: params.contactVerificationId }, data: { phoneVerifiedAt: new Date() } })
-
-            console.log(JSON.stringify(cv), undefined, 2)
-        }
+        console.log(JSON.stringify(cv, undefined, 2))
 
         return { phoneSuccess: verificationSuccessful }
     },
@@ -109,10 +110,6 @@ export const actions: Actions = {
 
         const code = (await request.formData()).get('code') as string
 
-        if (code === '') {
-            return { emailFailed: true }
-        }
-
         const verificationSuccessful = await checkEmailVerificationCode(verification.email, code)
 
         if (!verificationSuccessful) {
@@ -124,7 +121,7 @@ export const actions: Actions = {
             data: { emailVerifiedAt: new Date() }
         })
 
-        console.log(JSON.stringify(cv), undefined, 2)
+        console.log(JSON.stringify(cv, undefined, 2))
 
         return { emailSuccess: true }
 
@@ -153,42 +150,3 @@ export const actions: Actions = {
     }
 }
 
-async function sendPhoneVerificationCode(phone: string, contactVerificationId: string) {
-    await twilio.verify.v2
-        .services(TWILIO_VERIFY_SID)
-        .verifications
-        .create({ to: phone, channel: 'sms' })
-        .catch(console.warn)
-
-    await prisma.contactVerification.update({ where: { id: contactVerificationId }, data: { phoneVerificationCodeSentAt: new Date() } })
-}
-
-async function checkPhoneVerificationCode(phone: string, code: string) {
-    const verificationCheck = await twilio.verify.v2
-        .services(TWILIO_VERIFY_SID)
-        .verificationChecks
-        .create({ to: phone, code })
-        .catch(console.warn)
-
-    return verificationCheck?.status === 'approved'
-}
-
-async function sendEmailVerificationCode(email: string, contactVerificationId: string) {
-    await twilio.verify.v2
-        .services(TWILIO_VERIFY_SID)
-        .verifications
-        .create({ to: email, channel: 'email' })
-        .catch(console.warn)
-
-    await prisma.contactVerification.update({ where: { id: contactVerificationId }, data: { emailVerificationCodeSentAt: new Date() } })
-}
-
-async function checkEmailVerificationCode(email: string, code: string) {
-    const verificationCheck = await twilio.verify.v2
-        .services(TWILIO_VERIFY_SID)
-        .verificationChecks
-        .create({ to: email, code })
-        .catch(console.warn)
-
-    return verificationCheck?.status === 'approved'
-}

@@ -31,7 +31,6 @@ export const getPlaces: Handler<void, Place[]> = async () => {
     }
 
     return await res.json() as Place[]
-
 }
 
 export const deletePlaces: Handler<void, void> = async () => {

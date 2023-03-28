@@ -176,6 +176,7 @@
 		infoWindowContent.children.namedItem('place-name')!.textContent = place.name;
 		infoWindowContent.children.namedItem('place-id')!.textContent = place.id;
 		infoWindowContent.children.namedItem('place-address')!.textContent = place.address;
+		(infoWindowContent.children.namedItem('place-link') as HTMLAnchorElement)!.href = `/explore/places/${place.id}`
 
 		infoWindow.open(map, anchor);
 	}
@@ -206,6 +207,7 @@
 	<div id="place-name" class="font-semibold"><!-- --></div>
 	<div id="place-address"><!-- --></div>
 	<div id="place-id"><!-- --></div>
+	<a id="place-link">page</a>
 </div>
 
 <style>

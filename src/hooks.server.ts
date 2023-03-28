@@ -9,10 +9,12 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { SENDGRID_API_KEY } from '$env/static/private';
 import { error, redirect } from '@sveltejs/kit';
 import { lookupUserByPhoneNumber } from '$lib/server/auth/phone-authorization';
+import { checkPhoneVerificationCode } from '$lib/server/auth/contact-verification';
 
 export const handle = sequence(
 	// authenticate
 	SvelteKitAuth({
+		session: {strategy: 'jwt'},
 		adapter: PrismaAdapter(prisma),
 		providers: [
 			EmailProvider({
@@ -28,29 +30,34 @@ export const handle = sequence(
 				name: 'Phone Number',
 				type: "credentials",
 				credentials: {
-					phoneNumber: {label: "Phone Number", type: "text"}
+					phoneNumber: {label: "Phone Number", type: "text"},
+					otp: {label: "One Time Password", type: "text"}
 				},
-				authorize: async ({phoneNumber}) => {
+				authorize: async ({phoneNumber, otp}) => {
 
-					// TODO: implement actual auth
+					const verificationSuccessful = await checkPhoneVerificationCode(phoneNumber as string, otp as string)
+
+					if (!verificationSuccessful) {
+						return null
+					}
 
 					return lookupUserByPhoneNumber(phoneNumber as string)
 				}
 			})
 		],
 		callbacks: {
-			// TODO: if want to make sign in only possible when user already
-			// has an account, that logic goes here
 			signIn: async ({credentials, email, user}) => {
 				
-				if (credentials && credentials.phoneNumber) {
-					if (await prisma.user.findUnique({where: {phone: String(credentials.phoneNumber.value)}})) {
+				if (credentials && credentials.phoneNumber && credentials.otp) {
+					if (!!await prisma.user.findUnique({where: {phone: credentials.phoneNumber.value as string}})) {
 						return true
+					} else {
+						return false
 					}
 				}
 
 				if (email && user.email && email.verificationRequest) {
-					if (await prisma.user.findUnique({where: {email: user.email}})) {
+					if (!!await prisma.user.findUnique({where: {email: user.email}})) {
 						return true
 					} else {
 						return false
@@ -59,6 +66,15 @@ export const handle = sequence(
 
 				return true;
 			},
+			// jwt: async ({token, user}) => {
+			// 	console.log('something')
+			// 	return {...token, ...user}
+			// },
+			// session: ({token, session}) => {
+			// 	session.user = token
+
+			// 	return session
+			// }
 		},
 		pages: {
 			signIn: '/auth/login',
