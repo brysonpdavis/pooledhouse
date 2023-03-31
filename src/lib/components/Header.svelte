@@ -14,6 +14,7 @@
 			<ul tabindex="-1" class="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow">
 				<li><a href="/protected">protected</a></li>
 				{#if $page.data.session}
+					<li><a href="/verify">verify</a></li>
 					<li><button on:click={() => signOut()}>logout</button></li>
 				{:else}
 					<li><a href="/auth/login">login</a></li>

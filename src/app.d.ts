@@ -11,4 +11,32 @@ declare global {
 	}
 }
 
+declare module "@auth" {
+	interface Session {
+		user: {
+			id: string,
+			email: string,
+			phone: string,
+			industryVerificationToken: string
+		}
+	}
+
+	interface DefaultSession {
+		user: {
+			id: string,
+			email: string,
+			phone: string,
+			industryVerificationToken: string
+		}
+	}
+
+	interface User {
+		id: string,
+		email: string,
+		phone: string,
+		industryVerificationToken: string
+
+	}
+}
+
 export {};

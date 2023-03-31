@@ -72,7 +72,6 @@ export const handle = sequence(
 			// },
 			// session: ({token, session}) => {
 			// 	session.user = token
-
 			// 	return session
 			// }
 		},
