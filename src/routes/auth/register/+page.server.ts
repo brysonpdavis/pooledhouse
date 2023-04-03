@@ -38,7 +38,7 @@ export const actions: Actions = {
             code: formData.get('code')
         }
 
-        const validatedCredentials = credentialsSchema.safeParse(credentials)
+        const validatedCredentials = await credentialsSchema.safeParseAsync(credentials)
 
         if (validatedCredentials.success === false) {
             throw error(400, validatedCredentials.error.issues[0].message)
