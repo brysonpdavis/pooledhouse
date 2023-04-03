@@ -109,11 +109,12 @@ model ExperienceReview {
 }
 
 model IndustryVerificationToken {
-  token           String   @unique
-  createdAt       DateTime @default(now()) @map("created_at")
-  createdByUserId String   @map("created_by_user_id")
-  createdByUser   User     @relation("CreatedByUser", fields: [createdByUserId], references: [id], onDelete: Cascade)
-  consumedByUser  User?    @relation("ConsumedByUser")
+  token                String                @unique
+  createdAt            DateTime              @default(now()) @map("created_at")
+  createdByUserId      String                @map("created_by_user_id")
+  createdByUser        User                  @relation("CreatedByUser", fields: [createdByUserId], references: [id], onDelete: Cascade)
+  consumedByUser       User?                 @relation("ConsumedByUser")
+  contactVerifications ContactVerification[]
 
   @@map("industry_verification_tokens")
 }
@@ -128,13 +129,15 @@ model WorkplaceReviewToken {
 }
 
 model ContactVerification {
-  id                          String    @id @default(cuid())
-  email                       String
-  emailVerificationCodeSentAt DateTime? @map("email_verification_code_sent_at")
-  emailVerifiedAt             DateTime? @map("email_verified_at")
-  phone                       String
-  phoneVerificationCodeSentAt DateTime? @map("phone_verification_code_sent_at")
-  phoneVerifiedAt             DateTime? @map("phone_verified_at")
+  id                               String                     @id @default(cuid())
+  email                            String
+  emailVerificationCodeSentAt      DateTime?                  @map("email_verification_code_sent_at")
+  emailVerifiedAt                  DateTime?                  @map("email_verified_at")
+  phone                            String
+  phoneVerificationCodeSentAt      DateTime?                  @map("phone_verification_code_sent_at")
+  phoneVerifiedAt                  DateTime?                  @map("phone_verified_at")
+  industryVerificationTokenDetails IndustryVerificationToken? @relation(fields: [industryVerificationToken], references: [token])
+  industryVerificationToken        String?
 
   @@unique([email, phone])
   @@map("contact_verifications")

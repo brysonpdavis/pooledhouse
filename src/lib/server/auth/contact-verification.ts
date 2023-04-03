@@ -2,8 +2,8 @@ import { prisma } from "$lib/server/prisma"
 import { twilio } from "$lib/server/twilio"
 import { TWILIO_VERIFY_SID } from "$env/static/private"
 
-export const createOrFindContactVerification = async (contactInfo: { email: string, phone: string }) => {
-    let verification = await prisma.contactVerification.findUnique({
+export const createOrFindContactVerification = async (contactInfo: { email: string, phone: string }, industryVerificationToken?: string) => {
+    let contactVerification = await prisma.contactVerification.findUnique({
         where: {
             email_phone: {
                 email: contactInfo.email,
@@ -12,16 +12,35 @@ export const createOrFindContactVerification = async (contactInfo: { email: stri
         }
     })
 
-    if (verification === null) {
-        verification = await prisma.contactVerification.create({
+
+
+    if (contactVerification === null) {
+        contactVerification = await prisma.contactVerification.create({
             data: {
                 email: contactInfo.email,
-                phone: contactInfo.phone
+                phone: contactInfo.phone,
+                industryVerificationTokenDetails: {
+                    connect: {
+                        token: industryVerificationToken
+                    }
+                }
             }
         })
     }
-    
-    return verification
+
+    if (contactVerification.industryVerificationToken === null && industryVerificationToken !== undefined) {
+        try {
+            contactVerification = await prisma.contactVerification.update({
+                where: { id: contactVerification.id },
+                data: { industryVerificationTokenDetails: { connect: { token: industryVerificationToken } } }
+            })
+        } catch (err) {
+            console.error('error occured attempting to update contact verification with industry token:')
+            console.error(err)
+        }
+    }
+
+    return contactVerification
 }
 
 export async function sendPhoneVerificationCode(phone: string, contactVerificationId?: string) {
@@ -31,9 +50,9 @@ export async function sendPhoneVerificationCode(phone: string, contactVerificati
         .create({ to: phone, channel: 'sms' })
         .catch(console.warn)
 
-        if (contactVerificationId !== undefined) {
-            await prisma.contactVerification.update({ where: { id: contactVerificationId }, data: { phoneVerificationCodeSentAt: new Date() } })
-        }
+    if (contactVerificationId !== undefined) {
+        await prisma.contactVerification.update({ where: { id: contactVerificationId }, data: { phoneVerificationCodeSentAt: new Date() } })
+    }
 }
 
 export async function checkPhoneVerificationCode(phone: string, code: string) {
