@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { slide } from 'svelte/transition';
+
 	let countryCode = '+1';
 	let hasVerificationCode: boolean = false;
 </script>
@@ -33,14 +35,31 @@
 			inputmode="numeric"
 			maxlength="10"
 			placeholder="3141592653"
-			class="input-bordered flex-grow input min-w-0"
+			class="input-bordered input min-w-0 flex-grow"
 		/>
 		<span class="w-20 flex-shrink-0">phone</span>
 	</label>
-	<label class="input-group" class:hidden={!hasVerificationCode}>
-		<input name="code" type="text" placeholder="******" class="input-bordered input w-full" maxlength="6" minlength="6" />
-		<span class="w-20 flex-shrink-0">code</span>
-	</label>
+	{#if hasVerificationCode}
+		<label
+			class="input-group"
+			class:hidden={!hasVerificationCode}
+			transition:slide={{ duration: 150 }}
+		>
+			<input
+				name="code"
+				type="text"
+				placeholder="******"
+				class="input-bordered input w-full"
+				maxlength="6"
+				minlength="6"
+			/>
+			<span class="w-20 flex-shrink-0">code</span>
+		</label>
+	{:else}
+		<label class="input-group hidden">
+			<input name="code" type="text" value="" />
+		</label>
+	{/if}
 	<label class="label">
 		<span class="label-text">have a verification code?</span>
 		<input type="checkbox" class="toggle-secondary toggle" bind:checked={hasVerificationCode} />
