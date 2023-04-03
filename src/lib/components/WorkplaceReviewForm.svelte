@@ -8,7 +8,7 @@
 {#if successfullyPosted}
 	<div>review submitted</div>
 {:else}
-	<form action={`/explore/places/${placeId}/review?/postReview`} method="post" use:enhance>
+	<form action={`/explore/places/${placeId}?/postReview`} method="post" use:enhance>
 		<label for="general" class="label">
 			tell us whatever you want us to know about working there?
 		</label>
