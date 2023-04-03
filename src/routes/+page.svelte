@@ -1,79 +1,41 @@
-<script lang="ts">
-	import type { Place } from '@prisma/client';
-	import type { PostPlaceInput } from '$lib/handlers/places';
-	import { page } from '$app/stores';
-
-	const loggedIn = $page.data.session?.user;
-
-	let places: Place[] = [];
-
-	const handlePost = async () => {
-		const res = await fetch('/api/protected/places', {
-			method: 'POST',
-			body: JSON.stringify({
-				googlePlaceId: (Math.random() * 10000).toString(),
-				name: 'something',
-				lat: 50,
-				lng: -50,
-				address: '12345 awesome rd',
-				createdByUserEmail: $page.data.session?.user?.email!
-			} satisfies PostPlaceInput)
-		});
-
-		if (res.ok) {
-			places.push(await res.json());
-			places = places;
-		}
-	};
-
-	const fetchPlaces = async () => {
-		const res = await fetch('/api/places', { method: 'GET' });
-
-		if (res.ok) {
-			places = await res.json();
-		}
-	};
-
-	const deletePlaces = async () => {
-		const res = await fetch('/api/protected/places', { method: 'DELETE' });
-
-		if (res.ok) {
-			places = [];
-		}
-	};
-</script>
-
 <div>
 	<h1>welcome to pooledhouse</h1>
-	<a class="hover:btn-primary-focus btn-primary btn" href="/explore">go to map</a>
 
-	<hr />
-
-	<div>
-		<button on:click={fetchPlaces} class="btn-primary btn">get</button>
-		<button disabled={!loggedIn} on:click={handlePost} class="btn-primary btn">post</button>
-		<button disabled={!loggedIn} on:click={deletePlaces} class="btn-primary btn">delete</button>
-	</div>
-
-	{#if places.length !== 0}
-		{#each places as place}
-			<div class="card my-4 bg-base-100 p-4 shadow-lg">
-				<h1>
-					{place.name}
-				</h1>
-				<div class="not-prose">
+	<div class="flex flex-col lg:flex-row">
+		<div class="card-bordered card m-4  p-4 lg:w-1/3">
+			<div class="flex flex-row justify-between gap-4">
+				<div class="flex-grow">
+					<div class="card-title">looking for a new gig? just curious?</div>
 					<p>
-						google id: {place.googlePlaceId}
+						see what other restaurant workers say about their workplace, or compare the best
+						workplaces in the city
 					</p>
+				</div>
+				<a class="hover:btn-primary-focus btn-primary btn btn-lg h-full" href="/explore">explore</a>
+			</div>
+		</div>
+		<div class="card-bordered card m-4 p-4 lg:w-1/3">
+			<div class="flex justify-between gap-4 flex-grow flex-row lg:flex-row-reverse">
+				<a class="hover:btn-primary-focus btn-primary btn btn-lg h-full" href="/auth/register">register</a>
+				<div class="flex-grow">
+					<div class="card-title justify-end">share your experience</div>
 					<p>
-						id: {place.id}
-					</p>
-					<p>
-						location: ({place.lat}
-						{place.lng})
+						after registering as a verified restaurant worker, you can verify your friends or coworkers, too
 					</p>
 				</div>
 			</div>
-		{/each}
-	{/if}
+		</div>
+		<div class="card-bordered card m-4  p-4 lg:w-1/3">
+			<div class="flex flex-row justify-between gap-4">
+				<div class="flex-grow">
+					<div class="card-title">share your perspective on your own workplace</div>
+					<p>
+						let everyone know what it's really like at behind the curtain at your workplace, anonymously
+					</p>
+				</div>
+				<a class="hover:btn-primary-focus btn-primary btn btn-lg h-full" href="/explore">contribute</a>
+			</div>
+		</div>
+	</div>
 </div>
+

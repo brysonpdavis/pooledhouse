@@ -1,9 +1,10 @@
 <script lang="ts">
 	let countryCode = '+1';
+	let hasVerificationCode: boolean = false;
 </script>
 
 <h3>To create an account, all you need is a phone number and an email.</h3>
-<form class="form-control max-w-md gap-4" method="post" action="?/register">
+<form class="form-control max-w-xl gap-4" method="post" action="?/register">
 	<label class="input-group">
 		<input
 			required
@@ -20,8 +21,8 @@
 			name="country-code"
 			type="text"
 			inputmode="numeric"
-			pattern={"[+]{1}[0-9]{1,3}"}
-            maxlength="4"
+			pattern={'[+]{1}[0-9]{1,3}'}
+			maxlength="4"
 			bind:value={countryCode}
 			class="input-bordered input w-20"
 		/>
@@ -32,10 +33,19 @@
 			inputmode="numeric"
 			maxlength="10"
 			placeholder="3141592653"
-			class="input-bordered input min-w-0"
+			class="input-bordered flex-grow input min-w-0"
 		/>
 		<span class="w-20 flex-shrink-0">phone</span>
 	</label>
+	<label class="input-group" class:hidden={!hasVerificationCode}>
+		<input name="code" type="text" placeholder="******" class="input-bordered input w-full" maxlength="6" minlength="6" />
+		<span class="w-20 flex-shrink-0">code</span>
+	</label>
+	<label class="label">
+		<span class="label-text">have a verification code?</span>
+		<input type="checkbox" class="toggle-secondary toggle" bind:checked={hasVerificationCode} />
+	</label>
+
 	<button type="submit" class="btn-primary btn"> submit </button>
 </form>
 <p>
