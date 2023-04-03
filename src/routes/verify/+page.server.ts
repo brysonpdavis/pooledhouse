@@ -17,8 +17,8 @@ export const load = (async ({ locals }) => {
         include: { createdIndustryTokens: { include: { consumedByUser: { select: { id: true } } } } }
     })
 
-    if (!user?.industryVerificationToken) {
-        throw error(403, { message: 'not verified, cannot access' })
+    if (!user) {
+        throw error(403, { message: 'could not look up user?' })
     }
 
     const createdTokens = user.createdIndustryTokens.map((token) => {
@@ -28,7 +28,7 @@ export const load = (async ({ locals }) => {
     })
 
 
-    return { createdTokens };
+    return { createdTokens, userVerified: !!user.industryVerificationToken };
 }) satisfies PageServerLoad;
 
 export const actions = {
@@ -46,5 +46,36 @@ export const actions = {
         const newToken = await createIndustryVerificationToken(user.id)
 
         return { newToken: { ...newToken, consumed: false } }
+    },
+    verifyMe: async (event) => {
+        console.log('starting verification')
+        const user = await findUserByRequestEvent(event)
+
+        if (!user) {
+            throw error(403, { message: 'user not logged in' })
+        }
+
+        const providedToken = (await event.request.formData()).get('verificationToken')
+
+        if (!providedToken) {
+            return { invalidToken: true }
+        }
+
+        const availableToken = await prisma.industryVerificationToken.findUnique({
+            where: { token: providedToken.toString() }
+        })
+
+        if (!availableToken) {
+            return { unavailableToken: true }
+        }
+
+        const updatedUser = await prisma.user.update({
+            where: { id: user.id },
+            data: { industryVerificationToken: { set: availableToken.token } }
+        })
+
+        return {
+            verificationSuccess: updatedUser.industryVerificationToken === availableToken.token
+        }
     }
 } satisfies Actions

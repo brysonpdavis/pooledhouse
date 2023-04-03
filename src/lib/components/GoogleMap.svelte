@@ -21,7 +21,9 @@
 	let uploadSuccess = false;
 	let uploadInProgress = false;
 
-	$: popUpInfoWindowPlacePageUrl = !!popUpInfoWindowPlace ? `/explore/places/${popUpInfoWindowPlace.id}` : '/'
+	$: popUpInfoWindowPlacePageUrl = !!popUpInfoWindowPlace
+		? `/explore/places/${popUpInfoWindowPlace.id}`
+		: '/';
 
 	const nycCoordinates = { lat: 40.73, lng: -73.9 };
 
@@ -99,21 +101,6 @@
 		});
 	});
 
-	function addMarker(
-		location: google.maps.LatLngLiteral,
-		map: google.maps.Map,
-		options?: {
-			label: string;
-			title: string;
-		}
-	) {
-		new googleApi.maps.Marker({
-			position: location,
-			...options,
-			map
-		});
-	}
-
 	async function addPlaceMarkers(map: google.maps.Map, places: Place[]) {
 		// change color of each marker based on value?
 		places.forEach((place) => {
@@ -159,13 +146,7 @@
 		if (res !== 'error') {
 			places.push(res);
 			places = places;
-			addMarker(
-				{
-					lat: currentPlace.geometry?.location?.lat()!,
-					lng: currentPlace.geometry?.location?.lng()!
-				},
-				map
-			);
+			addPlaceMarkers(map, [res]);
 		}
 
 		uploadInProgress = false;

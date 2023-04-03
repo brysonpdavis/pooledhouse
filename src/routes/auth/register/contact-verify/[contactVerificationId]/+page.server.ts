@@ -133,6 +133,8 @@ export const actions: Actions = {
             throw error(404, 'in-progress verification not found')
         }
 
+        console.log('resending phone verification to :', verification.phone)
+
         await sendPhoneVerificationCode(verification.phone, verification.id)
 
         return { phoneResent: true }
@@ -143,6 +145,8 @@ export const actions: Actions = {
         if (verification === null) {
             throw error(404, 'in-progress verification not found')
         }
+
+        console.log('resending email verification to :', verification.email)
 
         await sendEmailVerificationCode(verification.email, verification.id)
 

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { PageData, ActionData } from './$types';
-    import {enhance} from '$app/forms'
+	import { enhance } from '$app/forms';
 
 	import 'iconify-icon';
+	import { fly, slide } from 'svelte/transition';
 
 	export let data: PageData;
 
@@ -16,17 +17,16 @@
 	<iconify-icon class="md:text-2xl" icon="material-symbols:check-box" />
 {:else}
 	<form action="?/verifyPhone" method="post" use:enhance>
-		<input class="input-accent input" name="code" />
+		<input class="input-bordered input" name="code" />
 		<button class="btn-primary btn" type="submit">submit</button>
 		<form action="?/resendPhone" method="post" class="btn-accent btn" use:enhance>
 			<button type="submit">resend</button>
 		</form>
 	</form>
 	{#if form?.phoneFailed}
-		<span class="text-red-600"> oops, looks like that code didn't work </span>
-	{/if}
-	{#if form?.phoneResent}
-		phone verification code resent
+		<div in:fly><span class="text-red-600"> oops, looks like that code didn't work </span></div>
+	{:else if form?.phoneResent}
+		<div in:fly>phone verification code resent</div>
 	{/if}
 {/if}
 
@@ -42,9 +42,10 @@
 		</form>
 	</form>
 	{#if form?.emailFailed}
-		<span class="text-red-600"> oops, looks like that code didn't work </span>
-	{/if}
-	{#if form?.emailResent}
-		email verification code resent
+		<div in:fly><span class="text-red-600"> oops, looks like that code didn't work </span></div>
+	{:else if form?.emailResent}
+		<div in:fly>email verification code resent</div>
+	{:else}
+		<div in:fly>you may need to check your spam folder</div>
 	{/if}
 {/if}

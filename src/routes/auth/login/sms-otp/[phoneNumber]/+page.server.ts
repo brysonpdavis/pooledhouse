@@ -4,7 +4,7 @@ import { z } from 'zod'
 import validator from 'validator';
 import { sendPhoneVerificationCode } from '$lib/server/auth/contact-verification';
 
-const phoneNumberSchema = z.string().refine((x) => validator.isMobilePhone(x, 'en-US', {strictMode: true}), 'not a valid phone number')
+const phoneNumberSchema = z.string().refine((x) => validator.isMobilePhone(x, 'any', {strictMode: true}), 'not a valid phone number')
 
 export const load = (async (event) => {
 	const session = await event.locals.getSession();

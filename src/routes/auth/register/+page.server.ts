@@ -15,10 +15,10 @@ export const load = (async ({ locals }) => {
 
 const credentialsSchema = z.object({
     email: z.string().email("not a valid email"),
-    phone: z.string().refine((x) => validator.isMobilePhone(x, 'en-US',), 'not a valid phone number'),
-    code: z.string().max(6, "industry verification code is invalid").optional().refine(async (token) => {
+    phone: z.string().refine((x) => validator.isMobilePhone(x, 'any',), 'not a valid phone number'),
+    code: z.string().max(6, "industry verification code is invalid").nullable().refine(async (token) => {
 
-        if (token === '' || token === undefined) {
+        if (token === null) {
             return true
         }
 

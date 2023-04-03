@@ -1,9 +1,10 @@
 import { prisma } from "$lib/server/prisma"
 import { twilio } from "$lib/server/twilio"
 import { TWILIO_VERIFY_SID } from "$env/static/private"
+import type { Prisma } from "@prisma/client"
 
-export const createOrFindContactVerification = async (contactInfo: { email: string, phone: string }, industryVerificationToken?: string) => {
-    let contactVerification = await prisma.contactVerification.findUnique({
+export const createOrFindContactVerification = async (contactInfo: { email: string, phone: string }, industryVerificationToken: string | null) => {
+    let existingContactVerification = await prisma.contactVerification.findUnique({
         where: {
             email_phone: {
                 email: contactInfo.email,
@@ -12,26 +13,30 @@ export const createOrFindContactVerification = async (contactInfo: { email: stri
         }
     })
 
+    const industryVerificationTokenDetails = !!industryVerificationToken ?
+        { connect: { token: industryVerificationToken } } :
+        undefined satisfies Prisma.ContactVerificationCreateInput['industryVerificationTokenDetails']
 
 
-    if (contactVerification === null) {
-        contactVerification = await prisma.contactVerification.create({
+    if (existingContactVerification === null) {
+        existingContactVerification = await prisma.contactVerification.create({
             data: {
                 email: contactInfo.email,
                 phone: contactInfo.phone,
-                industryVerificationTokenDetails: {
-                    connect: {
-                        token: industryVerificationToken
-                    }
-                }
+                industryVerificationTokenDetails
             }
         })
     }
 
-    if (contactVerification.industryVerificationToken === null && industryVerificationToken !== undefined) {
+    // if the existing contact verification record has no industry verification token, and
+    // an industry verification token has been provided, update the contact verification record 
+    if (
+        existingContactVerification.industryVerificationToken === null &&
+        industryVerificationToken !== null
+    ) {
         try {
-            contactVerification = await prisma.contactVerification.update({
-                where: { id: contactVerification.id },
+            existingContactVerification = await prisma.contactVerification.update({
+                where: { id: existingContactVerification.id },
                 data: { industryVerificationTokenDetails: { connect: { token: industryVerificationToken } } }
             })
         } catch (err) {
@@ -40,7 +45,7 @@ export const createOrFindContactVerification = async (contactInfo: { email: stri
         }
     }
 
-    return contactVerification
+    return existingContactVerification
 }
 
 export async function sendPhoneVerificationCode(phone: string, contactVerificationId?: string) {
