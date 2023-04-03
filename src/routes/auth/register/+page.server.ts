@@ -44,7 +44,6 @@ export const actions = {
         })
 
         if (user !== null) {
-            console.log(JSON.stringify(user))
             throw error(409, { message: 'a user already exists with that info' })
         }
 

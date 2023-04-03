@@ -66,14 +66,6 @@ export const handle = sequence(
 
 				return true;
 			},
-			// jwt: async ({token, user}) => {
-			// 	console.log('something')
-			// 	return {...token, ...user}
-			// },
-			// session: ({token, session}) => {
-			// 	session.user = token
-			// 	return session
-			// }
 		},
 		pages: {
 			signIn: '/auth/login',

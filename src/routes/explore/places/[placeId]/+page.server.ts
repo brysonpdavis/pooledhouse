@@ -18,7 +18,5 @@ export const load = (async ({params, locals}) => {
 
     const user = await prisma.user.findUnique({where: {email: userEmail}})
 
-    console.log('industry verification token: ', user?.industryVerificationToken)
-
     return {place, userVerified: !!user?.industryVerificationToken};
 }) satisfies PageServerLoad;

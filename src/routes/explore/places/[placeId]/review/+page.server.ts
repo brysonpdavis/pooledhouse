@@ -46,8 +46,6 @@ export const actions: Actions = {
 
         const formData = Object.fromEntries(await request.formData())
 
-        console.log(formData)
-
         const parsedData = postReviewFormDataSchema.safeParse(formData)
 
         if (!parsedData.success) {

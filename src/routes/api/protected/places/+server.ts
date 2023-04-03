@@ -17,7 +17,6 @@ export const POST = async ({ request }) => {
             }
         }
     })
-    console.log('new place', res)
     return new Response(JSON.stringify(res));
 }
 
