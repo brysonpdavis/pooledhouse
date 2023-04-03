@@ -1,5 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { z } from 'zod'
 import validator from 'validator'
 import { prisma } from '$lib/server/prisma';
@@ -18,7 +18,7 @@ const credentialsSchema = z.object({
     phone: z.string().refine((x) => validator.isMobilePhone(x, 'en-US',), 'not a valid phone number')
 })
 
-export const actions = {
+export const actions: Actions = {
     register: async ({ request }) => {
         const formData = await request.formData()
 

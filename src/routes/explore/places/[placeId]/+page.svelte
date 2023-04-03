@@ -1,7 +1,12 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import Modal from '$lib/components/Modal.svelte';
+	import WorkplaceReviewForm from '$lib/components/WorkplaceReviewForm.svelte';
+	import type { ActionData, PageData } from './$types';
 
 	export let data: PageData;
+	export let form: ActionData;
+
+	let reviewType: 'workplace' | 'experience' = 'workplace';
 </script>
 
 <a href={`/explore/places/${data.place.id}`}>
@@ -13,25 +18,45 @@
 <h3 class="text-accent">
 	{data.place.address}
 </h3>
+{#if reviewType === 'workplace'}
+	<div class="w-fit py-4">
+		{#if data.place.workplaceReviews.length === 0}
+			<div class="card-title">no workplace reviews for this place yet</div>
+		{:else}
+			<div class="card-title">workplace reviews</div>
+			{#each data.place.workplaceReviews as review}
+				<div class="card-bordered card p-4 shadow-lg">
+					<div>rating: {review.overallRating}</div>
+					<div>description: {review.description}</div>
+				</div>
+			{/each}
+		{/if}
+	</div>
+{/if}
 
-<div class=" w-fit p-4 ">
-	{#if data.place.reviews.length === 0}
-		<div class="card-title">no reviews for this place yet</div>
-	{:else}
-		<div class="card-title">reviews</div>
-		{#each data.place.reviews as review}
-			<div class="card-bordered card p-4 shadow-lg">
-				<div>rating: {review.overallRating}</div>
-				<div>description: {review.description}</div>
-			</div>
-		{/each}
-	{/if}
-</div>
+{#if reviewType === 'experience'}
+	<div class="w-fit py-4">
+		{#if data.place.experienceReviews.length === 0}
+			<div class="card-title">no experience reviews for this place yet</div>
+		{:else}
+			<div class="card-title">experience reviews</div>
+			{#each data.place.workplaceReviews as review}
+				<div class="card-bordered card p-4 shadow-lg">
+					<div>rating: {review.overallRating}</div>
+					<div>description: {review.description}</div>
+				</div>
+			{/each}
+		{/if}
+	</div>
+{/if}
 
-<a
-	href={`/explore/places/${data.place.id}/review`}
-	class="btn-primary btn"
-	class:btn-disabled={!data.userVerified}
->
-	write your own review
-</a>
+{#if data.userVerified}
+	<h3>have you worked at this establishment?</h3>
+	<Modal id="review" buttonText="workplace review">
+		<WorkplaceReviewForm placeId={data.place.id} successfullyPosted={form?.postReviewSuccess} />
+	</Modal>
+	<h3>have you visited this establishment?</h3>
+	<Modal id="review" buttonText="experience review">
+		<WorkplaceReviewForm placeId={data.place.id} successfullyPosted={form?.postReviewSuccess} />
+	</Modal>
+{/if}

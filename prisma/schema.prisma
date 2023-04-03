@@ -46,13 +46,15 @@ model User {
   emailVerified             DateTime?                   @map("email_verified")
   phone                     String                      @unique
   image                     String?
+  industryVerificationToken String?                     @unique
+  verification              IndustryVerificationToken?  @relation("ConsumedByUser", fields: [industryVerificationToken], references: [token])
   accounts                  Account[]
   sessions                  Session[]
   createdPlaces             Place[]
-  createdReviews            Review[]                    @relation("CreatedByUser")
-  industryVerificationToken String?                     @unique
-  verification              IndustryVerificationToken?  @relation("ConsumedByUser", fields: [industryVerificationToken], references: [token])
+  createdWorkplaceReviews   WorkplaceReview[]           @relation("CreatedByUser")
+  createdExperienceReview   ExperienceReview[]          @relation("CreatedByUser")
   createdIndustryTokens     IndustryVerificationToken[] @relation("CreatedByUser")
+  workplaceReviewTokens     WorkplaceReviewToken[]      @relation("AssociatedUser")
 
   @@map("users")
 }
@@ -67,40 +69,62 @@ model VerificationToken {
 }
 
 model Place {
-  id              String   @id @default(cuid())
-  name            String
-  lat             Float
-  lng             Float
-  googlePlaceId   String   @unique @map("google_place_id")
-  address         String
-  reviews         Review[]
-  createdByUserId String   @map("created_by_user_id")
-  createdByUser   User     @relation(fields: [createdByUserId], references: [id])
+  id                String             @id @default(cuid())
+  name              String
+  lat               Float
+  lng               Float
+  googlePlaceId     String             @unique @map("google_place_id")
+  address           String
+  workplaceReviews  WorkplaceReview[]
+  experienceReviews ExperienceReview[]
+  createdByUserId   String             @map("created_by_user_id")
+  createdByUser     User               @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
 
   @@map("places")
 }
 
-model Review {
+model WorkplaceReview {
   id              String    @id @default(cuid())
   overallRating   Int
   description     String
   placeId         String    @map("place_id")
   place           Place     @relation(fields: [placeId], references: [id])
   createdByUserId String    @map("created_by_user_id")
-  createdByUser   User      @relation("CreatedByUser", fields: [createdByUserId], references: [id])
+  createdByUser   User      @relation("CreatedByUser", fields: [createdByUserId], references: [id], onDelete: Cascade)
   lastEdited      DateTime?
 
-  @@map("reviews")
+  @@map("workplace_reviews")
+}
+
+model ExperienceReview {
+  id              String @id @default(cuid())
+  overallRating   Int
+  description     String
+  placeId         String @map("place_id")
+  place           Place  @relation(fields: [placeId], references: [id])
+  createdByUserId String @map("created_by_user_id")
+  createdByUser   User   @relation("CreatedByUser", fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  @@map("experience_reviews")
 }
 
 model IndustryVerificationToken {
   token           String   @unique
-  expires         DateTime
+  createdAt       DateTime @default(now()) @map("created_at")
   createdByUserId String   @map("created_by_user_id")
-  createdByUser   User     @relation("CreatedByUser", fields: [createdByUserId], references: [id])
+  createdByUser   User     @relation("CreatedByUser", fields: [createdByUserId], references: [id], onDelete: Cascade)
   consumedByUser  User?    @relation("ConsumedByUser")
 
   @@map("industry_verification_tokens")
+}
+
+model WorkplaceReviewToken {
+  token            String   @unique
+  createdAt        DateTime @default(now()) @map("created_at")
+  associatedUserId String   @map("associated_by_user_id")
+  associatedUser   User     @relation("AssociatedUser", fields: [associatedUserId], references: [id], onDelete: Cascade)
+
+  @@map("workplace_review_tokens")
 }
 
 model ContactVerification {

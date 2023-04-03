@@ -26,7 +26,7 @@ module.exports = {
 					// "accent": "#457b9d",
 					'accent': '#0d1117',
 					'accent-content': '#f1faee',
-					'neutral': '#f1faee',
+					// 'neutral': '#f1faee',
 					'base-100': '#ffffff',
 					'--rounded-box': '0.25rem',
 					'--rounded-btn': '0.25rem',

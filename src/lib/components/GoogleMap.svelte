@@ -17,8 +17,11 @@
 	let currentPlace: google.maps.places.PlaceResult | undefined;
 	let infoWindow: google.maps.InfoWindow;
 	let infoWindowContent: HTMLElement;
+	let popUpInfoWindowPlace: Place | undefined = places.at(0);
 	let uploadSuccess = false;
 	let uploadInProgress = false;
+
+	$: popUpInfoWindowPlacePageUrl = !!popUpInfoWindowPlace ? `/explore/places/${popUpInfoWindowPlace.id}` : '/'
 
 	const nycCoordinates = { lat: 40.73, lng: -73.9 };
 
@@ -65,7 +68,7 @@
 				strictBounds: true
 			});
 
-			const pacInputContainer = document.getElementById('pac-input-container')!
+			const pacInputContainer = document.getElementById('pac-input-container')!;
 
 			// this will position the location input
 			map.controls[google.maps.ControlPosition.TOP_LEFT].push(pacInputContainer);
@@ -172,12 +175,7 @@
 	type InfoWindowOpenAnchorType = Parameters<(typeof infoWindow)['open']>[1];
 
 	function popUpInfoWindow(place: Place, anchor: InfoWindowOpenAnchorType) {
-		// TODO: add new info items here
-		infoWindowContent.children.namedItem('place-name')!.textContent = place.name;
-		infoWindowContent.children.namedItem('place-id')!.textContent = place.id;
-		infoWindowContent.children.namedItem('place-address')!.textContent = place.address;
-		(infoWindowContent.children.namedItem('place-link') as HTMLAnchorElement)!.href = `/explore/places/${place.id}`
-
+		popUpInfoWindowPlace = place;
 		infoWindow.open(map, anchor);
 	}
 </script>
@@ -204,10 +202,10 @@
 <div id="map" class="flex h-full w-full" />
 <div id="info-window-content">
 	<!-- TODO: ADD OTHER INFO ITEMS TO DISPLAY -->
-	<div id="place-name" class="font-semibold"><!-- --></div>
-	<div id="place-address"><!-- --></div>
-	<div id="place-id"><!-- --></div>
-	<a id="place-link">page</a>
+	<div id="place-name" class="font-semibold">
+		<a id="place-link" href={popUpInfoWindowPlacePageUrl}>{popUpInfoWindowPlace?.name || 'name'}</a>
+	</div>
+	<div id="place-address">{popUpInfoWindowPlace?.address || 'address'}</div>
 </div>
 
 <style>
