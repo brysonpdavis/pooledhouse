@@ -71,7 +71,7 @@
 				};
 			}}
 		>
-			<button class="btn-secondary btn w-full" class:loading class:btn-disabled={disableTokenGeneration} type="submit">
+			<button class="btn-secondary btn-outline btn w-full" class:loading class:btn-disabled={disableTokenGeneration} type="submit">
 				generate new verification code
 			</button>
 			{#if disableTokenGeneration} 
@@ -110,15 +110,15 @@
 					minlength="6"
 					maxlength="8"
 				/>
-				<span>code</span>
+				<span class="text-accent">code</span>
 			</label>
-			<button class="btn-primary btn" class:loading type="submit">submit</button>
+			<button class="btn-secondary btn-outline btn" class:loading type="submit">submit</button>
 		</div>
 	</form>
 	{#if form?.invalidToken}
 		<div>invalid token</div>
 	{:else if form?.unavailableToken}
-		<div>that token isn't available</div>
+		<div class="text-error">that token isn't available</div>
 	{/if}
 
 	<p>

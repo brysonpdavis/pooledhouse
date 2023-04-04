@@ -21,7 +21,7 @@
 			placeholder="you@example.com"
 			class="input-bordered input w-full"
 		/>
-		<span class="w-20 flex-shrink-0">email</span>
+		<span class="text-secondary w-20 flex-shrink-0">email</span>
 	</label>
 	<label class="input-group" for="phone">
 		<input
@@ -44,7 +44,7 @@
 			placeholder="3141592653"
 			class="input-bordered input min-w-0 flex-grow"
 		/>
-		<span class="w-20 flex-shrink-0">phone</span>
+		<span class="text-secondary w-20 flex-shrink-0">phone</span>
 	</label>
 	{#if hasVerificationCode}
 		<label
@@ -60,15 +60,15 @@
 				maxlength="6"
 				minlength="6"
 			/>
-			<span class="w-20 flex-shrink-0">code</span>
+			<span class="text-secondary w-20 flex-shrink-0">code</span>
 		</label>
 	{/if}
 	<label class="label">
-		<span class="label-text">have a verification code?</span>
-		<input type="checkbox" class="toggle-secondary toggle" bind:checked={hasVerificationCode} />
+		<span class="label-text text-accent">have a verification code?</span>
+		<input type="checkbox" class="toggle-accent toggle" bind:checked={hasVerificationCode} />
 	</label>
 
-	<button type="submit" class="btn-primary btn" class:loading> submit </button>
+	<button type="submit" class="btn btn-outline btn-secondary" class:loading> submit </button>
 </form>
 <p>
 	Don't worry, your reviews will always be anonymous, we only use your email and phone for logging

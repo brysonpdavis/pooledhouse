@@ -20,16 +20,29 @@ export const load = (async ({ params, locals }) => {
         return { place, userVerified: false }
     }
 
-    const user = await prisma.user.findUnique({ where: { email: userEmail } })
+    const user = await prisma.user.findUnique({ where: { email: userEmail }, include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } } })
 
-    return { place, userVerified: !!user?.industryVerificationToken };
+    if (!user) {
+        return { place }
+    }
+
+    const userVerified = !!user?.industryVerificationToken
+
+    const unusedWorkplaceReviewTokens = user?.workplaceReviewTokens.filter(({workplaceReview}) => workplaceReview === null)
+
+    return { place, userVerified, reviewToken: unusedWorkplaceReviewTokens.at(0)?.token };
 }) satisfies PageServerLoad;
 
 
 const postReviewFormDataSchema = z.object({
     general: z.string(),
     rating: z.coerce.number().min(0).max(100),
-    compensation: z.coerce.number().min(0).max(100)
+    compensation: z.coerce.number().min(0).max(100),
+    workplaceReviewToken: z.string().min(1).refine(async (t) => {
+        const availableToken = await prisma.workplaceReviewToken.findUnique({where: {token: t}, include: {workplaceReview: true}})
+    
+        return !!availableToken && availableToken.workplaceReview === null
+    }, 'not a valid workplace review token')
 })
 
 export const actions: Actions = {
@@ -50,7 +63,7 @@ export const actions: Actions = {
 
         const formData = Object.fromEntries(await request.formData())
 
-        const parsedData = postReviewFormDataSchema.safeParse(formData)
+        const parsedData = await postReviewFormDataSchema.safeParseAsync(formData)
 
         if (!parsedData.success) {
             throw error(400, { message: parsedData.error.issues[0].message })
@@ -63,7 +76,8 @@ export const actions: Actions = {
                 },
                 place: { connect: { id: params.placeId } },
                 description: parsedData.data.general,
-                overallRating: parsedData.data.rating
+                overallRating: parsedData.data.rating,
+                workplaceReviewToken: {connect: {token: parsedData.data.workplaceReviewToken}}
             }
         }).catch((console.warn))
 

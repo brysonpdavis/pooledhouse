@@ -84,14 +84,16 @@ model Place {
 }
 
 model WorkplaceReview {
-  id              String    @id @default(cuid())
-  overallRating   Int
-  description     String
-  placeId         String    @map("place_id")
-  place           Place     @relation(fields: [placeId], references: [id])
-  createdByUserId String    @map("created_by_user_id")
-  createdByUser   User      @relation("CreatedByUser", fields: [createdByUserId], references: [id], onDelete: Cascade)
-  lastEdited      DateTime?
+  id                   String                 @id @default(cuid())
+  overallRating        Int
+  description          String
+  placeId              String                 @map("place_id")
+  place                Place                  @relation(fields: [placeId], references: [id])
+  createdByUserId      String                 @map("created_by_user_id")
+  createdByUser        User                   @relation("CreatedByUser", fields: [createdByUserId], references: [id], onDelete: Cascade)
+  lastEdited           DateTime?
+  token                String                 @unique
+  workplaceReviewToken WorkplaceReviewToken   @relation("Token", fields: [token], references: [token])
 
   @@map("workplace_reviews")
 }
@@ -120,10 +122,11 @@ model IndustryVerificationToken {
 }
 
 model WorkplaceReviewToken {
-  token            String   @unique
-  createdAt        DateTime @default(now()) @map("created_at")
-  associatedUserId String   @map("associated_by_user_id")
-  associatedUser   User     @relation("AssociatedUser", fields: [associatedUserId], references: [id], onDelete: Cascade)
+  token             String           @unique @default(cuid())
+  createdAt         DateTime         @default(now()) @map("created_at")
+  associatedUserId  String           @map("associated_by_user_id")
+  associatedUser    User             @relation("AssociatedUser", fields: [associatedUserId], references: [id], onDelete: Cascade)
+  workplaceReview   WorkplaceReview? @relation("Token")
 
   @@map("workplace_review_tokens")
 }

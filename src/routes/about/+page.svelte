@@ -4,7 +4,7 @@
 </script>
 <h1>welcome to pooledhouse</h1>
 
-<h2 class="text-success">this is some info</h2>
+<h2>a workplace review platform for the service industry</h2>
 
 <p>
 	lots of info this is a paragraph and i'm explaining some stuff to you that is very important you

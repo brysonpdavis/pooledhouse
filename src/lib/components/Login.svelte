@@ -52,7 +52,7 @@
 			<option value="phone">phone</option>
 		</select>
 	</div>
-	<button type="submit" class="hover:btn-primary-focus btn-primary btn mt-4 w-full max-w-lg">
+	<button type="submit" class="btn-secondary btn-outline btn mt-4 w-full max-w-lg">
 		log in!
 	</button>
 </form>

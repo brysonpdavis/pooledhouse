@@ -6,7 +6,9 @@
 
 <header class="flex h-12 w-full bg-primary md:h-16">
 	<div class="dynamic-layout items-center justify-between">
-		<a href="/" class="flex font-mono font-bold text-primary-content text-xl">pooled<span class="text-secondary">house</span></a>
+		<a href="/" class="flex font-mono text-xl font-bold text-primary-content"
+			>pooled<span class="text-secondary">house</span></a
+		>
 		<div class="dropdown-end dropdown h-full">
 			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 			<!-- svelte-ignore a11y-label-has-associated-control -->
@@ -14,9 +16,13 @@
 				<iconify-icon class="text-2xl" icon="material-symbols:menu-rounded" />
 			</label>
 			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-			<ul tabindex="0" class="dropdown-content card-bordered border-accent menu rounded-box w-52 bg-base-100 p-2 shadow">
+			<ul
+				tabindex="0"
+				class="card-bordered dropdown-content menu rounded-box w-52 border-accent bg-base-100 p-2 shadow"
+			>
 				<li><a href="/about">about</a></li>
 				{#if $page.data.session}
+					<li><a href="/protected">profile</a></li>
 					<li><a href="/verify">verify</a></li>
 					<li><button on:click={() => signOut()}>logout</button></li>
 				{:else}

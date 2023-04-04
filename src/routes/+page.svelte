@@ -7,19 +7,18 @@
 				<div class="flex-grow">
 					<div class="card-title text-accent">looking for a new gig? just curious?</div>
 					<p>
-						see what other restaurant workers say about their workplace, or compare places in the city
+						see what other restaurant workers say about their workplace, or compare places in the
+						city
 					</p>
 				</div>
-				<a class="btn-secondary btn-outline btn-lg btn h-full" href="/explore">explore</a>
+				<a class="btn-outline btn-secondary btn-lg btn h-full" href="/explore">explore</a>
 			</div>
 		</div>
 		<div class="card-bordered card m-4 p-4 lg:w-1/3">
 			<div class="flex flex-grow flex-row items-center justify-between gap-4 lg:flex-row-reverse">
-				<a class="btn-secondary btn-outline btn-lg btn h-full" href="/auth/register"
-					>register</a
-				>
+				<a class="btn-outline btn-secondary btn-lg btn h-full" href="/auth/register">register</a>
 				<div class="flex-grow">
-					<div class="card-title text-accent justify-end lg:justify-start">join the team</div>
+					<div class="card-title justify-end text-accent lg:justify-start">join the team</div>
 					<p>
 						after registering as a verified restaurant worker, you can verify your friends or
 						coworkers and join the conversation
@@ -36,9 +35,7 @@
 						anonymously
 					</p>
 				</div>
-				<a class="btn-secondary btn-outline btn-lg btn h-full" href="/explore"
-					>contribute</a
-				>
+				<a class="btn-outline btn-secondary btn-lg btn h-full" href="/explore">contribute</a>
 			</div>
 		</div>
 	</div>

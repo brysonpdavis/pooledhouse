@@ -3,13 +3,12 @@
 
 	export let placeId: string;
 	export let successfullyPosted: boolean = false;
-	export let workplaceReviewToken: string;
 </script>
 
 {#if successfullyPosted}
 	<div>review submitted</div>
 {:else}
-	<form action={`/explore/places/${placeId}?/postReview`} method="post" use:enhance>
+	<form action={`/explore/places/${placeId}?/postExperienceReview`} method="post" use:enhance>
 		<label for="general" class="label">
 			tell us what everyone should know about working here
 		</label>
@@ -40,7 +39,6 @@
 			<input value={75} type="radio" name="compensation" class="mask-dollar mask bg-green-600" />
 			<input value={100} type="radio" name="compensation" class="mask-dollar mask bg-green-700" />
 		</div>
-		<input class="hidden" name="workplaceReviewToken" value={workplaceReviewToken} type="text" />
 
 		<div class="my-4">
 			<button type="submit" class="btn-primary btn">submit</button>

@@ -1,10 +1,13 @@
 <script lang="ts">
+	import ExperienceReviewForm from '$lib/components/ExperienceReviewForm.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import WorkplaceReviewForm from '$lib/components/WorkplaceReviewForm.svelte';
 	import type { ActionData, PageData } from './$types';
 
 	export let data: PageData;
 	export let form: ActionData;
+
+	const workplaceReviewToken = data.reviewToken;
 
 	let reviewType: 'workplace' | 'experience' = 'workplace';
 </script>
@@ -52,11 +55,19 @@
 
 {#if data.userVerified}
 	<h3>have you worked at this establishment?</h3>
-	<Modal id="review" buttonText="workplace review">
-		<WorkplaceReviewForm placeId={data.place.id} successfullyPosted={form?.postReviewSuccess} />
-	</Modal>
+	{#if workplaceReviewToken}
+		<Modal id="review" buttonText="workplace review">
+			<WorkplaceReviewForm
+				placeId={data.place.id}
+				successfullyPosted={form?.postReviewSuccess}
+				{workplaceReviewToken}
+			/>
+		</Modal>
+	{:else}
+		<p>you're out of workplace reviews :(</p>
+	{/if}
 	<h3>have you visited this establishment?</h3>
 	<Modal id="review" buttonText="experience review">
-		<WorkplaceReviewForm placeId={data.place.id} successfullyPosted={form?.postReviewSuccess} />
+		<ExperienceReviewForm placeId={data.place.id} successfullyPosted={form?.postReviewSuccess} />
 	</Modal>
 {/if}
