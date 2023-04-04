@@ -10,14 +10,14 @@
 {:else}
 	<form action={`/explore/places/${placeId}?/postReview`} method="post" use:enhance>
 		<label for="general" class="label">
-			tell us whatever you want us to know about working there?
+			tell us what everyone should know about working here
 		</label>
 		<textarea
 			class="textarea-bordered textarea h-32 w-full max-w-lg"
 			name="general"
 			placeholder="well, you see..."
 		/>
-		<label for="rating" class="label">how much did you enjoy working there?</label>
+		<label for="rating" class="label">how much did you enjoy working here?</label>
 		<div class="rating gap-1">
 			<input value={0} type="radio" name="rating" class="mask mask-heart bg-red-400" />
 			<input value={25} type="radio" name="rating" class="mask mask-heart bg-orange-400" />

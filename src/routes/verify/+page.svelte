@@ -13,11 +13,17 @@
 		tokens = [...tokens, form.newToken];
 	}
 
+	$: consumedTokensCount = tokens.filter(t => t.consumed).length
+
+	$: disableTokenGeneration = tokens.length >= 20 && consumedTokensCount !== tokens.length
+
+	$: console.log(tokens.length)
+
 	let loading = false;
 </script>
 
 {#if data.userVerified}
-	<h3>looks like you're verified</h3>
+	<h2>looks like you're verified</h2>
 	<p>
 		here you can generate some verification codes. send them to your industry friends to get them
 		verified too!
@@ -27,15 +33,15 @@
 			<div class="card-bordered card p-4 shadow-md w-full max-w-md">
 				<div class="flex flex-row items-center gap-12">
 					{#if token.consumed}
-						<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline" />
+						<iconify-icon class="text-2xl text-accent" icon="material-symbols:check-box-outline" />
 					{:else}
 						<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline-blank" />
 					{/if}
-					<div class="justify-characters flex-grow font-mono text-2xl">
+					<div class="justify-characters flex-grow font-mono text-2xl" class:line-through={token.consumed}>
 						{token.token}
 					</div>
-					<button class="btn-neutral btn" use:copy={token.token}>
-						<iconify-icon class="text-lg" icon="material-symbols:content-copy-outline" />
+					<button class="btn" class:btn-disabled={token.consumed} use:copy={token.token}>
+						<iconify-icon class="text-lg" class:text-accent={!token.consumed} icon="material-symbols:content-copy-outline" />
 					</button>
 				</div>
 			</div>
@@ -65,9 +71,12 @@
 				};
 			}}
 		>
-			<button class="btn-primary btn w-full" class:loading type="submit">
+			<button class="btn-secondary btn w-full" class:loading class:btn-disabled={disableTokenGeneration} type="submit">
 				generate new verification code
 			</button>
+			{#if disableTokenGeneration} 
+				<div class="text-center text-error">token generation handicapped after 20</div>
+			{/if}
 		</form>
 	</div>
 {:else}
@@ -85,19 +94,25 @@
 		probably be your best resource!
 	</p>
 
-	<form class="form-control" method="post" action="?/verifyMe">
-		<div class="flex w-fit flex-row gap-4">
-			<label class="input-group">
+	<form class="form-control w-full" method="post" action="?/verifyMe" use:enhance={() => {
+		loading = true
+		return async ({update}) => {
+			await update()
+			loading = false
+		}
+	}}>
+		<div class="flex w-full max-w-lg flex-row gap-4">
+			<label class="input-group flex-grow">
 				<input
-					class="input-bordered input"
+					class="input-bordered input w-full"
 					name="verificationToken"
 					required
 					minlength="6"
 					maxlength="8"
 				/>
-				<span>verification code</span>
+				<span>code</span>
 			</label>
-			<button class="btn-primary btn" type="submit">submit</button>
+			<button class="btn-primary btn" class:loading type="submit">submit</button>
 		</div>
 	</form>
 	{#if form?.invalidToken}

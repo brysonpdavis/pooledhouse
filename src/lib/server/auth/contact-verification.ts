@@ -13,6 +13,8 @@ export const createOrFindContactVerification = async (contactInfo: { email: stri
         }
     })
 
+    industryVerificationToken = industryVerificationToken?.toUpperCase() || null
+
     const industryVerificationTokenDetails = !!industryVerificationToken ?
         { connect: { token: industryVerificationToken } } :
         undefined satisfies Prisma.ContactVerificationCreateInput['industryVerificationTokenDetails']

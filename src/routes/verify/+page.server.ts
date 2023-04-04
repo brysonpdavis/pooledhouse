@@ -62,7 +62,7 @@ export const actions = {
         }
 
         const availableToken = await prisma.industryVerificationToken.findUnique({
-            where: { token: providedToken.toString() }
+            where: { token: providedToken.toString().toUpperCase() }
         })
 
         if (!availableToken) {

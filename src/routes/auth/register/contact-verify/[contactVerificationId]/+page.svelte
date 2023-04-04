@@ -24,7 +24,7 @@
 		</form>
 	</form>
 	{#if form?.phoneFailed}
-		<div in:fly><span class="text-red-600"> oops, looks like that code didn't work </span></div>
+		<div in:fly><span class="text-error"> oops, looks like that code didn't work </span></div>
 	{:else if form?.phoneResent}
 		<div in:fly>phone verification code resent</div>
 	{/if}
@@ -42,7 +42,7 @@
 		</form>
 	</form>
 	{#if form?.emailFailed}
-		<div in:fly><span class="text-red-600"> oops, looks like that code didn't work </span></div>
+		<div in:fly><span class="text-error"> oops, looks like that code didn't work </span></div>
 	{:else if form?.emailResent}
 		<div in:fly>email verification code resent</div>
 	{:else}

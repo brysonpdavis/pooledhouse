@@ -1,6 +1,10 @@
+<script>
+	import HeartSvg from "$lib/components/HeartSvg.svelte";
+
+</script>
 <h1>welcome to pooledhouse</h1>
 
-<h2>this is some info</h2>
+<h2 class="text-success">this is some info</h2>
 
 <p>
 	lots of info this is a paragraph and i'm explaining some stuff to you that is very important you
@@ -16,4 +20,4 @@
 	about what goes on here. let me assure you that all of your questions will soon be answered.
 </p>
 
-<h3>happy hunting</h3>
+<h3>peace and love <HeartSvg /></h3>

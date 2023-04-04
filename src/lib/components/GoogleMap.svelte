@@ -173,7 +173,7 @@
 		disabled={!loggedIn ||
 			!currentPlace ||
 			!!places.find((p) => p.googlePlaceId === currentPlace?.place_id)}
-		class="loading btn-primary btn"
+		class="loading btn-accent btn-outline btn"
 		class:loading={uploadInProgress}
 		on:click={() => handleClickAdd()}
 	>
@@ -183,10 +183,10 @@
 <div id="map" class="flex h-full w-full" />
 <div id="info-window-content">
 	<!-- TODO: ADD OTHER INFO ITEMS TO DISPLAY -->
-	<div id="place-name" class="font-semibold">
-		<a id="place-link" href={popUpInfoWindowPlacePageUrl}>{popUpInfoWindowPlace?.name || 'name'}</a>
+	<div id="place-name" class="font-semibold font-sans text-lg">
+		<a id="place-link" class="text-accent hover:no-underline" href={popUpInfoWindowPlacePageUrl}>{popUpInfoWindowPlace?.name || 'name'}</a>
 	</div>
-	<div id="place-address">{popUpInfoWindowPlace?.address || 'address'}</div>
+	<div class="text-base-100 font-sans" id="place-address">{popUpInfoWindowPlace?.address || 'address'}</div>
 </div>
 
 <style>

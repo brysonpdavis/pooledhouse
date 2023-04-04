@@ -6,13 +6,15 @@
 
 <header class="flex h-12 w-full bg-primary md:h-16">
 	<div class="dynamic-layout items-center justify-between">
-		<a href="/" class="flex font-mono font-bold text-primary-content md:text-xl">pooledhouse</a>
+		<a href="/" class="flex font-mono font-bold text-primary-content text-xl">pooled<span class="text-secondary">house</span></a>
 		<div class="dropdown-end dropdown h-full">
-			<button class="btn-primary btn aspect-square h-full text-accent">
-				<iconify-icon class="md:text-2xl" icon="material-symbols:menu-rounded" />
-			</button>
-			<ul tabindex="-1" class="dropdown-content menu rounded-box w-52 bg-base-100 p-2 shadow">
-				<li><a href="/protected">protected</a></li>
+			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+			<!-- svelte-ignore a11y-label-has-associated-control -->
+			<label tabindex="0" class="btn-ghost btn-square btn h-full text-primary-content">
+				<iconify-icon class="text-2xl" icon="material-symbols:menu-rounded" />
+			</label>
+			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+			<ul tabindex="0" class="dropdown-content card-bordered border-accent menu rounded-box w-52 bg-base-100 p-2 shadow">
 				<li><a href="/about">about</a></li>
 				{#if $page.data.session}
 					<li><a href="/verify">verify</a></li>
