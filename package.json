@@ -45,6 +45,7 @@
 		"@auth/core": "^0.5.1",
 		"@auth/sveltekit": "^0.3.0",
 		"@googlemaps/js-api-loader": "^1.15.1",
+		"@indot/rainbowvis": "^1.0.2",
 		"@next-auth/prisma-adapter": "^1.0.5",
 		"@prisma/client": "^4.10.1",
 		"@sendgrid/mail": "^7.7.0",

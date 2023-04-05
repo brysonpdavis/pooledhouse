@@ -255,6 +255,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@indot/rainbowvis@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@indot/rainbowvis@npm:1.0.2"
+  checksum: 8775d3a0a4b439d2274c42db2fc121d8094c6ba102a3b3b79e6b9c5c826117aee2ec87c5a1f5c3d2eb183fe95f791af6c78f66309452684f8a1777ccf39e840b
+  languageName: node
+  linkType: hard
+
 "@jridgewell/resolve-uri@npm:3.1.0":
   version: 3.1.0
   resolution: "@jridgewell/resolve-uri@npm:3.1.0"
@@ -1011,6 +1018,7 @@ __metadata:
     "@auth/core": ^0.5.1
     "@auth/sveltekit": ^0.3.0
     "@googlemaps/js-api-loader": ^1.15.1
+    "@indot/rainbowvis": ^1.0.2
     "@next-auth/prisma-adapter": ^1.0.5
     "@prisma/client": ^4.10.1
     "@sendgrid/mail": ^7.7.0

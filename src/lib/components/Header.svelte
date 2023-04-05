@@ -1,7 +1,8 @@
 <script lang="ts">
 	import 'iconify-icon';
-	import { page } from '$app/stores';
 	import { signOut } from '@auth/sveltekit/client';
+
+	export let loggedIn: boolean
 </script>
 
 <header class="flex h-12 w-full bg-primary md:h-16">
@@ -21,7 +22,7 @@
 				class="card-bordered dropdown-content menu rounded-box w-52 border-accent bg-base-100 p-2 shadow"
 			>
 				<li><a href="/about">about</a></li>
-				{#if $page.data.session}
+				{#if loggedIn}
 					<li><a href="/protected">profile</a></li>
 					<li><a href="/verify">verify</a></li>
 					<li><button on:click={() => signOut()}>logout</button></li>

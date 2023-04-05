@@ -5,12 +5,18 @@
 	import { postPlace } from '$lib/handlers/places';
 	import { page } from '$app/stores';
 	import type { Place } from '@prisma/client';
+	import { rainbow } from '@indot/rainbowvis';
+	import { shadeColor } from '$lib/utils/colors';
 
 	export let places: Place[];
 
 	const optimize = places.length > 50;
 
 	const loggedIn = $page.data.session?.user;
+
+	const markerColorGradient = rainbow()
+		.overColors(...['#f87171', '#fb923c', '#facc15', '#a3e635', '#4ade80'].map(c => shadeColor(c, -10)))
+		.withRange(0, 100);
 
 	let googleApi: typeof google;
 	let map: google.maps.Map;
@@ -20,6 +26,8 @@
 	let popUpInfoWindowPlace: Place | undefined = places.at(0);
 	let uploadSuccess = false;
 	let uploadInProgress = false;
+
+	let markers = [];
 
 	$: popUpInfoWindowPlacePageUrl = !!popUpInfoWindowPlace
 		? `/explore/places/${popUpInfoWindowPlace.id}`
@@ -38,10 +46,13 @@
 		zoom: 11,
 		clickableIcons: false,
 		disableDefaultUI: true,
-		mapId: '58085ec09961ed07'
+		mapId: '58085ec09961ed07',
+		styles: [{ featureType: 'poi.business', stylers: [{ visibility: 'off' }] }]
 	};
 
 	onMount(async () => {
+		places.sort((p1, p2) => p2.lat - p1.lat)
+		
 		loader.load().then(async (google) => {
 			googleApi = google;
 
@@ -104,12 +115,37 @@
 	async function addPlaceMarkers(map: google.maps.Map, places: Place[]) {
 		// change color of each marker based on value?
 		places.forEach((place) => {
-			const m = new googleApi.maps.Marker({
+			// const m = new googleApi.maps.Marker({
+			// 	position: { lat: place.lat, lng: place.lng },
+			// 	optimized: optimize,
+			// 	title: place.name,
+			// 	map
+			// });
+
+			const r = Math.random() * 100;
+
+			console.log('random number + color', r, markerColorGradient.colorAt(r))
+
+			const markerColor = `#${markerColorGradient.colorAt(r)}`
+
+			const m = new googleApi.maps.marker.AdvancedMarkerView({
 				position: { lat: place.lat, lng: place.lng },
-				optimized: optimize,
-				title: place.name,
+				content: new google.maps.marker.PinView({
+					borderColor: shadeColor(markerColor, -30),
+					background: markerColor,
+					glyphColor: shadeColor(markerColor, -30),
+					glyph: null
+				}).element,
 				map
 			});
+
+			const markerElement = m.element;
+
+			if (markerElement) {
+				markerElement.onmouseover = () => {
+					popUpInfoWindow(place, m)
+				};
+			}
 
 			m.addListener('dblclick', () => {
 				map.setCenter({ lat: place.lat, lng: place.lng });
@@ -173,7 +209,7 @@
 		disabled={!loggedIn ||
 			!currentPlace ||
 			!!places.find((p) => p.googlePlaceId === currentPlace?.place_id)}
-		class="loading btn-accent btn-outline btn"
+		class="loading btn-outline btn-accent btn"
 		class:loading={uploadInProgress}
 		on:click={() => handleClickAdd()}
 	>
@@ -183,10 +219,14 @@
 <div id="map" class="flex h-full w-full" />
 <div id="info-window-content">
 	<!-- TODO: ADD OTHER INFO ITEMS TO DISPLAY -->
-	<div id="place-name" class="font-semibold font-sans text-lg">
-		<a id="place-link" class="text-accent hover:no-underline" href={popUpInfoWindowPlacePageUrl}>{popUpInfoWindowPlace?.name || 'name'}</a>
+	<div id="place-name" class="font-sans text-lg font-semibold">
+		<a id="place-link" class="text-accent hover:no-underline" href={popUpInfoWindowPlacePageUrl}
+			>{popUpInfoWindowPlace?.name || 'name'}</a
+		>
 	</div>
-	<div class="text-base-100 font-sans" id="place-address">{popUpInfoWindowPlace?.address || 'address'}</div>
+	<div class="font-sans text-base-100" id="place-address">
+		{popUpInfoWindowPlace?.address || 'address'}
+	</div>
 </div>
 
 <style>
