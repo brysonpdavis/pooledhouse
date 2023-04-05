@@ -2,7 +2,7 @@
 	import 'iconify-icon';
 	import { signOut } from '@auth/sveltekit/client';
 
-	export let loggedIn: boolean
+	export let loggedIn: boolean;
 </script>
 
 <header class="flex h-12 w-full bg-primary md:h-16">
@@ -21,6 +21,7 @@
 				tabindex="0"
 				class="card-bordered dropdown-content menu rounded-box w-52 border-accent bg-base-100 p-2 shadow"
 			>
+				<li><a href="/explore">explore</a></li>
 				<li><a href="/about">about</a></li>
 				{#if loggedIn}
 					<li><a href="/protected">profile</a></li>
