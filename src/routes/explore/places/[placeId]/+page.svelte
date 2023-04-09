@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ExperienceReviewForm from '$lib/components/ExperienceReviewForm.svelte';
 	import Modal from '$lib/components/Modal.svelte';
-	import WorkplaceReviewForm from '$lib/components/WorkplaceReviewForm.svelte';
+	import ExperienceReviewForm from './ExperienceReviewForm.svelte';
+	import WorkplaceReviewForm from './WorkplaceReviewForm.svelte';
 	import type { ActionData, PageData } from './$types';
 
 	export let data: PageData;
