@@ -1,5 +1,5 @@
 <script lang="ts">
-	import GoogleMap from '$lib/components/GoogleMap.svelte';
+	import ExploreMap from './ExploreMap.svelte';
 	import type { PageData } from './$types';
 	import { browser } from '$app/environment';
 	export let data: PageData;
@@ -7,6 +7,6 @@
 
 <div class="h-full w-full">
 	{#if browser}
-		<GoogleMap places={data.places} />
+		<ExploreMap places={data.places} />
 	{/if}
 </div>
