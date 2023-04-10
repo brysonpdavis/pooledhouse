@@ -1,6 +1,7 @@
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
+import { findUserByRequestEvent } from '$lib/server/utils/user';
 
 export const load = (async (event) => {
 	const session = await event.locals.getSession();
@@ -14,5 +15,23 @@ export const load = (async (event) => {
 
 	if (!user) throw redirect(303, '/auth/nope')
 
-	return {user};
+	return { user };
 }) satisfies PageServerLoad;
+
+export const actions = {
+	addWorkplaceReviewToken: async (event) => {
+		const user = await findUserByRequestEvent(event)
+
+		if (!user) {
+			throw error(404, { message: 'user not found' })
+		}
+
+		const res = await prisma.workplaceReviewToken.create({
+			data: {
+				associatedUser: { connect: { id: user.id } }
+			}
+		})
+
+		return { createdWorkplaceReviewToken: res.token }
+	}
+}
