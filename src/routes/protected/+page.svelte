@@ -9,10 +9,28 @@
 
 <h3>you're now logged in</h3>
 
-<p>we're just going to call this the profile page for now</p>
+<button
+	class="btn-outline btn-accent btn"
+	on:click={async () => {
+		const response = await fetch('/api/places/randomize', { method: 'POST' });
+		console.log(await response.json());
+	}}
+>
+	randomize
+</button>
+
+<button
+	class="btn-outline btn-secondary btn"
+	on:click={async () => {
+		const response = await fetch('/api/places/clear', { method: 'POST' });
+		console.log(await response.json());
+	}}
+>
+	clear
+</button>
 
 <form method="post" action="?/addWorkplaceReviewToken">
-	<button class="btn btn-outline btn-accent" type="submit">create token</button>
+	<button class="btn-outline btn-accent btn" type="submit">create token</button>
 </form>
 {#if form?.createdWorkplaceReviewToken}
 	<div class="text-neutral">new token created: {form.createdWorkplaceReviewToken}</div>
@@ -23,3 +41,4 @@
 <pre>
     {JSON.stringify(data.user, undefined, 4)}
 </pre>
+

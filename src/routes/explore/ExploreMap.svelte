@@ -10,9 +10,9 @@
 
 	export let places: Place[];
 
-	const optimize = places.length > 50;
-
 	const loggedIn = $page.data.session?.user;
+
+	const NO_SCORE_MARKER_COLOR = '#007FFF'
 
 	const markerColorGradient = rainbow()
 		.overColors(...['#f87171', '#fb923c', '#facc15', '#a3e635', '#4ade80'].map(c => shadeColor(c, -10)))
@@ -26,8 +26,6 @@
 	let popUpInfoWindowPlace: Place | undefined = places.at(0);
 	let uploadSuccess = false;
 	let uploadInProgress = false;
-
-	let markers = [];
 
 	$: popUpInfoWindowPlacePageUrl = !!popUpInfoWindowPlace
 		? `/explore/places/${popUpInfoWindowPlace.id}`
@@ -122,11 +120,7 @@
 			// 	map
 			// });
 
-			const r = Math.random() * 100;
-
-			console.log('random number + color', r, markerColorGradient.colorAt(r))
-
-			const markerColor = `#${markerColorGradient.colorAt(r)}`
+			const markerColor = place.workplaceScore ? `#${markerColorGradient.colorAt(place.workplaceScore)}` : NO_SCORE_MARKER_COLOR
 
 			const m = new googleApi.maps.marker.AdvancedMarkerView({
 				position: { lat: place.lat, lng: place.lng },
