@@ -88,12 +88,12 @@ model Place {
 model WorkplaceReview {
   id                      String               @id @default(cuid())
   overallRating           Int
-  description             String
+  description             String               @db.VarChar(2048)
   compensationRating      Int?
-  compensationDescription String?
-  guestDescription        String?
-  cultureDescription      String?
-  idealFor                String?
+  compensationDescription String?              @db.VarChar(1024)
+  guestDescription        String?              @db.VarChar(1024)
+  cultureDescription      String?              @db.VarChar(1024)
+  idealFor                String?              @db.VarChar(1024)
   placeId                 String               @map("place_id")
   place                   Place                @relation(fields: [placeId], references: [id])
   createdByUserId         String               @map("created_by_user_id")
@@ -108,11 +108,11 @@ model WorkplaceReview {
 model ExperienceReview {
   id              String  @id @default(cuid())
   overallRating   Int
-  description     String
+  description     String  @db.VarChar(2048)
   fnbRating       Int?
-  fnbDescription  String?
+  fnbDescription  String? @db.VarChar(1024)
   vibeRating      Int?
-  vibeDescription String?
+  vibeDescription String? @db.VarChar(1024)
   placeId         String  @map("place_id")
   place           Place   @relation(fields: [placeId], references: [id])
   createdByUserId String  @map("created_by_user_id")

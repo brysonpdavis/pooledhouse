@@ -10,12 +10,17 @@
 
 	export let places: Place[];
 
-	const optimize = places.length > 50;
-
 	const loggedIn = $page.data.session?.user;
 
+	$: canAddPlace =
+		loggedIn && currentPlace && !places.find((p) => p.googlePlaceId === currentPlace?.place_id);
+
+	const NO_SCORE_MARKER_COLOR = '#007FFF';
+
 	const markerColorGradient = rainbow()
-		.overColors(...['#f87171', '#fb923c', '#facc15', '#a3e635', '#4ade80'].map(c => shadeColor(c, -10)))
+		.overColors(
+			...['#f87171', '#fb923c', '#facc15', '#a3e635', '#4ade80'].map((c) => shadeColor(c, -10))
+		)
 		.withRange(0, 100);
 
 	let googleApi: typeof google;
@@ -26,8 +31,6 @@
 	let popUpInfoWindowPlace: Place | undefined = places.at(0);
 	let uploadSuccess = false;
 	let uploadInProgress = false;
-
-	let markers = [];
 
 	$: popUpInfoWindowPlacePageUrl = !!popUpInfoWindowPlace
 		? `/explore/places/${popUpInfoWindowPlace.id}`
@@ -51,8 +54,8 @@
 	};
 
 	onMount(async () => {
-		places.sort((p1, p2) => p2.lat - p1.lat)
-		
+		places.sort((p1, p2) => p2.lat - p1.lat);
+
 		loader.load().then(async (google) => {
 			googleApi = google;
 
@@ -122,11 +125,9 @@
 			// 	map
 			// });
 
-			const r = Math.random() * 100;
-
-			console.log('random number + color', r, markerColorGradient.colorAt(r))
-
-			const markerColor = `#${markerColorGradient.colorAt(r)}`
+			const markerColor = place.workplaceScore
+				? `#${markerColorGradient.colorAt(place.workplaceScore)}`
+				: NO_SCORE_MARKER_COLOR;
 
 			const m = new googleApi.maps.marker.AdvancedMarkerView({
 				position: { lat: place.lat, lng: place.lng },
@@ -143,7 +144,7 @@
 
 			if (markerElement) {
 				markerElement.onmouseover = () => {
-					popUpInfoWindow(place, m)
+					popUpInfoWindow(place, m);
 				};
 			}
 
@@ -204,17 +205,21 @@
 		type="text"
 		placeholder="Enter a location"
 	/>
-
-	<button
-		disabled={!loggedIn ||
-			!currentPlace ||
-			!!places.find((p) => p.googlePlaceId === currentPlace?.place_id)}
-		class="loading btn-outline btn-accent btn"
-		class:loading={uploadInProgress}
-		on:click={() => handleClickAdd()}
-	>
-		{#if !uploadInProgress}add{/if}
-	</button>
+	{#if canAddPlace}
+		<div class="card-bordered card mx-4 h-fit w-[235px] bg-primary">
+			<div class="m-2 flex flex-grow-0 flex-row text-secondary">
+				<p class="my-0">that place isn't in the database yet, would you like to add it?</p>
+			</div>
+			<button
+				disabled={!canAddPlace}
+				class="btn-outline loading btn-accent btn"
+				class:loading={uploadInProgress}
+				on:click={() => handleClickAdd()}
+			>
+				{#if !uploadInProgress}add{/if}
+			</button>
+		</div>
+	{/if}
 </div>
 <div id="map" class="flex h-full w-full" />
 <div id="info-window-content">

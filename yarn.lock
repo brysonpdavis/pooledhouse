@@ -1047,6 +1047,7 @@ __metadata:
     svelte-check: ^3.0.1
     svelte-copy: ^1.3.0
     svelte-loading-spinners: ^0.3.4
+    sveltekit-superforms: ^0.6.14
     tailwindcss: ^3.2.7
     tslib: ^2.4.1
     twilio: ^4.9.0
@@ -3801,6 +3802,17 @@ __metadata:
   version: 3.55.1
   resolution: "svelte@npm:3.55.1"
   checksum: ce66391bae68b2055a0a63ee0477e73f036247d4dd5abd5240372d5f4971a452ad29c4ef2c630ab089697429edd61756ef7b764e7597ad7e897ce9f8a9457fec
+  languageName: node
+  linkType: hard
+
+"sveltekit-superforms@npm:^0.6.14":
+  version: 0.6.14
+  resolution: "sveltekit-superforms@npm:0.6.14"
+  peerDependencies:
+    "@sveltejs/kit": 1.x
+    svelte: 3.x
+    zod: 3.x
+  checksum: 711c1adc3e91a1034162b8f9c53459a7dd0920f901a82f76666729c1892f7619714e0e1e779a5e1fdd248caec54a22532bd58ceb6afeaf13cd635bd78a9a8c44
   languageName: node
   linkType: hard
 
