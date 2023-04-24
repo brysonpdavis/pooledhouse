@@ -49,8 +49,7 @@
 		zoom: 11,
 		clickableIcons: false,
 		disableDefaultUI: true,
-		mapId: '58085ec09961ed07',
-		styles: [{ featureType: 'poi.business', stylers: [{ visibility: 'off' }] }]
+		mapId: '58085ec09961ed07'
 	};
 
 	onMount(async () => {
