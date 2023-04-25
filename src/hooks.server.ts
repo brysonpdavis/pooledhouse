@@ -7,14 +7,14 @@ import { sendVerificationRequest } from '$lib/server/auth/send-email-verificatio
 import { sequence } from '@sveltejs/kit/hooks';
 
 import { SENDGRID_API_KEY } from '$env/static/private';
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { lookupUserByPhoneNumber } from '$lib/server/auth/phone-authorization';
 import { checkPhoneVerificationCode } from '$lib/server/auth/contact-verification';
 
 export const handle = sequence(
 	// authenticate
 	SvelteKitAuth({
-		session: {strategy: 'jwt'},
+		session: { strategy: 'jwt' },
 		adapter: PrismaAdapter(prisma),
 		providers: [
 			EmailProvider({
@@ -30,10 +30,10 @@ export const handle = sequence(
 				name: 'Phone Number',
 				type: "credentials",
 				credentials: {
-					phoneNumber: {label: "Phone Number", type: "text"},
-					otp: {label: "One Time Password", type: "text"}
+					phoneNumber: { label: "Phone Number", type: "text" },
+					otp: { label: "One Time Password", type: "text" }
 				},
-				authorize: async ({phoneNumber, otp}) => {
+				authorize: async ({ phoneNumber, otp }) => {
 
 					const verificationSuccessful = await checkPhoneVerificationCode(phoneNumber as string, otp as string)
 
@@ -46,10 +46,10 @@ export const handle = sequence(
 			})
 		],
 		callbacks: {
-			signIn: async ({credentials, email, user}) => {
-				
+			signIn: async ({ credentials, email, user }) => {
+
 				if (credentials && credentials.phoneNumber && credentials.otp) {
-					if (!!await prisma.user.findUnique({where: {phone: credentials.phoneNumber.value as string}})) {
+					if (!!await prisma.user.findUnique({ where: { phone: credentials.phoneNumber.value as string } })) {
 						return true
 					} else {
 						return false
@@ -57,7 +57,7 @@ export const handle = sequence(
 				}
 
 				if (email && user.email && email.verificationRequest) {
-					if (!!await prisma.user.findUnique({where: {email: user.email}})) {
+					if (!!await prisma.user.findUnique({ where: { email: user.email } })) {
 						return true
 					} else {
 						return false
@@ -78,13 +78,7 @@ export const handle = sequence(
 		const protectedApiRoute = event.url.pathname.startsWith('/api/protected')
 
 		if (protectedApiRoute && !(await event.locals.getSession())?.user) {
-			throw error(401, {message: 'you need to be logged in to access this endpoint'})
-		}
-
-		const protectedPage = event.url.pathname.startsWith('/protected')
-
-		if (protectedPage && !(await event.locals.getSession())?.user) {
-			redirect(302, '/auth/nope')
+			throw error(401, { message: 'you need to be logged in to access this endpoint' })
 		}
 
 		return resolve(event)

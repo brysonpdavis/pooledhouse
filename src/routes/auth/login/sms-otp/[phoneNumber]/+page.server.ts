@@ -9,7 +9,7 @@ const phoneNumberSchema = z.string().refine((x) => validator.isMobilePhone(x, 'a
 export const load = (async (event) => {
 	const session = await event.locals.getSession();
 
-	if (session?.expires) throw redirect(303, '/protected');
+	if (session?.expires) throw redirect(303, '/profile');
 
 	const phone = event.params.phoneNumber
 

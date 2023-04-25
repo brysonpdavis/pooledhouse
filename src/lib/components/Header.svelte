@@ -24,7 +24,7 @@
 				<li><a href="/explore">explore</a></li>
 				<li><a href="/about">about</a></li>
 				{#if loggedIn}
-					<li><a href="/protected">profile</a></li>
+					<li><a href="/profile">profile</a></li>
 					<li><a href="/verify">verify</a></li>
 					<li><button on:click={() => signOut()}>logout</button></li>
 				{:else}
