@@ -1,5 +1,7 @@
 <script>
 	import HeartSvg from '$lib/components/HeartSvg.svelte';
+
+	import {page} from '$app/stores'
 </script>
 
 <h1>welcome to pooledhouse</h1>
@@ -40,9 +42,9 @@
 <p>
 	to attempt to cut down on the friction of onboarding new users, the verification process is
 	simple. if you have an account and are already verified, you can visit
-	<a href="/verify">pooledhouse.com/verify</a> to generate verification codes and give them to your
+	<a href="/verify">{$page.url.host}/verify</a> to generate verification codes and give them to your
 	friends to input into their accounts. if they have an account but are not verified yet, then they
-	can input their verification code at the same url, <a href="/verify">pooledhouse.com/verify</a>.
+	can input their verification code at the same url, <a href="/verify">{$page.url.host}/verify</a>.
 	and if they haven't made an account yet, there is a place to input a verification code upon sign
 	up.
 </p>
