@@ -81,12 +81,6 @@ export const handle = sequence(
 			throw error(401, {message: 'you need to be logged in to access this endpoint'})
 		}
 
-		const protectedPage = event.url.pathname.startsWith('/protected')
-
-		if (protectedPage && !(await event.locals.getSession())?.user) {
-			redirect(302, '/auth/nope')
-		}
-
 		return resolve(event)
 	}
 )
