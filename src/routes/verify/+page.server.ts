@@ -61,21 +61,40 @@ export const actions = {
             return { invalidToken: true }
         }
 
-        const availableToken = await prisma.industryVerificationToken.findUnique({
-            where: { token: providedToken.toString().toUpperCase() }
-        })
+        const availableToken = await matchAvailableIndustryVerificationToken(providedToken.toString())
+
+        console.log('available token: ', availableToken)
 
         if (!availableToken) {
             return { unavailableToken: true }
         }
 
-        const updatedUser = await prisma.user.update({
-            where: { id: user.id },
-            data: { industryVerificationToken: { set: availableToken.token } }
-        })
+        const updatedUser = await updateUserWithVerificationTokenAndCreateAssocatedWorkplaceReviewToken(user.id, availableToken.token)
+
+        await createWorkplaceReviewTokenFromUserId(availableToken.createdByUserId)
 
         return {
             verificationSuccess: updatedUser.industryVerificationToken === availableToken.token
         }
     }
 } satisfies Actions
+
+async function updateUserWithVerificationTokenAndCreateAssocatedWorkplaceReviewToken(userId: string, token: string) {
+    return await prisma.user.update({
+        where: { id: userId },
+        data: { industryVerificationToken: { set: token }, workplaceReviewTokens: { create: {} } },
+        select: { industryVerificationToken: true }
+    })
+}
+
+async function createWorkplaceReviewTokenFromUserId(userId: string) {
+    return await prisma.workplaceReviewToken.create({
+        data: { associatedUser: { connect: { id: userId } } }
+    })
+}
+
+async function matchAvailableIndustryVerificationToken(token: string) {
+    return await prisma.industryVerificationToken.findFirst({
+        where: { token: token.toUpperCase(), consumedByUser: null }
+    })
+}
