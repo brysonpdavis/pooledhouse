@@ -63,8 +63,6 @@ export const actions = {
 
         const availableToken = await matchAvailableIndustryVerificationToken(providedToken.toString())
 
-        console.log('available token: ', availableToken)
-
         if (!availableToken) {
             return { unavailableToken: true }
         }
