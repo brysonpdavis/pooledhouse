@@ -39,7 +39,7 @@ export const load = (async ({ params, locals }) => {
 
 
 export const actions: Actions = {
-    postWorkplaceReview: async ({ request, locals, params }) => {
+    postWorkplaceReview: async ({ request, locals, params, fetch }) => {
         const session = await locals.getSession()
 
         const email = session?.user?.email
@@ -81,16 +81,16 @@ export const actions: Actions = {
 
         console.log(JSON.stringify(result, undefined, 2))
 
-        await refreshPlaceScores(params.placeId)
+        await refreshPlaceScores(params.placeId, fetch)
 
         return { postWorkplaceReviewSuccess: true }
     },
-    postExperienceReview: async ({ request, params }) => {
+    postExperienceReview: async ({ request, params, fetch }) => {
         console.log('posting experience review..........', await request.formData())
 
         // TODO: implement this action...
 
-        await refreshPlaceScores(params.placeId)
+        await refreshPlaceScores(params.placeId, fetch)
 
         return { postExperienceReviewSuccess: true }
     },
@@ -108,6 +108,6 @@ export const actions: Actions = {
     }
 }
 
-async function refreshPlaceScores(placeId: string) {
+async function refreshPlaceScores(placeId: string, fetch: Function) {
     await fetch(`/api/places/${placeId}/refresh`, { method: 'POST' })
 }
