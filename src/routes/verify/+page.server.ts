@@ -67,7 +67,7 @@ export const actions = {
             return { unavailableToken: true }
         }
 
-        const updatedUser = await updateUserWithVerificationTokenAndCreateAssocatedWorkplaceReviewToken(user.id, availableToken.token)
+        const updatedUser = await updateUserWithVerificationToken(user.id, availableToken.token)
 
         await createWorkplaceReviewTokenFromUserId(availableToken.createdByUserId)
 
@@ -77,10 +77,10 @@ export const actions = {
     }
 } satisfies Actions
 
-async function updateUserWithVerificationTokenAndCreateAssocatedWorkplaceReviewToken(userId: string, token: string) {
+async function updateUserWithVerificationToken(userId: string, token: string) {
     return await prisma.user.update({
         where: { id: userId },
-        data: { industryVerificationToken: { set: token }, workplaceReviewTokens: { create: {} } },
+        data: { industryVerificationToken: { set: token } },
         select: { industryVerificationToken: true }
     })
 }
