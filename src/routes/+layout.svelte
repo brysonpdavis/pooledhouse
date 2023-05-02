@@ -12,7 +12,7 @@
 	<title>pooledhouse</title>
 </svelte:head>
 
-<div class="flex min-h-screen flex-col justify-between">
+<div class="flex min-h-[100dvh] flex-col justify-between">
 	<Header loggedIn={data.session !== null} />
 	<main class="flex w-full flex-grow">
 		<div class="dynamic-layout p-4">
