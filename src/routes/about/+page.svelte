@@ -1,7 +1,7 @@
 <script>
 	import HeartSvg from '$lib/components/HeartSvg.svelte';
 
-	import {page} from '$app/stores'
+	import { page } from '$app/stores';
 </script>
 
 <h1>welcome to pooledhouse</h1>

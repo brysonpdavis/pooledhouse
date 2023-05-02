@@ -39,7 +39,7 @@ export const load = (async ({ params, locals }) => {
 
 
 export const actions: Actions = {
-    postWorkplaceReview: async ({ request, locals, params }) => {
+    postWorkplaceReview: async ({ request, locals, params, fetch }) => {
         const session = await locals.getSession()
 
         const email = session?.user?.email
@@ -59,7 +59,7 @@ export const actions: Actions = {
         const parsedData = await postWorkplaceReviewFormDataSchema.safeParseAsync(formData)
 
         if (!parsedData.success) {
-            return fail(400, {workplaceReviewSchemaErrors: parsedData.error.format()})
+            return fail(400, { workplaceReviewSchemaErrors: parsedData.error.format() })
         }
 
         const result = await prisma.workplaceReview.create({
@@ -81,25 +81,33 @@ export const actions: Actions = {
 
         console.log(JSON.stringify(result, undefined, 2))
 
+        await refreshPlaceScores(params.placeId, fetch)
+
         return { postWorkplaceReviewSuccess: true }
     },
-    postExperienceReview: async ({request}) => {
+    postExperienceReview: async ({ request, params, fetch }) => {
         console.log('posting experience review..........', await request.formData())
 
         // TODO: implement this action...
 
-        return {postExperienceReviewSuccess: true}
+        await refreshPlaceScores(params.placeId, fetch)
+
+        return { postExperienceReviewSuccess: true }
     },
-    deleteReview: async ({request}) => {
+    deleteReview: async ({ request }) => {
 
         const reviewId = (await request.formData()).get('reviewId')?.valueOf()
 
         if (!reviewId || typeof reviewId !== "string") {
-            return {deleteFailed: true}
+            return { deleteFailed: true }
         }
 
-        const res = await prisma.workplaceReview.delete({where: {id: reviewId}})
+        const res = await prisma.workplaceReview.delete({ where: { id: reviewId } })
 
         console.log('deleted: ', res)
     }
+}
+
+async function refreshPlaceScores(placeId: string, fetch: Function) {
+    await fetch(`/api/places/${placeId}/refresh`, { method: 'POST' })
 }
