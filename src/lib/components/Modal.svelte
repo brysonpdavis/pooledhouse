@@ -7,6 +7,7 @@
 
 <!-- The button to open modal -->
 <label for={`modal-${id}`} class="btn-primary btn">{buttonText}</label>
+
 <!-- Put this part before </body> tag -->
 <input type="checkbox" id={`modal-${id}`} class="modal-toggle" bind:checked={show} />
 
