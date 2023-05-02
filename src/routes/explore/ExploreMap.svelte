@@ -15,7 +15,7 @@
 	$: canAddPlace =
 		loggedIn && currentPlace && !places.find((p) => p.googlePlaceId === currentPlace?.place_id);
 
-	const NO_SCORE_MARKER_COLOR = '#007FFF';
+	const NO_SCORE_MARKER_COLOR = '#777777';
 
 	const markerColorGradient = rainbow()
 		.overColors(
@@ -117,13 +117,6 @@
 	async function addPlaceMarkers(map: google.maps.Map, places: Place[]) {
 		// change color of each marker based on value?
 		places.forEach((place) => {
-			// const m = new googleApi.maps.Marker({
-			// 	position: { lat: place.lat, lng: place.lng },
-			// 	optimized: optimize,
-			// 	title: place.name,
-			// 	map
-			// });
-
 			const markerColor = place.workplaceScore
 				? `#${markerColorGradient.colorAt(place.workplaceScore)}`
 				: NO_SCORE_MARKER_COLOR;
