@@ -45,7 +45,7 @@
 	</label>
 
 	{#if showControls}
-		<div transition:slide={{ duration: 150 }}>
+		<div transition:slide|local={{ duration: 150 }}>
 			<button
 				class="btn-outline btn-accent btn"
 				on:click={async () => {
@@ -83,7 +83,7 @@
 	</label>
 
 	{#if showUserData}
-		<pre transition:slide={{ duration: 500 }}>
+		<pre transition:slide|local={{ duration: 500 }}>
 		{JSON.stringify(data.user, undefined, 4)}
 	</pre>
 	{/if}

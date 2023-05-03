@@ -58,7 +58,7 @@
 		{#if showOptionalQuestions}
 			<label
 				class:hidden={!showOptionalQuestions}
-				transition:slide={{ duration: 1000 }}
+				transition:slide|local={{ duration: 1000 }}
 				class="flex flex-col"
 			>
 				<label for="compensationDescription" class="label">
