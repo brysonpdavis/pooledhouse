@@ -50,7 +50,7 @@
 		<label
 			class="input-group"
 			class:hidden={!hasVerificationCode}
-			transition:slide={{ duration: 150 }}
+			transition:slide|local={{ duration: 150 }}
 		>
 			<input
 				name="code"
