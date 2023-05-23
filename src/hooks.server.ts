@@ -19,7 +19,7 @@ export const handle = sequence(
 		providers: [
 			EmailProvider({
 				server: `smtp://apikey:${SENDGRID_API_KEY}@smtp.sendgrid.net:587`,
-				from: 'hey@brysondavis.dev',
+				from: 'do-not-reply@pooledhouse.com',
 				type: 'email',
 				id: 'email',
 				sendVerificationRequest,
