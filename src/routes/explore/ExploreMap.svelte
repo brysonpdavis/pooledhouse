@@ -117,7 +117,7 @@
 	async function addPlaceMarkers(map: google.maps.Map, places: Place[]) {
 		// change color of each marker based on value?
 		places.forEach((place) => {
-			const markerColor = place.workplaceScore
+			const markerColor = place.workplaceScore !== null
 				? `#${markerColorGradient.colorAt(place.workplaceScore)}`
 				: NO_SCORE_MARKER_COLOR;
 

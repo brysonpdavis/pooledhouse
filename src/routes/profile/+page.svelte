@@ -8,6 +8,7 @@
 
 	let showControls = false;
 	let showUserData = false;
+	let refreshed = false;
 
 	const numWorkplaceReviewsWritten = data.user.workplaceReviewTokens.filter(
 		(wrt) => !!wrt.workplaceReview
@@ -59,12 +60,27 @@
 			<button
 				class="btn-outline btn-secondary btn"
 				on:click={async () => {
+					const response = await fetch('/api/places/refresh-all', { method: 'POST' });
+					console.log(await response.json());
+				}}
+			>
+				refresh scores
+			</button>
+
+			<button
+				class="btn-outline btn-secondary btn"
+				on:click={async () => {
 					const response = await fetch('/api/places/clear', { method: 'POST' });
 					console.log(await response.json());
+					refreshed = true;
 				}}
 			>
 				clear scores
 			</button>
+
+			{#if refreshed}
+				<h3>scores refreshed</h3>
+			{/if}
 
 			<form method="post" action="?/addWorkplaceReviewToken">
 				<button class="btn-outline btn-accent btn" type="submit"

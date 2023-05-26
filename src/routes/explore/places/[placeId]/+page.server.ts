@@ -108,6 +108,6 @@ export const actions: Actions = {
     }
 }
 
-async function refreshPlaceScores(placeId: string, fetch: Function) {
-    await fetch(`/api/places/${placeId}/refresh`, { method: 'POST' })
+async function refreshPlaceScores(placeId: string, fetchMethod: typeof fetch) {
+    await fetchMethod(`/api/places/${placeId}/refresh`, { method: 'POST' })
 }

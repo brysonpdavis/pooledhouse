@@ -17,29 +17,33 @@ export const POST: RequestHandler = async ({ params: { placeId } }) => {
 
     console.log('place: ', reviewScores.name)
 
-    const workplaceOverallAverage = reviewScores.workplaceReviews.reduce((prev, wr) => wr.overallRating + prev, 0) / reviewScores?.workplaceReviews.length
+    const workplaceOverallRatings = reviewScores.workplaceReviews.map(wr => wr.overallRating)
+
+    const workplaceOverallAverage = averageOrNull(workplaceOverallRatings)
 
     console.log('overall workplace rating: ', workplaceOverallAverage)
 
-    const workplaceCompensationRatings = reviewScores.workplaceReviews.filter(wr => wr.compensationRating !== null)
+    const workplaceCompensationRatings = reviewScores.workplaceReviews.map(wr => wr.compensationRating).filter(notNull)
 
-    const workplaceCompensationAverage = workplaceCompensationRatings.reduce((prev, wr) => prev + wr.compensationRating!, 0) / workplaceCompensationRatings.length
+    const workplaceCompensationAverage = averageOrNull(workplaceCompensationRatings)
 
     console.log('compensation rating: ', workplaceCompensationAverage)
 
-    const experienceOverallAverage = reviewScores.experienceReviews.reduce((prev, er) => er.overallRating + prev, 0) / reviewScores.experienceReviews.length
+    const experienceOverallRatings = reviewScores.experienceReviews.map(er => er.overallRating)
+
+    const experienceOverallAverage = averageOrNull(experienceOverallRatings)
 
     console.log('experience overall rating: ', experienceOverallAverage)
 
-    const experienceFnbRatings = reviewScores.experienceReviews.filter(er => er.fnbRating !== null)
+    const experienceFnbRatings = reviewScores.experienceReviews.map(er => er.fnbRating).filter(notNull)
 
-    const experienceFnbAverage = experienceFnbRatings.reduce((prev, er) => prev + er.fnbRating!, 0)
+    const experienceFnbAverage = averageOrNull(experienceFnbRatings)
 
     console.log('fnb rating: ', experienceFnbAverage)
 
-    const experienceVibeRatings = reviewScores.experienceReviews.filter(er => er.vibeRating !== null)
+    const experienceVibeRatings = reviewScores.experienceReviews.map(er => er.vibeRating).filter(notNull)
 
-    const experienceVibeAverage = experienceVibeRatings.reduce((prev, er) => prev + er.vibeRating!, 0)
+    const experienceVibeAverage = averageOrNull(experienceVibeRatings)
 
     console.log('vibe rating: ', experienceVibeAverage)
 
@@ -53,3 +57,13 @@ export const POST: RequestHandler = async ({ params: { placeId } }) => {
 
     return new Response(JSON.stringify(refreshResult));
 };
+
+function averageOrNull(xs: (number)[]) {
+    if (xs.length === 0) return null
+
+    return xs.reduce((prev, x) => prev + x, 0) / xs.length
+}
+
+function notNull<T>(value: T | null): value is T {
+    return value !== null
+}
