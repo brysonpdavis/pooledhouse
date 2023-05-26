@@ -6,8 +6,14 @@
 	import type { PageData } from './$types';
 	import { navigating } from '$app/stores';
 
-	export let data: PageData
+	export let data: PageData;
+
+	import { dev } from '$app/environment';
+	import { inject } from '@vercel/analytics';
+
+	inject({ mode: dev ? 'development' : 'production' });
 </script>
+
 <svelte:head>
 	<title>pooledhouse</title>
 </svelte:head>
