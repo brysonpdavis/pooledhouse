@@ -25,8 +25,8 @@
 					<HeartSvg />
 				</p> -->
 					<p>
-						disclaimer<span class="text-secondary">!</span>
-						current data is for placeholder purposes only while the app is in pre-release
+						<span class="badge badge-secondary">disclaimer</span>
+						current data is for placeholder purposes only while the app is in pre-release!
 					</p>
 				</div>
 			</div>

@@ -1,13 +1,12 @@
 <script lang="ts">
-	import mapExample from '$lib/assets/map-example.png'
+	import mapExample from '$lib/assets/map-example.png';
 </script>
 
 <div class="flex flex-col gap-8">
-	<h3>
-		pooledhouse is a workplace review and transparency platform for restaurant workers, currently
-		only available in nyc.
+	<h3 class="mb-0 mt-4 font-light md:text-4xl">
+		a workplace transparency platform for restaurant workers in NYC
 	</h3>
-	<div class="flex flex-col lg:flex-row gap-8">
+	<div class="flex flex-col gap-8 lg:flex-row">
 		<div class="card-bordered card p-4 lg:w-1/3">
 			<div class="flex flex-grow flex-row items-center justify-between gap-4">
 				<div class="flex-grow">
@@ -45,5 +44,5 @@
 			</div>
 		</div>
 	</div>
-	<img class="card card-bordered rounded-md w-fit m-0" src={mapExample} alt='map example'/>
+	<img class="card-bordered card m-0 w-fit rounded-md" src={mapExample} alt="map example" />
 </div>
