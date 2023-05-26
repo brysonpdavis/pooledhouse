@@ -2,7 +2,6 @@ import { prisma } from '$lib/server/prisma';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ params: { placeId } }) => {
-    // TODO: fill in this handler with logic to recompute score average
     const reviewScores = await prisma.place.findUnique({
         where: { id: placeId },
         select: {
