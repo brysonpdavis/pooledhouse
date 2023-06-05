@@ -8,7 +8,7 @@
 	</h3>
 	<div class="flex flex-col gap-8 lg:flex-row">
 		<div class="card-bordered card p-4 lg:w-1/3">
-			<div class="flex flex-grow flex-row items-center justify-between gap-4">
+			<div class="flex flex-grow flex-col justify-between gap-4">
 				<div class="flex-grow">
 					<div class="card-title text-accent">looking for a new gig? just curious?</div>
 					<p>
@@ -16,12 +16,11 @@
 						city
 					</p>
 				</div>
-				<a class="btn-outline btn-secondary btn-lg btn h-full" href="/explore">explore</a>
+				<a class="btn-outline btn-secondary btn-lg btn" href="/explore">explore</a>
 			</div>
 		</div>
 		<div class="card-bordered card p-4 lg:w-1/3">
-			<div class="flex flex-grow flex-row items-center justify-between gap-4 lg:flex-row-reverse">
-				<a class="btn-outline btn-secondary btn-lg btn h-full" href="/auth/register">register</a>
+			<div class="flex flex-grow flex-col justify-between gap-4">
 				<div class="flex-grow">
 					<div class="card-title justify-end text-accent lg:justify-start">join the team</div>
 					<p class="text-right lg:text-left">
@@ -29,10 +28,11 @@
 						coworkers and join the conversation
 					</p>
 				</div>
+				<a class="btn-outline btn-secondary btn-lg btn" href="/auth/register">register</a>
 			</div>
 		</div>
 		<div class="card-bordered card p-4 lg:w-1/3">
-			<div class="flex flex-grow flex-row items-center justify-between gap-4">
+			<div class="flex flex-grow flex-col justify-between gap-4">
 				<div class="flex-grow">
 					<div class="card-title text-accent">share perspective on your own workplace</div>
 					<p>
@@ -40,9 +40,9 @@
 						anonymously
 					</p>
 				</div>
-				<a class="btn-outline btn-secondary btn-lg btn h-full" href="/explore">contribute</a>
+				<a class="btn-outline btn-secondary btn-lg btn" href="/explore">contribute</a>
 			</div>
 		</div>
 	</div>
-	<img class="card-bordered card m-0 w-fit rounded-md" src={mapExample} alt="map example" />
+	<img class="card-bordered card m-0 w-full rounded-md" src={mapExample} alt="map example" />
 </div>

@@ -46,6 +46,10 @@
 		/>
 		<span class="text-secondary w-20 flex-shrink-0">phone</span>
 	</label>
+	<label class="label">
+		<span class="label-text text-accent">have a verification code?</span>
+		<input type="checkbox" class="toggle-accent toggle" bind:checked={hasVerificationCode} />
+	</label>
 	{#if hasVerificationCode}
 		<label
 			class="input-group"
@@ -63,11 +67,6 @@
 			<span class="text-secondary w-20 flex-shrink-0">code</span>
 		</label>
 	{/if}
-	<label class="label">
-		<span class="label-text text-accent">have a verification code?</span>
-		<input type="checkbox" class="toggle-accent toggle" bind:checked={hasVerificationCode} />
-	</label>
-
 	<button type="submit" class="btn btn-outline btn-secondary" class:loading> submit </button>
 </form>
 <p>
