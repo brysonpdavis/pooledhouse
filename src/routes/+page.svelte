@@ -58,7 +58,7 @@
 			alt="map example"
 		/>
 		<div class="card w-full p-4 lg:w-1/3">
-			<div>
+			<div class="h-full justify-center lg:flex flex-col">
 				<div class="card-title text-3xl text-accent">get started</div>
 				<p class="xl:text-2xl">
 					if you just want to peruse, no need to create an account. just head to the
