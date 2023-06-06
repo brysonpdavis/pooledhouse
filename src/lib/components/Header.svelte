@@ -5,9 +5,9 @@
 	export let loggedIn: boolean;
 </script>
 
-<header class="flex h-12 w-full bg-primary md:h-16">
+<header class="flex h-12 w-full bg-base-200 md:h-16">
 	<div class="dynamic-layout items-center justify-between">
-		<a href="/" class="flex font-mono text-xl font-bold text-primary-content"
+		<a href="/" class="flex font-mono text-xl font-bold text-primary-content hover:text-inherit"
 			>pooled<span class="text-secondary">house</span></a
 		>
 		<div class="dropdown-end dropdown h-full">
