@@ -42,4 +42,8 @@
 	h2 {
 		@apply font-normal;
 	}
+
+	a:hover {
+		@apply text-accent;
+	}
 }

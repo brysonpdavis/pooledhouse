@@ -53,6 +53,7 @@ module.exports = {
 					'secondary': '#ff4700',
 					'accent': '#4c97c9',
 					'base-100': '#1a1a1a',
+					'base-200': '#0e0e0e',
 					'success': '#177d36',
 					'--rounded-box': '0.25rem',
 					'--rounded-btn': '0.125rem',
