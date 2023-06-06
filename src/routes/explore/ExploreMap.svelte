@@ -7,6 +7,7 @@
 	import type { Place } from '@prisma/client';
 	import { rainbow } from '@indot/rainbowvis';
 	import { shadeColor } from '$lib/utils/colors';
+	import Loading from '$lib/components/Loading.svelte';
 
 	export let places: Place[];
 
@@ -29,6 +30,7 @@
 	let infoWindow: google.maps.InfoWindow;
 	let infoWindowContent: HTMLElement;
 	let popUpInfoWindowPlace: Place | undefined = places.at(0);
+	let initialLoading = true;
 	let uploadSuccess = false;
 	let uploadInProgress = false;
 
@@ -41,7 +43,8 @@
 	const loader = new Loader({
 		apiKey: PUBLIC_GOOGLE_MAPS_API_KEY,
 		version: 'beta',
-		libraries: ['places', 'marker']
+		libraries: ['places', 'marker'],
+		authReferrerPolicy: 'origin'
 	});
 
 	const mapOptions: google.maps.MapOptions = {
@@ -58,13 +61,16 @@
 		loader.load().then(async (google) => {
 			googleApi = google;
 
+			const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary;
+			const { AdvancedMarkerView } = (await google.maps.importLibrary('marker')) as google.maps.MarkerLibrary;
+
 			const autocompleteBounds = new google.maps.Circle({
 				center: new google.maps.LatLng(nycCoordinates.lat, nycCoordinates.lng),
 				radius: 12000
 			}).getBounds()!;
 
-			map = new google.maps.Map(document.getElementById('map')!, mapOptions);
-			const marker = new google.maps.marker.AdvancedMarkerView({
+			map = new Map(document.getElementById('map')!, mapOptions);
+			const marker = new AdvancedMarkerView({
 				map,
 				content: new google.maps.marker.PinView({
 					borderColor: '#007FFF',
@@ -72,6 +78,8 @@
 					glyphColor: 'white'
 				}).element
 			});
+
+			initialLoading = false
 
 			infoWindowContent = document.getElementById('info-window-content') as HTMLElement;
 			infoWindow = new google.maps.InfoWindow({ content: infoWindowContent });
@@ -117,9 +125,10 @@
 	async function addPlaceMarkers(map: google.maps.Map, places: Place[]) {
 		// change color of each marker based on value?
 		places.forEach((place) => {
-			const markerColor = place.workplaceScore !== null
-				? `#${markerColorGradient.colorAt(place.workplaceScore)}`
-				: NO_SCORE_MARKER_COLOR;
+			const markerColor =
+				place.workplaceScore !== null
+					? `#${markerColorGradient.colorAt(place.workplaceScore)}`
+					: NO_SCORE_MARKER_COLOR;
 
 			const m = new googleApi.maps.marker.AdvancedMarkerView({
 				position: { lat: place.lat, lng: place.lng },
@@ -190,6 +199,10 @@
 	}
 </script>
 
+{#if initialLoading} 
+	<Loading />
+{/if}
+
 <div id="pac-input-container" class="animate-fade">
 	<input
 		id="pac-input"
@@ -227,8 +240,8 @@
 </div>
 
 <style>
-	/* these css properties will make the elements not  
-	** visible until they have been added to the map 
+	/* these css properties will make the elements hidden  
+	** until they have been added to the map 
 	*/
 
 	#info-window-content {
