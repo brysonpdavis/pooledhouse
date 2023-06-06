@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Loader } from '@googlemaps/js-api-loader';
-	import { PUBLIC_GOOGLE_MAPS_API_KEY } from '$env/static/public';
+	import { PUBLIC_GOOGLE_MAPS_API_KEY, PUBLIC_GOOGLE_MAPS_MAP_ID } from '$env/static/public';
 	import { postPlace } from '$lib/handlers/places';
 	import { page } from '$app/stores';
 	import type { Place } from '@prisma/client';
@@ -49,7 +49,7 @@
 		zoom: 11,
 		clickableIcons: false,
 		disableDefaultUI: true,
-		mapId: '58085ec09961ed07'
+		mapId: PUBLIC_GOOGLE_MAPS_MAP_ID
 	};
 
 	onMount(async () => {
