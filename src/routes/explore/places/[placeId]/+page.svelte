@@ -22,37 +22,37 @@
 <h3 class="text-accent">
 	{data.place.address}
 </h3>
-<!-- {#if reviewType === 'workplace'} -->
 <div class="w-fit py-4">
-	{#if data.place.workplaceReviews.length === 0}
+	{#if data.comments.workplaceOverallComments.length === 0}
 		<div class="card-title">no workplace reviews for this place yet</div>
 	{:else}
+		<h2>{data.place.workplaceScore} / 100</h2>
 		<div class="card-title">workplace reviews</div>
-		{#each data.place.workplaceReviews as review}
-			<div class="card-bordered card p-4 shadow-lg">
-				<div>rating: {review.overallRating}</div>
-				<div>description: {review.description}</div>
+		general comments
+		{#each data.comments.workplaceOverallComments as comment}
+			<div class="card bg-base-200 p-4 hover:shadow-sm shadow-slate-500">
+				<div>{comment.text}</div>
+				{#if comment.numberOfReactions > 0}
+				<div>{comment.numberOfAgreements} / {comment.numberOfReactions} agree</div>
+			{/if}
 			</div>
 		{/each}
 	{/if}
 </div>
-<!-- {/if} -->
 
-<!-- {#if reviewType === 'experience'} -->
 <div class="w-fit py-4">
-	{#if data.place.experienceReviews.length === 0}
+	{#if data.comments.experienceOverallComments.length === 0}
 		<div class="card-title">no experience reviews for this place yet</div>
 	{:else}
 		<div class="card-title">experience reviews</div>
-		{#each data.place.workplaceReviews as review}
-			<div class="card-bordered card p-4 shadow-lg">
-				<div>rating: {review.overallRating}</div>
-				<div>description: {review.description}</div>
+		<h3>overall</h3>
+		{#each data.comments.experienceOverallComments as comment}
+			<div class="card bg-base-200 p-2 shadow-lg">
+				<div>{comment.text}</div>
 			</div>
 		{/each}
 	{/if}
 </div>
-<!-- {/if} -->
 
 {#if data.userVerified}
 	<h3>have you worked at this establishment?</h3>

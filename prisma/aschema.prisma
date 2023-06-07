@@ -1,0 +1,259 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// auth.js model for a user's associated provider accounts
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+/// auth.js model for a client's session
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+/// auth.js model for a user
+model User {
+  id                               String                            @id @default(cuid())
+  name                             String?
+  email                            String                            @unique
+  emailVerified                    DateTime?                         @map("email_verified")
+  phone                            String                            @unique
+  image                            String?
+  industryVerificationToken        String?                           @unique
+  verification                     IndustryVerificationToken?        @relation("ConsumedByUser", fields: [industryVerificationToken], references: [token])
+  accounts                         Account[]
+  sessions                         Session[]
+  createdPlaces                    Place[]
+  createdWorkplaceReviews          WorkplaceReview[]                 @relation("CreatedByUser")
+  createdExperienceReview          ExperienceReview[]                @relation("CreatedByUser")
+  createdIndustryTokens            IndustryVerificationToken[]       @relation("CreatedByUser")
+  workplaceReviewTokens            WorkplaceReviewToken[]            @relation("AssociatedUser")
+  workplaceReviewCommentReactions  WorkplaceReviewCommentReaction[]  @relation("UserCommentReactions")
+  experienceReviewCommentReactions ExperienceReviewCommentReaction[] @relation("UserCommentReactions")
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Place {
+  id                String             @id @default(cuid())
+  name              String
+  lat               Float
+  lng               Float
+  googlePlaceId     String             @unique @map("google_place_id")
+  address           String
+  workplaceScore    Float?
+  workplaceReviews  WorkplaceReview[]
+  experienceScore   Float?
+  experienceReviews ExperienceReview[]
+  createdByUserId   String             @map("created_by_user_id")
+  createdByUser     User               @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  @@map("places")
+}
+
+model WorkplaceReview {
+  id String @id @default(cuid())
+
+  overallRating               Int
+  overallDescriptionCommentId String                 @unique
+  overallDescriptionComment   WorkplaceReviewComment @relation("OverallComment", fields: [overallDescriptionCommentId], references: [id], onDelete: Cascade)
+
+  compensationRating               Int?
+  compensationDescriptionCommentId String?                 @unique
+  compensationDescriptionComment   WorkplaceReviewComment? @relation("CompensationComment", fields: [compensationDescriptionCommentId], references: [id], onDelete: Cascade)
+
+  guestDescriptionCommentId String?                 @unique
+  guestDescriptionComment   WorkplaceReviewComment? @relation("GuestComment", fields: [guestDescriptionCommentId], references: [id], onDelete: Cascade)
+
+  cultureDescriptionCommentId String?                 @unique
+  cultureDescriptionComment   WorkplaceReviewComment? @relation("CultureComment", fields: [cultureDescriptionCommentId], references: [id], onDelete: Cascade)
+
+  idealForCommentId String?                 @unique
+  idealForComment   WorkplaceReviewComment? @relation("IdealForComment", fields: [idealForCommentId], references: [id], onDelete: Cascade)
+
+  placeId String @map("place_id")
+  place   Place  @relation(fields: [placeId], references: [id])
+
+  createdByUserId String @map("created_by_user_id")
+  createdByUser   User   @relation("CreatedByUser", fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  token                String               @unique
+  workplaceReviewToken WorkplaceReviewToken @relation("Token", fields: [token], references: [token])
+
+  comments WorkplaceReviewComment[] @relation("ReviewToComment")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map("workplace_reviews")
+}
+
+model ExperienceReview {
+  id String @id @default(cuid())
+
+  overallRating               Int
+  overallDescriptionCommentId String                  @unique
+  overallDescriptionComment   ExperienceReviewComment @relation("OverallComment", fields: [overallDescriptionCommentId], references: [id], onDelete: Cascade)
+
+  fnbRating               Int?
+  fnbDescriptionCommentId String?                  @unique
+  fnbDescriptionComment   ExperienceReviewComment? @relation("FnbComment", fields: [fnbDescriptionCommentId], references: [id], onDelete: Cascade)
+
+  vibeRating               Int?
+  vibeDescriptionCommentId String?                  @unique
+  vibeDescriptionComment   ExperienceReviewComment? @relation("VibeComment", fields: [vibeDescriptionCommentId], references: [id], onDelete: Cascade)
+
+  placeId String @map("place_id")
+  place   Place  @relation(fields: [placeId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  comments ExperienceReviewComment[] @relation("ReviewToComment")
+
+  createdByUserId String @map("created_by_user_id")
+  createdByUser   User   @relation("CreatedByUser", fields: [createdByUserId], references: [id], onDelete: Cascade)
+
+  @@map("experience_reviews")
+}
+
+model WorkplaceReviewComment {
+  id                String          @id @default(cuid())
+  workplaceReviewId String
+  workplaceReview   WorkplaceReview @relation("ReviewToComment", fields: [workplaceReviewId], references: [id], onDelete: Cascade)
+
+  text String @db.VarChar(2048)
+
+  numberOfAgreements Int   @default(0)
+  numberOfReactions  Int   @default(0)
+  reactionScore      Float @default(0)
+
+  overallWorkplaceReview          WorkplaceReview? @relation("OverallComment")
+  compensationWorkplaceReview     WorkplaceReview? @relation("CompensationComment")
+  guestDescriptionWorkplaceReview WorkplaceReview? @relation("GuestComment")
+  cultureWorkplaceReview          WorkplaceReview? @relation("CultureComment")
+  idealForWorkplaceReview         WorkplaceReview? @relation("IdealForComment")
+
+  reactions WorkplaceReviewCommentReaction[] @relation("ReactionToComment")
+
+  @@unique([id, workplaceReviewId])
+  @@map("WorkplaceReviewComment")
+}
+
+model ExperienceReviewComment {
+  id                 String           @id @default(cuid())
+  experienceReviewId String           @map("workplaceReviewId")
+  experienceReview   ExperienceReview @relation("ReviewToComment", fields: [experienceReviewId], references: [id], onDelete: Cascade)
+
+  text String @db.VarChar(2048)
+
+  numberOfAgreements Int   @default(0)
+  numberOfReactions  Int   @default(0)
+  reactionScore      Float @default(0)
+
+  overallExperienceReview ExperienceReview? @relation("OverallComment")
+  fnbExperienceReview     ExperienceReview? @relation("FnbComment")
+  vibeExperienceReview    ExperienceReview? @relation("VibeComment")
+
+  reactions ExperienceReviewCommentReaction[] @relation("ReactionToComment")
+
+  @@unique([id, experienceReviewId])
+  @@map("ExperienceReviewComment")
+}
+
+model WorkplaceReviewCommentReaction {
+  id                       String                 @id @default(cuid())
+  workplaceReviewCommentId String
+  workplaceReviewComment   WorkplaceReviewComment @relation("ReactionToComment", fields: [workplaceReviewCommentId], references: [id])
+  agree                    Boolean
+  userId                   String
+  user                     User                   @relation("UserCommentReactions", fields: [userId], references: [id])
+
+  @@unique([userId, workplaceReviewCommentId])
+  @@map("workplace_review_comment_reactions")
+}
+
+model ExperienceReviewCommentReaction {
+  id                        String                  @id @default(cuid())
+  experienceReviewCommentId String
+  experienceReviewComment   ExperienceReviewComment @relation("ReactionToComment", fields: [experienceReviewCommentId], references: [id])
+  agree                     Boolean
+  userId                    String
+  user                      User                    @relation("UserCommentReactions", fields: [userId], references: [id])
+
+  @@unique([userId, experienceReviewCommentId])
+  @@map("experience_review_comment_reactions")
+}
+
+model IndustryVerificationToken {
+  token                String                @unique
+  createdAt            DateTime              @default(now()) @map("created_at")
+  createdByUserId      String                @map("created_by_user_id")
+  createdByUser        User                  @relation("CreatedByUser", fields: [createdByUserId], references: [id], onDelete: Cascade)
+  consumedByUser       User?                 @relation("ConsumedByUser")
+  contactVerifications ContactVerification[]
+
+  @@map("industry_verification_tokens")
+}
+
+model WorkplaceReviewToken {
+  token            String           @unique @default(cuid())
+  createdAt        DateTime         @default(now()) @map("created_at")
+  associatedUserId String           @map("associated_by_user_id")
+  associatedUser   User             @relation("AssociatedUser", fields: [associatedUserId], references: [id], onDelete: Cascade)
+  workplaceReview  WorkplaceReview? @relation("Token")
+
+  @@map("workplace_review_tokens")
+}
+
+model ContactVerification {
+  id                               String                     @id @default(cuid())
+  email                            String
+  emailVerificationCodeSentAt      DateTime?                  @map("email_verification_code_sent_at")
+  emailVerifiedAt                  DateTime?                  @map("email_verified_at")
+  phone                            String
+  phoneVerificationCodeSentAt      DateTime?                  @map("phone_verification_code_sent_at")
+  phoneVerifiedAt                  DateTime?                  @map("phone_verified_at")
+  industryVerificationTokenDetails IndustryVerificationToken? @relation(fields: [industryVerificationToken], references: [token])
+  industryVerificationToken        String?
+
+  @@unique([email, phone])
+  @@map("contact_verifications")
+}

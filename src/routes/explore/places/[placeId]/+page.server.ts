@@ -2,13 +2,50 @@ import { prisma } from '$lib/server/prisma';
 import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { postWorkplaceReviewFormDataSchema } from './post-workplace-review-form-zod-schema';
+import type { ReviewComment } from '@prisma/client';
 
 export const load = (async ({ params, locals }) => {
 
-    const place = await prisma.place.findUnique({
+    const placeResult = await prisma.place.findUnique({
         where: { id: params.placeId },
-        include: { workplaceReviews: true, experienceReviews: true }
+        include: {
+            workplaceReviews: {
+                include:
+                {
+                    overallDescriptionComment: true,
+                    compensationDescriptionComment: true,
+                    guestDescriptionComment: true,
+                    idealForComment: true,
+                    cultureDescriptionComment: true
+                }
+            },
+            experienceReviews: {
+                include: {
+                    fnbDescriptionComment: true,
+                    vibeDescriptionComment: true,
+                    overallDescriptionComment: true
+                }
+            }
+        }
     })
+
+    if (!placeResult) {
+        throw error(404, 'place not found')
+    }
+
+    const {workplaceReviews, experienceReviews, ...place} = placeResult
+
+    const comments = {
+        // workplace comments
+        workplaceOverallComments: workplaceReviews.map(wr => wr.overallDescriptionComment).filter(notNull).sort(commentsComparator),
+        compensationComments: workplaceReviews.map(wr => wr.compensationDescriptionComment).filter(notNull).sort(commentsComparator),
+        guestComments: workplaceReviews.map(wr => wr.guestDescriptionComment).filter(notNull).sort(commentsComparator),
+        cultureComments: workplaceReviews.map(wr => wr.cultureDescriptionComment).filter(notNull).sort(commentsComparator),
+        // experience comments
+        experienceOverallComments: experienceReviews.map(er => er.overallDescriptionComment).filter(notNull).sort(commentsComparator),
+        fnbComments: experienceReviews.map(er => er.fnbDescriptionComment).filter(notNull).sort(commentsComparator),
+        vibeComments: experienceReviews.map(er => er.vibeDescriptionComment).filter(notNull).sort(commentsComparator)
+    }
 
     if (!place) {
         throw error(404, "couldn't find a place with that id")
@@ -17,13 +54,13 @@ export const load = (async ({ params, locals }) => {
     const userEmail = (await locals.getSession())?.user?.email
 
     if (!userEmail) {
-        return { place, userVerified: false }
+        return { comments, place, userVerified: false }
     }
 
     const user = await prisma.user.findUnique({ where: { email: userEmail }, include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } } })
 
     if (!user) {
-        return { place }
+        return { comments, place }
     }
 
     const userVerified = !!user?.industryVerificationToken
@@ -34,7 +71,7 @@ export const load = (async ({ params, locals }) => {
 
     const previousExperienceReview = await prisma.experienceReview.findFirst({ where: { createdByUserId: user.id, placeId: place.id } })
 
-    return { place, userVerified, reviewToken: unusedWorkplaceReviewTokens.at(0)?.token, previousWorkplaceReview, previousExperienceReview };
+    return { comments, place, userVerified, reviewToken: unusedWorkplaceReviewTokens.at(0)?.token, previousWorkplaceReview, previousExperienceReview };
 }) satisfies PageServerLoad;
 
 
@@ -62,26 +99,31 @@ export const actions: Actions = {
             return fail(400, { workplaceReviewSchemaErrors: parsedData.error.format() })
         }
 
+        const { id } = await prisma.review.create({ data: { createdByUser: { connect: { email } } } })
+
+        console.log('review id: ', id)
+
         const result = await prisma.workplaceReview.create({
             data: {
+                review: { connect: { id } },
                 createdByUser: {
                     connect: { email }
                 },
                 place: { connect: { id: params.placeId } },
-                description: parsedData.data.general,
+                overallDescriptionComment: { create: { text: parsedData.data.general, review: { connect: { id } } } },
                 overallRating: parsedData.data.rating,
                 compensationRating: parsedData.data.compensation,
-                compensationDescription: parsedData.data.compensationDescription || undefined,
-                guestDescription: parsedData.data.guestDescription || undefined,
-                cultureDescription: parsedData.data.cultureDescription || undefined,
-                idealFor: parsedData.data.idealFor || undefined,
-                workplaceReviewToken: { connect: { token: parsedData.data.workplaceReviewToken } }
+                compensationDescriptionComment: parsedData.data.compensationDescription ? { create: { text: parsedData.data.compensationDescription!, review: { connect: { id } } } } : undefined,
+                guestDescriptionComment: parsedData.data.guestDescription ? { create: { text: parsedData.data.guestDescription, review: { connect: { id } } } } : undefined,
+                cultureDescriptionComment: parsedData.data.cultureDescription ? { create: { text: parsedData.data.cultureDescription, review: { connect: { id } } } } : undefined,
+                idealForComment: parsedData.data.idealFor ? { create: { text: parsedData.data.idealFor, review: { connect: { id } } } } : undefined,
+                workplaceReviewToken: { connect: { token: parsedData.data.workplaceReviewToken } },
             }
-        }).catch(console.warn)
+        })
 
         console.log(JSON.stringify(result, undefined, 2))
 
-        await refreshPlaceScores(params.placeId, fetch)
+        await refreshPlaceScores(params.placeId, fetch).catch(console.warn)
 
         return { postWorkplaceReviewSuccess: true }
     },
@@ -110,4 +152,12 @@ export const actions: Actions = {
 
 async function refreshPlaceScores(placeId: string, fetchMethod: typeof fetch) {
     await fetchMethod(`/api/places/${placeId}/refresh`, { method: 'POST' })
+}
+
+function notNull<T>(x: T | undefined | null): x is T  {
+    return x !== undefined && x !== null
+}
+
+function commentsComparator(comment1: ReviewComment, comment2: ReviewComment): number {
+    return comment1.reactionScore - comment2.reactionScore
 }
