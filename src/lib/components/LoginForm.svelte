@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { enhance } from '$app/forms';
+import { goto } from '$app/navigation';
 	import { signIn } from '@auth/sveltekit/client';
 
 	let identifier = '';
 	let loginMethod: 'email' | 'phone' = 'email';
+	let submitting = false;
 
 	async function handleSubmit() {
 		if (loginMethod === 'email') {
@@ -19,6 +21,7 @@
 
 	<form
 		on:submit={async (event) => {
+			submitting = true
 			event.preventDefault();
 			await handleSubmit();
 		}}
@@ -53,7 +56,7 @@
 				<option value="phone">phone</option>
 			</select>
 		</div>
-		<button type="submit" class="btn-outline btn-secondary btn mt-4 w-full">
+		<button type="submit" class={`btn-outline btn-secondary btn mt-4 w-full ${submitting ? 'loading' : ''}` }>
 			log in!
 		</button>
 	</form>
