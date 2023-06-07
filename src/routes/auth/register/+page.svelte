@@ -5,8 +5,8 @@
 	let hasVerificationCode: boolean = false;
 	let loading = false;
 </script>
-
-<h3>To create an account, all you need is a phone number and an email.</h3>
+<div class="w-fit m-auto">
+<h3 class="w-fit">To create an account, all you need is a phone number and an email.</h3>
 <form
 	class="form-control max-w-xl gap-4"
 	method="post"
@@ -69,7 +69,10 @@
 	{/if}
 	<button type="submit" class="btn btn-outline btn-secondary" class:loading> submit </button>
 </form>
-<p>
-	Don't worry, your reviews will always be anonymous, we only use your email and phone for logging
-	you in and making sure that you're a real person.
-</p>
+<div class="max-w-xl">
+	<p>
+		Don't worry, your reviews will always be anonymous, we only use your email and phone for logging
+		you in and making sure that you're a real person.
+	</p>	
+</div>
+</div>
