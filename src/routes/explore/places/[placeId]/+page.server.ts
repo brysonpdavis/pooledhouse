@@ -36,15 +36,17 @@ export const load = (async ({ params, locals }) => {
     const {workplaceReviews, experienceReviews, ...place} = placeResult
 
     const comments = {
-        // workplace comments
-        workplaceOverallComments: workplaceReviews.map(wr => wr.overallDescriptionComment).filter(notNull).sort(commentsComparator),
-        compensationComments: workplaceReviews.map(wr => wr.compensationDescriptionComment).filter(notNull).sort(commentsComparator),
-        guestComments: workplaceReviews.map(wr => wr.guestDescriptionComment).filter(notNull).sort(commentsComparator),
-        cultureComments: workplaceReviews.map(wr => wr.cultureDescriptionComment).filter(notNull).sort(commentsComparator),
-        // experience comments
-        experienceOverallComments: experienceReviews.map(er => er.overallDescriptionComment).filter(notNull).sort(commentsComparator),
-        fnbComments: experienceReviews.map(er => er.fnbDescriptionComment).filter(notNull).sort(commentsComparator),
-        vibeComments: experienceReviews.map(er => er.vibeDescriptionComment).filter(notNull).sort(commentsComparator)
+        workplace: {
+            general: workplaceReviews.map(wr => wr.overallDescriptionComment).filter(notNull).sort(commentsComparator),
+            compensation: workplaceReviews.map(wr => wr.compensationDescriptionComment).filter(notNull).sort(commentsComparator),
+            guest: workplaceReviews.map(wr => wr.guestDescriptionComment).filter(notNull).sort(commentsComparator),
+            culture: workplaceReviews.map(wr => wr.cultureDescriptionComment).filter(notNull).sort(commentsComparator)    
+        },
+        experience: {
+            general: experienceReviews.map(er => er.overallDescriptionComment).filter(notNull).sort(commentsComparator),
+            fnb: experienceReviews.map(er => er.fnbDescriptionComment).filter(notNull).sort(commentsComparator),
+            vibe: experienceReviews.map(er => er.vibeDescriptionComment).filter(notNull).sort(commentsComparator)
+        }
     }
 
     if (!place) {

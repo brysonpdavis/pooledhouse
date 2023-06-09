@@ -10,7 +10,24 @@
 
 	const workplaceReviewToken = data.reviewToken;
 
-	// let reviewType: 'workplace' | 'experience' = 'workplace';
+	const workplaceSections: { key: keyof typeof data.comments.workplace; heading: string }[] = [
+		{
+			key: 'general',
+			heading: 'general comments'
+		},
+		{ key: 'compensation', heading: 'compensation' },
+		{ key: 'culture', heading: "what's the culture like?" },
+		{ key: 'guest', heading: 'how are the guests?' }
+	];
+
+	const experienceSections: { key: keyof typeof data.comments.experience; heading: string }[] = [
+		{
+			key: 'general',
+			heading: 'general comments'
+		},
+		{ key: 'fnb', heading: 'quality of the food and beverage?' },
+		{ key: 'vibe', heading: "how's the vibe?" }
+	];
 </script>
 
 <a href={`/explore/places/${data.place.id}`}>
@@ -23,33 +40,47 @@
 	{data.place.address}
 </h3>
 <div class="w-fit py-4">
-	{#if data.comments.workplaceOverallComments.length === 0}
+	{#if data.comments.workplace.general.length === 0}
 		<div class="card-title">no workplace reviews for this place yet</div>
 	{:else}
 		<h2>{data.place.workplaceScore} / 100</h2>
 		<div class="card-title">workplace reviews</div>
-		general comments
-		{#each data.comments.workplaceOverallComments as comment}
-			<div class="card bg-base-200 p-4 hover:shadow-sm shadow-slate-500">
-				<div>{comment.text}</div>
-				{#if comment.numberOfReactions > 0}
-				<div>{comment.numberOfAgreements} / {comment.numberOfReactions} agree</div>
+		{#each workplaceSections as section}
+			{@const sectionComments = data.comments.workplace[section.key]}
+			{#if sectionComments.length > 0}
+				<h3>{section.heading}</h3>
+				{#each sectionComments as comment}
+					<div class="card bg-base-200 p-4 shadow-slate-500 hover:shadow-sm">
+						<div>{comment.text}</div>
+						{#if comment.numberOfReactions > 0}
+							<div>{comment.numberOfAgreements} / {comment.numberOfReactions} agree</div>
+						{/if}
+					</div>
+				{/each}
 			{/if}
-			</div>
 		{/each}
 	{/if}
 </div>
 
 <div class="w-fit py-4">
-	{#if data.comments.experienceOverallComments.length === 0}
+	{#if data.comments.experience.general.length === 0}
 		<div class="card-title">no experience reviews for this place yet</div>
 	{:else}
+		<h2>{data.place.experienceScore} / 100</h2>
 		<div class="card-title">experience reviews</div>
-		<h3>overall</h3>
-		{#each data.comments.experienceOverallComments as comment}
-			<div class="card bg-base-200 p-2 shadow-lg">
-				<div>{comment.text}</div>
-			</div>
+		{#each experienceSections as section}
+			{@const sectionComments = data.comments.experience[section.key]}
+			{#if sectionComments.length > 0}
+				<h3>{section.heading}</h3>
+				{#each data.comments.experience[section.key] as comment}
+					<div class="card bg-base-200 p-4 shadow-slate-500 hover:shadow-sm">
+						<div>{comment.text}</div>
+						{#if comment.numberOfReactions > 0}
+							<div>{comment.numberOfAgreements} / {comment.numberOfReactions} agree</div>
+						{/if}
+					</div>
+				{/each}
+			{/if}
 		{/each}
 	{/if}
 </div>
