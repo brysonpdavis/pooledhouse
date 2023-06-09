@@ -62,8 +62,23 @@ export const load = (async ({ params, locals }) => {
     const user = await prisma.user.findUnique({ where: { email: userEmail }, include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } } })
 
     if (!user) {
-        return { comments, place }
+        throw error(404, "unexpected error")
     }
+
+    const usersCommentReactions = await prisma.reviewCommentReaction.findMany({
+        where: {
+            userId: user.id,
+            reviewComment: {
+                review: { OR: [{ workplaceReview: { placeId: place.id } }, { experienceReview: { placeId: place.id } }] }
+                // reviewId: {
+                //     in: [
+                //         ...placeResult.workplaceReviews.map(wr => wr.id),
+                //         ...placeResult.experienceReviews.map(er => er.id)
+                //     ]
+                // }
+            }
+        }
+    })
 
     const userVerified = !!user?.industryVerificationToken
 
@@ -73,7 +88,7 @@ export const load = (async ({ params, locals }) => {
 
     const previousExperienceReview = await prisma.experienceReview.findFirst({ where: { createdByUserId: user.id, placeId: place.id } })
 
-    return { comments, place, userVerified, reviewToken: unusedWorkplaceReviewTokens.at(0)?.token, previousWorkplaceReview, previousExperienceReview };
+    return { comments, usersCommentReactions, place, userVerified, reviewToken: unusedWorkplaceReviewTokens.at(0)?.token, previousWorkplaceReview, previousExperienceReview };
 }) satisfies PageServerLoad;
 
 

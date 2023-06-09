@@ -2,12 +2,18 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import ExperienceReviewForm from './ExperienceReviewForm.svelte';
 	import WorkplaceReviewForm from './WorkplaceReviewForm.svelte';
-	import Comment from './Comment.svelte'
+	import Comment from './Comment.svelte';
 	import type { ActionData, PageData } from './$types';
 	import { enhance } from '$app/forms';
+	import type { ReviewCommentReaction } from '@prisma/client';
 
 	export let data: PageData;
 	export let form: ActionData;
+
+	const usersCommentReactionsByCommentId = data.usersCommentReactions?.reduce(
+		(map, cr) => map.set(cr.reviewCommentId, cr),
+		new Map<string, ReviewCommentReaction>()
+	);
 
 	const workplaceReviewToken = data.reviewToken;
 
@@ -46,7 +52,7 @@
 				{#if sectionComments.length > 0}
 					<h3>{section.heading}</h3>
 					{#each sectionComments as comment}
-						<Comment {comment} />
+						<Comment {comment} usersCommentReaction={usersCommentReactionsByCommentId?.get(comment.id)} />
 					{/each}
 				{/if}
 			{/each}
