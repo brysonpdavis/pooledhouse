@@ -78,9 +78,10 @@ model Place {
     lng               Float
     googlePlaceId     String             @unique @map("google_place_id")
     address           String
-    workplaceScore    Float?
+    compensationScore Float?             @map("compensation_score")
+    workplaceScore    Float?             @map("workplace_score")
+    experienceScore   Float?             @map("experience_score")
     workplaceReviews  WorkplaceReview[]
-    experienceScore   Float?
     experienceReviews ExperienceReview[]
     createdByUserId   String             @map("created_by_user_id")
     createdByUser     User               @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)

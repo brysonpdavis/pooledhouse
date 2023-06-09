@@ -50,6 +50,7 @@ export const POST: RequestHandler = async ({ params: { placeId } }) => {
     const refreshResult = await prisma.place.update({
         where: { id: placeId },
         data: {
+            compensationScore: workplaceCompensationAverage,
             workplaceScore: workplaceOverallAverage,
             experienceScore: experienceOverallAverage
         }

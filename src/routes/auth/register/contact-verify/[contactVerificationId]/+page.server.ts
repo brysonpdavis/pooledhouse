@@ -44,9 +44,7 @@ export const load = (async ({ params, locals }) => {
     if (!!contactVerification.emailVerifiedAt && !!contactVerification.phoneVerifiedAt) {
         console.log('create a new user and redirect')
 
-        const createdUser = await prisma.user.create({ data: { email, phone } })
-
-        console.log('created new user: ', createdUser.id)
+        await createUser(email, phone)
 
         throw redirect(303, '/auth/login')
     }
@@ -154,3 +152,13 @@ export const actions: Actions = {
     }
 }
 
+async function createUser(email: string, phone: string) {
+    const createdUser = await prisma.user.create({
+        data: {
+            email,
+            phone
+        }
+    })
+
+    console.log('created new user: ', createdUser.id)
+}

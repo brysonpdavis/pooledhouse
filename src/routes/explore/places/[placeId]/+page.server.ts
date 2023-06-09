@@ -33,14 +33,14 @@ export const load = (async ({ params, locals }) => {
         throw error(404, 'place not found')
     }
 
-    const {workplaceReviews, experienceReviews, ...place} = placeResult
+    const { workplaceReviews, experienceReviews, ...place } = placeResult
 
     const comments = {
         workplace: {
             general: workplaceReviews.map(wr => wr.overallDescriptionComment).filter(notNull).sort(commentsComparator),
             compensation: workplaceReviews.map(wr => wr.compensationDescriptionComment).filter(notNull).sort(commentsComparator),
             guest: workplaceReviews.map(wr => wr.guestDescriptionComment).filter(notNull).sort(commentsComparator),
-            culture: workplaceReviews.map(wr => wr.cultureDescriptionComment).filter(notNull).sort(commentsComparator)    
+            culture: workplaceReviews.map(wr => wr.cultureDescriptionComment).filter(notNull).sort(commentsComparator)
         },
         experience: {
             general: experienceReviews.map(er => er.overallDescriptionComment).filter(notNull).sort(commentsComparator),
@@ -149,6 +149,68 @@ export const actions: Actions = {
         const res = await prisma.workplaceReview.delete({ where: { id: reviewId } })
 
         console.log('deleted: ', res)
+    },
+    commentReaction: async ({ request, locals }) => {
+        const formData = await request.formData()
+        const commentId = formData.get('commentId')?.valueOf()
+        const agree = formData.get('agree')?.valueOf()
+
+        const reactionBool = agree === "agree" || (agree === "disagree" ? false : null)
+
+        if (commentId === undefined || reactionBool === null) {
+            throw error(404, "required info not provied")
+        }
+
+        const userEmail = (await locals.getSession())?.user?.email
+
+        if (!userEmail) {
+            throw error(404, 'user not logged in')
+        }
+
+        const userId = (await prisma.user.findUnique({ where: { email: userEmail } }))?.id
+
+        if (!userId) {
+            throw error(404, 'user not found')
+        }
+
+        const reactions = await prisma.reviewCommentReaction.findMany({ where: { reviewCommentId: commentId } })
+
+        const existingReaction = reactions.find(r => r.userId === userId)
+
+        if (existingReaction) {
+            if (existingReaction.agree === reactionBool) {
+                return
+            }
+
+            await prisma.$transaction([
+                prisma.reviewComment.update({
+                    where: { id: commentId as string },
+                    data: {
+                        numberOfAgreements: { increment: reactionBool ? 1 : -1 },
+                        reactionScore: calculateReactionScore({
+                            reactions: reactions.length,
+                            agreements: reactions.filter(r => r.agree).length + (reactionBool ? 1 : -1)
+                        })
+                    }
+                }),
+                prisma.reviewCommentReaction.update({
+                    where: { id: existingReaction.id },
+                    data: { agree: reactionBool }
+                })
+            ])
+
+            return
+        }
+
+        await prisma.reviewComment.update({
+            where: { id: commentId as string },
+            data: {
+                numberOfAgreements: { increment: reactionBool ? 1 : 0 },
+                numberOfReactions: { increment: 1 },
+                reactionScore: reactionBool ? 1 : -1,
+                reactions: { create: { agree: reactionBool, user: { connect: { id: userId } } } }
+            }
+        })
     }
 }
 
@@ -156,10 +218,14 @@ async function refreshPlaceScores(placeId: string, fetchMethod: typeof fetch) {
     await fetchMethod(`/api/places/${placeId}/refresh`, { method: 'POST' })
 }
 
-function notNull<T>(x: T | undefined | null): x is T  {
+function notNull<T>(x: T | undefined | null): x is T {
     return x !== undefined && x !== null
 }
 
 function commentsComparator(comment1: ReviewComment, comment2: ReviewComment): number {
     return comment1.reactionScore - comment2.reactionScore
+}
+
+function calculateReactionScore({ reactions, agreements }: { reactions: number, agreements: number }): number {
+    return ((2 * agreements) - reactions) / reactions
 }
