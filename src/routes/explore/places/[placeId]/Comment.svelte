@@ -2,6 +2,7 @@
 	import { slide } from 'svelte/transition';
 	import { enhance } from '$app/forms';
 	import type { ReviewComment, ReviewCommentReaction } from '@prisma/client';
+	import {page} from '$app/stores'
 
 	export let comment: ReviewComment;
 
@@ -34,7 +35,7 @@
 	{#if comment.numberOfReactions > 0}
 		<div>{comment.numberOfAgreements} / {comment.numberOfReactions} agree</div>
 	{/if}
-	{#if showReactions}
+	{#if showReactions && $page.data.session?.user}
 		<div class="flex w-full flex-row justify-start gap-2" transition:slide={{ duration: 200 }}>
 			<form
 				method="post"
