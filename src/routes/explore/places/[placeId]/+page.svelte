@@ -11,20 +11,14 @@
 	const workplaceReviewToken = data.reviewToken;
 
 	const workplaceSections: { key: keyof typeof data.comments.workplace; heading: string }[] = [
-		{
-			key: 'general',
-			heading: 'general comments'
-		},
+		{ key: 'general', heading: 'general comments' },
 		{ key: 'compensation', heading: 'compensation' },
 		{ key: 'culture', heading: "what's the culture like?" },
 		{ key: 'guest', heading: 'how are the guests?' }
 	];
 
 	const experienceSections: { key: keyof typeof data.comments.experience; heading: string }[] = [
-		{
-			key: 'general',
-			heading: 'general comments'
-		},
+		{ key: 'general', heading: 'general comments' },
 		{ key: 'fnb', heading: 'quality of the food and beverage?' },
 		{ key: 'vibe', heading: "how's the vibe?" }
 	];
