@@ -16,7 +16,7 @@
 			<div class="flex flex-grow flex-col justify-between gap-4">
 				<div class="flex-grow">
 					<div class="card-title text-accent">
-						looking for a new gig? just curious what's out there?
+						looking for a new gig? just curious?
 					</div>
 					<p>
 						see what other restaurant workers say about their workplace, or compare places in the
@@ -58,13 +58,15 @@
 			alt="map example"
 		/>
 		<div class="card w-full p-4 lg:w-1/3">
-			<div class="h-full justify-center lg:flex flex-col">
-				<div class="card-title text-3xl text-accent">get started</div>
+			<div class="h-full flex-col justify-center lg:flex">
+				<div class="card-title text-3xl font-extralight uppercase tracking-wide text-accent">get started</div>
 				<p class="xl:text-2xl">
 					if you just want to peruse, no need to create an account. just head to the
 					<a href="/explore">explore</a> page.
 				</p>
-				<div class="card-title hidden text-3xl text-accent lg:flex">learn more</div>
+				<div class="card-title hidden text-3xl font-extralight uppercase tracking-wide text-accent lg:flex">
+					learn more
+				</div>
 				<p class="xl:text-2xl">
 					to learn more about how it all works, head to the
 					<a href="/about">about</a> page.
@@ -74,7 +76,7 @@
 	</div>
 	<div class="card w-full bg-base-200 p-4">
 		<div class="card-title text-accent">do it for the culture!</div>
-		<p class="xl:text-xl">
+		<p class="xl:text-xl mb-0">
 			pooledhouse was created purely as a project intended for the good of the culture of the
 			restaurant industry. it will always be completely free, and reviews will always be anonymous.
 		</p>
