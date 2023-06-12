@@ -41,35 +41,35 @@
 		</h1>
 	</a>
 
-	<div class="flex flex-col xl:flex-row justify-between gap-2 xl:items-center">
-		<h3 class="text-accent m-0">
+	<div class="flex w-full flex-col justify-between gap-2 xl:flex-row xl:items-center">
+		<h3 class="m-0 text-accent">
 			{data.place.address}
 		</h3>
-		<div class="btn-group-horizontal btn-group">
+		<div class="btn-group btn-group-horizontal">
 			<button
 				on:click={() => (showSection = 'workplace')}
 				class:btn-active={showSection !== 'workplace'}
-				class="btn btn-secondary">workplace</button
+				class="btn-secondary btn flex basis-1/2">workplace</button
 			>
 			<button
 				on:click={() => (showSection = 'experience')}
 				class:btn-active={showSection !== 'experience'}
-				class="btn btn-secondary">experience</button
+				class="btn-secondary btn flex basis-1/2">experience</button
 			>
 		</div>
 	</div>
 
-	<div class="flex w-full flex-col gap-4 xl:flex-row">
+	<div class="flex w-full flex-col gap-4">
 		{#if showSection === 'workplace'}
 			<div
-				transition:slide|local={{ axis: 'x' }}
+				transition:slide|local={{ axis: 'y' }}
 				class="card-bordered card flex flex-grow overflow-hidden border-primary p-4"
 			>
 				{#if data.comments.workplace.general.length === 0}
 					<div class="card-title">no workplace reviews for this place yet</div>
 				{:else}
 					<div class="flex w-full flex-col">
-						<h2 class="mt-0 text-5xl">{data.place.workplaceScore} / 100</h2>
+						<h2 class="mt-0 text-5xl">{data.place.workplaceScore ?? '???'} / 100</h2>
 						<div class="card-title">workplace reviews</div>
 						{#each workplaceSections as section}
 							{@const sectionComments = data.comments.workplace[section.key]}
@@ -90,7 +90,7 @@
 
 		{#if showSection === 'experience'}
 			<div
-				transition:slide|local={{ axis: 'x' }}
+				transition:slide|local={{ axis: 'y' }}
 				class="card-bordered card flex flex-grow overflow-hidden border-primary p-4"
 			>
 				{#if data.comments.experience.general.length === 0}
@@ -102,13 +102,11 @@
 						{@const sectionComments = data.comments.experience[section.key]}
 						{#if sectionComments.length > 0}
 							<h3>{section.heading}</h3>
-							{#each data.comments.experience[section.key] as comment}
-								<div class="card bg-base-200 p-4 shadow-slate-500 hover:shadow-sm">
-									<div>{comment.text}</div>
-									{#if comment.numberOfReactions > 0}
-										<div>{comment.numberOfAgreements} / {comment.numberOfReactions} agree</div>
-									{/if}
-								</div>
+							{#each sectionComments as comment}
+								<Comment
+									{comment}
+									usersCommentReaction={usersCommentReactionsByCommentId?.get(comment.id)}
+								/>
 							{/each}
 						{/if}
 					{/each}
@@ -122,7 +120,7 @@
 			<p class="text-accent">you already wrote a workplace review for this place</p>
 			<form method="post" action="?/deleteReview" use:enhance>
 				<input name="reviewId" class="hidden" value={data.previousWorkplaceReview.id} />
-				<button class="btn-outline btn btn-secondary" type="submit">delete your review</button>
+				<button class="btn-outline btn-secondary btn" type="submit">delete your review</button>
 			</form>
 		{:else if workplaceReviewToken}
 			<h3>have you worked at this establishment?</h3>

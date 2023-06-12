@@ -226,6 +226,8 @@ export const actions: Actions = {
                 reactions: { create: { agree: reactionBool, user: { connect: { id: userId } } } }
             }
         })
+
+        return
     }
 }
 
