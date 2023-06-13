@@ -1,4 +1,4 @@
-import { error, redirect } from '@sveltejs/kit';
+import { error, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
 import { findUserByRequestEvent } from '$lib/server/utils/user';
@@ -34,4 +34,4 @@ export const actions = {
 
 		return { createdWorkplaceReviewToken: res.token }
 	}
-}
+} satisfies Actions

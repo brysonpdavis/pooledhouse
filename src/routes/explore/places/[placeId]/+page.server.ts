@@ -240,7 +240,7 @@ function notNull<T>(x: T | undefined | null): x is T {
 }
 
 function commentsComparator(comment1: ReviewComment, comment2: ReviewComment): number {
-    return comment1.reactionScore - comment2.reactionScore
+    return comment2.reactionScore - comment1.reactionScore
 }
 
 function calculateReactionScore({ reactions, agreements }: { reactions: number, agreements: number }): number {

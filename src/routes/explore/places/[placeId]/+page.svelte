@@ -7,6 +7,7 @@
 	import { enhance } from '$app/forms';
 	import type { ReviewCommentReaction } from '@prisma/client';
 	import { slide } from 'svelte/transition';
+	import { scoreColorGradient } from '$lib/utils/colors';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -27,11 +28,12 @@
 		{ key: 'guest', heading: 'how are the guests?' }
 	];
 
-	const experienceSections: { key: keyof typeof data.comments.experience; heading: string }[] = [
-		{ key: 'general', heading: 'general comments' },
-		{ key: 'fnb', heading: 'quality of the food and beverage?' },
-		{ key: 'vibe', heading: "how's the vibe?" }
-	];
+	// TODO: uncomment this out when experience reviews are implemented
+	// const experienceSections: { key: keyof typeof data.comments.experience; heading: string }[] = [
+	// 	{ key: 'general', heading: 'general comments' },
+	// 	{ key: 'fnb', heading: 'quality of the food and beverage?' },
+	// 	{ key: 'vibe', heading: "how's the vibe?" }
+	// ];
 </script>
 
 <div class="flex flex-col gap-4">
@@ -49,12 +51,12 @@
 			<button
 				on:click={() => (showSection = 'workplace')}
 				class:btn-active={showSection !== 'workplace'}
-				class="btn-secondary btn flex basis-1/2">workplace</button
+				class="btn-secondary btn flex flex-1 tracking-wider">workplace</button
 			>
 			<button
 				on:click={() => (showSection = 'experience')}
 				class:btn-active={showSection !== 'experience'}
-				class="btn-secondary btn flex basis-1/2">experience</button
+				class="btn-secondary btn flex flex-1 tracking-wider">visit</button
 			>
 		</div>
 	</div>
@@ -65,26 +67,48 @@
 				transition:slide|local={{ axis: 'y' }}
 				class="card-bordered card flex flex-grow overflow-hidden border-primary p-4"
 			>
-				{#if data.comments.workplace.general.length === 0}
-					<div class="card-title">no workplace reviews for this place yet</div>
-				{:else}
-					<div class="flex w-full flex-col">
-						<h2 class="mt-0 text-5xl">{data.place.workplaceScore ?? '???'} / 100</h2>
-						<div class="card-title">workplace reviews</div>
+				<div class="flex w-full flex-col gap-4">
+					<div class="flex flex-col items-center gap-4 xl:flex-row xl:justify-between">
+						<div
+							class="card-title w-fit text-4xl font-bold uppercase tracking-widest text-base-content"
+						>
+							workplace reviews
+						</div>
+						<div class="w-fit rounded-md bg-base-200 p-4 font-mono">
+							{#if data.place.workplaceScore !== null}
+								<span
+									style={`color: #${scoreColorGradient.colorAt(data.place.workplaceScore)};`}
+									class="text-5xl"
+								>
+									{Math.floor(data.place.workplaceScore)}
+								</span>
+							{:else}
+								<span class="text-5xl text-primary"> ??? </span>
+							{/if}
+							/ 100
+						</div>
+					</div>
+					{#if data.comments.workplace.general.length === 0}
+						<div class="card-title justify-center bg-base-200 p-4">
+							no workplace reviews for this place yet
+						</div>
+					{:else}
 						{#each workplaceSections as section}
 							{@const sectionComments = data.comments.workplace[section.key]}
 							{#if sectionComments.length > 0}
 								<h3>{section.heading}</h3>
-								{#each sectionComments as comment}
-									<Comment
-										{comment}
-										usersCommentReaction={usersCommentReactionsByCommentId?.get(comment.id)}
-									/>
-								{/each}
+								<div class="flex flex-col gap-2">
+									{#each sectionComments as comment (comment.id)}
+										<Comment
+											{comment}
+											usersCommentReaction={usersCommentReactionsByCommentId?.get(comment.id)}
+										/>
+									{/each}
+								</div>
 							{/if}
 						{/each}
-					</div>
-				{/if}
+					{/if}
+				</div>
 			</div>
 		{/if}
 
@@ -93,28 +117,60 @@
 				transition:slide|local={{ axis: 'y' }}
 				class="card-bordered card flex flex-grow overflow-hidden border-primary p-4"
 			>
-				{#if data.comments.experience.general.length === 0}
+				<div class="flex w-full flex-col gap-4">
+					<div class="flex flex-col items-center gap-4 xl:flex-row xl:justify-between">
+						<div
+							class="card-title w-fit text-4xl font-bold uppercase tracking-widest text-base-content"
+						>
+							visit reviews
+						</div>
+						<div class="w-fit rounded-md bg-base-200 p-4 font-mono">
+							{#if data.place.experienceScore !== null}
+								<span
+									style={`color: #${scoreColorGradient.colorAt(data.place.experienceScore)};`}
+									class="text-5xl"
+								>
+									{Math.floor(data.place.experienceScore)}
+								</span>
+							{:else}
+								<span class="text-5xl text-primary"> ??? </span>
+							{/if}
+							/ 100
+						</div>
+					</div>
+
+					<div class="w-full flex-grow bg-base-200 p-4 text-center tracking-wider text-accent">
+						visit reviews coming soon
+					</div>
+					<!-- {#if data.comments.experience.general.length === 0}
 					<div class="card-title">no experience reviews for this place yet</div>
-				{:else}
-					<h2>{data.place.experienceScore ?? '???'} / 100</h2>
-					<div class="card-title">experience reviews</div>
-					{#each experienceSections as section}
-						{@const sectionComments = data.comments.experience[section.key]}
-						{#if sectionComments.length > 0}
-							<h3>{section.heading}</h3>
-							{#each sectionComments as comment}
-								<Comment
-									{comment}
-									usersCommentReaction={usersCommentReactionsByCommentId?.get(comment.id)}
-								/>
-							{/each}
-						{/if}
-					{/each}
-				{/if}
+					{:else}
+						<h2>
+							{data.place.experienceScore !== null ? Math.floor(data.place.experienceScore) : '???'}
+							/ 100
+						</h2>
+						<div class="card-title">experience reviews</div>
+						{#each experienceSections as section}
+							{@const sectionComments = data.comments.experience[section.key]}
+							{#if sectionComments.length > 0}
+								<h3>{section.heading}</h3>
+								<div class="flex flex-col gap-2">
+									{#each sectionComments as comment (comment.id)}
+										<Comment
+											{comment}
+											usersCommentReaction={usersCommentReactionsByCommentId?.get(comment.id)}
+										/>
+									{/each}
+								</div>
+							{/if}
+						{/each}
+					{/if} -->
+				</div>
 			</div>
 		{/if}
 	</div>
 
+	<!-- TODO: move this to the place's contribute page -->
 	{#if data.userVerified}
 		{#if data.previousWorkplaceReview}
 			<p class="text-accent">you already wrote a workplace review for this place</p>
@@ -135,11 +191,11 @@
 		{:else}
 			<p>you're out of workplace reviews :(</p>
 		{/if}
-		<h3>have you visited this establishment?</h3>
+		<h3>have you visited or worked for this establishment?</h3>
 		{#if data.previousExperienceReview}
-			<p>you already wrote an experience review for this place</p>
+			<p>you already wrote a visit review for this place</p>
 		{:else}
-			<Modal id="experienceReview" buttonText="experience review">
+			<Modal id="experienceReview" buttonText="write a review">
 				<ExperienceReviewForm
 					placeId={data.place.id}
 					successfullyPosted={form?.postExperienceReviewSuccess}
