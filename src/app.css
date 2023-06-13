@@ -8,7 +8,7 @@
 	}
 
 	.btn {
-		@apply no-animation;
+		@apply no-animation uppercase;
 	}
 
 	.prose {

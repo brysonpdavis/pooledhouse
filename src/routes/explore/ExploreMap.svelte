@@ -5,10 +5,10 @@
 	import { postPlace } from '$lib/handlers/places';
 	import { page } from '$app/stores';
 	import type { Place } from '@prisma/client';
-	import { rainbow } from '@indot/rainbowvis';
 	import { shadeColor } from '$lib/utils/colors';
 	import Loading from '$lib/components/Loading.svelte';
 	import AddPlaceButton from './AddPlaceButton.svelte';
+	import { scoreColorGradient } from '$lib/utils/colors';
 
 	export let places: Place[];
 
@@ -20,12 +20,6 @@
 		!places.find((p) => p.googlePlaceId === currentAutocompletePlace?.place_id);
 
 	const NO_SCORE_MARKER_COLOR = '#777777';
-
-	const markerColorGradient = rainbow()
-		.overColors(
-			...['#f87171', '#fb923c', '#facc15', '#a3e635', '#4ade80'].map((c) => shadeColor(c, -10))
-		)
-		.withRange(0, 100);
 
 	let googleLibraries: {
 		maps: google.maps.MapsLibrary;
@@ -159,7 +153,7 @@
 		places.forEach((place) => {
 			const markerColor =
 				place.workplaceScore !== null
-					? `#${markerColorGradient.colorAt(place.workplaceScore)}`
+					? `#${scoreColorGradient.colorAt(place.workplaceScore)}`
 					: NO_SCORE_MARKER_COLOR;
 
 			createMarkerFromPlace(place, markerColor);
