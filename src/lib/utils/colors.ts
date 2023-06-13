@@ -1,3 +1,5 @@
+import { rainbow } from "@indot/rainbowvis";
+
 export function shadeColor(color: string, percent: number) {
 
     var R = parseInt(color.substring(1, 3), 16);
@@ -22,3 +24,9 @@ export function shadeColor(color: string, percent: number) {
 
     return `#${RR}${GG}${BB}`;
 }
+
+export const scoreColorGradient = rainbow()
+    .overColors(
+        ...['#f87171', '#fb923c', '#facc15', '#a3e635', '#4ade80'].map((c) => shadeColor(c, -10))
+    )
+    .withRange(0, 100);
