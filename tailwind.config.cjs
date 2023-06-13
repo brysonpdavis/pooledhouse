@@ -3,9 +3,6 @@ module.exports = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
 		extend: {
-			transitionProperty: {
-				width: 'width'
-			},
 			animation: {
 				fade: 'fadeIn 150ms linear'
 			},
@@ -18,9 +15,6 @@ module.exports = {
 			fontFamily: {
 				sans: ['Overpass', 'sans-serif'],
 				mono: ['DM Mono', 'monospace']
-			},
-			boxShadow: {
-				reg: '2px 2px 3px slategray'
 			}
 		}
 	},
