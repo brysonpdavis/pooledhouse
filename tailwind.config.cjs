@@ -60,16 +60,15 @@ module.exports = {
 					'--btn-text-case': 'lowercase'
 				},
 				aquatic: {
-					'primary': '#0d5376',
-					'secondary': 'rgb(14, 165, 233)',
-					'accent': '#e8f7ff',
+					'secondary': '#0d5376',
+					'accent': '#0EA5E9',
+					'primary': '#e8f7ff',
 					'base-100': '#1a1a1a',
 					'base-200': '#0e0e0e',
 					'success': '#177d36',
 					'--rounded-box': '0.25rem',
 					'--rounded-btn': '0.125rem',
 					'--btn-text-case': 'lowercase'
-
 				}
 			}
 		]

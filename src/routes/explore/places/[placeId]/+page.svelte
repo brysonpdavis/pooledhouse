@@ -50,12 +50,12 @@
 		<div class="btn-group btn-group-horizontal">
 			<button
 				on:click={() => (showSection = 'workplace')}
-				class:btn-active={showSection !== 'workplace'}
+				class:btn-active={showSection === 'workplace'}
 				class="btn-secondary btn flex flex-1 tracking-wider">workplace</button
 			>
 			<button
 				on:click={() => (showSection = 'experience')}
-				class:btn-active={showSection !== 'experience'}
+				class:btn-active={showSection === 'experience'}
 				class="btn-secondary btn flex flex-1 tracking-wider">visit</button
 			>
 		</div>

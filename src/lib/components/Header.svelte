@@ -7,13 +7,13 @@
 
 <header class="flex h-12 w-full bg-base-200 md:h-16">
 	<div class="dynamic-layout items-center justify-between">
-		<a href="/" class="flex font-mono text-xl font-bold text-primary-content hover:text-inherit"
+		<a href="/" class="flex font-mono text-xl font-bold text-accent hover:text-accent"
 			>pooled<span class="text-secondary">house</span></a
 		>
 		<div class="dropdown-end dropdown h-full">
 			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 			<!-- svelte-ignore a11y-label-has-associated-control -->
-			<label tabindex="0" class="btn-ghost btn-square btn h-full text-primary-content">
+			<label tabindex="0" class="btn-ghost btn-square btn h-full text-accent">
 				<iconify-icon class="text-2xl" icon="material-symbols:menu-rounded" />
 			</label>
 			<!-- svelte-ignore a11y-no-noninteractive-tabindex -->

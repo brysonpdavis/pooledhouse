@@ -11,6 +11,6 @@
 			<div class="text-2xl text-accent tracking-wider font-extrabold uppercase">{titleText}</div>
 			<p>{bodyText}</p>
 		</div>
-		<a class="btn-outline btn-secondary btn" {href}>{buttonText}</a>
+		<a class="btn-secondary btn" {href}>{buttonText}</a>
 	</div>
 </div>
