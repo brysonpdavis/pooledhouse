@@ -1,6 +1,4 @@
 <script>
-	import HeartSvg from './HeartSvg.svelte';
-
 	let show = true;
 </script>
 
@@ -15,19 +13,12 @@
 				>
 					x
 				</label>
-				<div class="w-fit">
-					<!-- <p>
-					if you appreciate the project, consider
-					<a class="underline hover:no-underline" href="https://www.buymeacoffee.com/brysonpd">
-						donating
-					</a>
-					to support development
-					<HeartSvg />
-				</p> -->
-					<p>
-						<span class="badge badge-secondary">disclaimer</span>
-						current data is for placeholder purposes only while the app is in pre-release!
+				<div class="w-full px-8 flex flex-row justify-center">
+					⚠️ 
+					<p class="font-semibold tracking-tight">
+						current data is for placeholder purposes only while the app is in pre-release
 					</p>
+					⚠️ 
 				</div>
 			</div>
 		</div>
