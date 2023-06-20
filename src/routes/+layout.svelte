@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import Header from '$lib/components/NavWrapper.svelte';
+	import NavWrapper from '$lib/components/NavWrapper.svelte';
 	import Loading from '$lib/components/Loading.svelte';
 	import type { PageData } from './$types';
 	import { navigating } from '$app/stores';
@@ -18,7 +18,7 @@
 </svelte:head>
 
 <div class="flex min-h-[100dvh] flex-col justify-between">
-	<Header loggedIn={data.session !== null}>
+	<NavWrapper loggedIn={data.session !== null}>
 		<main class="flex w-full flex-grow">
 			<div class="dynamic-layout p-4">
 				<content class="prose w-full">
@@ -30,5 +30,5 @@
 				</content>
 			</div>
 		</main>
-	</Header>
+	</NavWrapper>
 </div>
