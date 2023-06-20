@@ -26,7 +26,11 @@
 	}
 
 	.card-title {
-		@apply font-normal
+		@apply font-normal;
+	}
+
+	.nav-drawer > ul > li {
+		@apply uppercase tracking-wider font-extrabold;
 	}
 }
 
