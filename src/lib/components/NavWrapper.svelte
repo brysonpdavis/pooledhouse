@@ -1,35 +1,24 @@
 <script lang="ts">
 	import 'iconify-icon';
 	import { signOut } from '@auth/sveltekit/client';
-	// import { navigating } from '$app/stores';
-	// import { onMount } from 'svelte';
-	// import { browser } from '$app/environment';
 
 	export let loggedIn: boolean;
 
-	// let navDrawer: HTMLInputElement;
+	let navOpen: boolean = false;
 
-	// onMount(() => {
-	// 	navDrawer = document.getElementById('nav-drawer') as HTMLInputElement;
-	// });
-
-	// $: closeNav = !!$navigating;
-
-	// $: {
-	// 	if (browser) {
-	// 		navDrawer.setAttribute('checked', closeNav ? 'checked' : '');
-	// 	}
-	// }
+	function closeNav() {
+		navOpen = false;
+	}
 </script>
 
 <!-- <header class="flex h-12 w-full bg-base-200 md:h-16"> -->
 <div class="drawer drawer-end">
-	<input id="nav-drawer" type="checkbox" class="drawer-toggle" />
+	<input id="nav-drawer" type="checkbox" class="drawer-toggle" bind:checked={navOpen} />
 	<div class="drawer-content flex flex-col">
 		<!-- Navbar -->
 		<div class="navbar w-full bg-base-300">
-			<div class="dynamic-layout items-center justify-between">
-				<div class="mx-2 flex-1 px-2">
+			<div class="dynamic-layout justify-between">
+				<div class="flex-shrink">
 					<a href="/" class="flex font-mono text-xl font-bold text-accent hover:text-accent"
 						>pooled<span class="text-secondary">house</span></a
 					>
@@ -72,7 +61,7 @@
 	</div>
 	<div class="nav-drawer drawer-side">
 		<label for="nav-drawer" class="drawer-overlay" />
-		<ul class="menu h-full w-80 bg-base-200 p-4">
+		<ul class="menu h-full w-80 bg-base-200 p-4" on:click={closeNav} on:keydown={closeNav}>
 			<!-- Sidebar content here -->
 			<li><a href="/explore">explore</a></li>
 			<li><a href="/about">about</a></li>

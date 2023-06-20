@@ -29,6 +29,10 @@
 		@apply font-normal;
 	}
 
+	.navbar {
+		@apply p-0;	
+	}
+
 	.nav-drawer > ul > li {
 		@apply uppercase tracking-wider font-extrabold;
 	}
