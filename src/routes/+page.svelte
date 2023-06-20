@@ -35,7 +35,7 @@
 			buttonText="contribute"
 		/>
 	</div>
-	<div class="flex flex-col-reverse lg:flex-row lg:gap-8 max-w-7xl">
+	<div class="flex max-w-7xl flex-col-reverse lg:flex-row lg:gap-8">
 		<img
 			class="card-bordered card m-0 w-full rounded-md border-8 border-base-200 lg:w-2/3"
 			src={mapExample}
@@ -43,22 +43,22 @@
 		/>
 		<div class="card w-full p-4 lg:w-1/3">
 			<div class="h-full flex-col justify-center lg:flex">
-				<div class="text-3xl font-extrabold uppercase tracking-wider text-accent">get started</div>
-				<p class="lg:text-2xl">
+				<div class="text-2xl font-extrabold uppercase tracking-wider text-accent">get started</div>
+				<p class="xl:text-xl">
 					if you just want to peruse, no need to create an account. just head to the
-					<a href="/explore">explore</a> page.
+					<a href="/explore">explore</a> page to see what people are saying.
 				</p>
-				<div class="hidden text-3xl font-extrabold uppercase tracking-wider text-accent lg:flex">
+				<div class="hidden text-2xl font-extrabold uppercase tracking-wider text-accent lg:flex">
 					learn more
 				</div>
-				<p class="lg:text-2xl">
+				<p class="xl:text-xl">
 					to learn more about how it all works, head to the
 					<a href="/about">about</a> page.
 				</p>
 			</div>
 		</div>
 	</div>
-	<div class="card w-full bg-base-200 p-8 max-w-7xl">
+	<div class="card w-full max-w-7xl bg-base-200 p-8">
 		<div class="text-2xl font-extrabold uppercase tracking-wider text-accent">for the culture</div>
 		<p class="mb-0 lg:text-xl">
 			pooledhouse was created purely as a project intended for the good of the culture of the
