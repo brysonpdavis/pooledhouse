@@ -37,7 +37,7 @@
 </script>
 
 <div class="flex flex-col gap-4">
-	<a href={`/explore/places/${data.place.id}`}>
+	<a href={`/places/${data.place.id}`}>
 		<h1 class="m-0">
 			{data.place.name}
 		</h1>
@@ -140,7 +140,7 @@
 					</div>
 
 					<div class="w-full flex-grow bg-base-200 p-4 text-center tracking-wider text-accent">
-						visit reviews coming soon
+						customer reviews from verified restaurant workers... coming soon
 					</div>
 					<!-- {#if data.comments.experience.general.length === 0}
 					<div class="card-title">no experience reviews for this place yet</div>

@@ -43,7 +43,7 @@
 	let uploadInProgress = false;
 
 	$: popUpInfoWindowPlacePageUrl = !!popUpInfoWindowPlace
-		? `/explore/places/${popUpInfoWindowPlace.id}`
+		? `/places/${popUpInfoWindowPlace.id}`
 		: '/';
 
 	const nycCoordinates = { lat: 40.73, lng: -73.9 };
