@@ -24,14 +24,14 @@
 		/>
 		<SplashSection
 			href="/auth/register"
-			titleText="join the team"
-			bodyText="after registering as a verified restaurant worker, you can verify your friends or coworkers and join the conversation"
+			titleText="do some paperwork"
+			bodyText="after registering as a verified restaurant worker, you can join the conversation and verify your friends or coworkers"
 			buttonText="register"
 		/>
 		<SplashSection
 			href="/contribute"
 			titleText="share your perspective"
-			bodyText="let everyone know what it's really like behind the curtain at your place of work, anonymously"
+			bodyText="let everyone know what it's really like behind the curtain at your past or present places of work, anonymously"
 			buttonText="contribute"
 		/>
 	</div>
