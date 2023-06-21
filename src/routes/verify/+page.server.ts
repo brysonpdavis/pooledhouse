@@ -1,7 +1,7 @@
 import { prisma } from '$lib/server/prisma';
 import { error, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { findUserByRequestEvent } from '$lib/server/utils/user';
+import { findUserByRequestEvent } from '$lib/server/crud/user';
 import { createIndustryVerificationToken } from '$lib/server/utils/verification-token';
 
 export const load = (async ({ locals }) => {
