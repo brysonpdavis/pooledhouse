@@ -32,7 +32,7 @@
 		<p>you're out of workplace reviews :(</p>
 	{/if}
 {:else if !!data.session?.user?.email}
-	<!-- logged in -->
+	<!-- logged in, not verified -->
 {:else}
 	<!-- not logged in -->
 {/if}

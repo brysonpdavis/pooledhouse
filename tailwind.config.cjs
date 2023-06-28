@@ -60,9 +60,9 @@ module.exports = {
 					'--btn-text-case': 'lowercase'
 				},
 				aquatic: {
-					'secondary': '#0d5376',
+					'secondary': '#093f6b',
 					'accent': '#0EA5E9',
-					'primary': '#e8f7ff',
+					'primary': '#d1e8f2',
 					'base-100': '#1a1a1a',
 					'base-200': '#0e0e0e',
 					'success': '#177d36',

@@ -33,8 +33,8 @@
 		@apply p-0;	
 	}
 
-	.nav-drawer > ul > li {
-		@apply uppercase tracking-wider font-extrabold;
+	.nav-drawer > ul > li, .nav-drawer > ul > li > button {
+		@apply uppercase tracking-wider font-extrabold hover:text-accent;
 	}
 }
 

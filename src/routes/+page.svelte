@@ -3,35 +3,35 @@
 	import SplashSection from './SplashSection.svelte';
 </script>
 
-<div class="flex flex-col items-center gap-16">
+<div class="flex flex-col items-center gap-8 lg:gap-16">
 	<div class="flex flex-col items-center pt-20 sm:pt-24 lg:pt-32 ">
 		<h3
 			class="my-0 max-w-5xl text-center text-3xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl"
 		>
-			a workplace transparency platform for restaurant workers in NYC
+			workplace transparency for restaurant workers in NYC
 		</h3>
-		<p class="mt-6 mb-0 max-w-3xl text-center text-lg">
-			see what other industry workers have to say, write your own anonymous workplace reviews, and
-			verify your friends or coworkers as industry workers to build the team
+		<p class="mt-6 mb-0 max-w-3xl text-center text-xl">
+			pooledhouse is a platform for restaurant workers to share their experiences and help each
+			other find better jobs
 		</p>
 	</div>
 	<div class="flex w-full flex-col gap-8 lg:flex-row">
 		<SplashSection
 			href="/explore"
 			titleText="take a peek"
-			bodyText="see what other industry workers say about their workplace, or compare places in the city"
+			bodyText="see what other industry workers say about their workplace, or compare places in the city to find the best fit for you"
 			buttonText="explore"
 		/>
 		<SplashSection
 			href="/auth/register"
 			titleText="do some paperwork"
-			bodyText="after registering as a verified restaurant worker, you can join the conversation and verify your friends or coworkers"
+			bodyText="after registering as a verified restaurant worker, you are free to post, react, or verify your friends and coworkers"
 			buttonText="register"
 		/>
 		<SplashSection
 			href="/contribute"
 			titleText="share your perspective"
-			bodyText="let everyone know what it's really like behind the curtain at your past or present places of work, anonymously"
+			bodyText="join the conversation and help other restaurant workers make informed decisisons about where to work"
 			buttonText="contribute"
 		/>
 	</div>
@@ -48,13 +48,13 @@
 					if you just want to peruse, no need to create an account. just head to the
 					<a href="/explore">explore</a> page to see what people are saying.
 				</p>
-				<div class="hidden text-2xl font-extrabold uppercase tracking-wider text-accent lg:flex">
+				<!-- <div class="hidden text-2xl font-extrabold uppercase tracking-wider text-accent lg:flex">
 					learn more
 				</div>
 				<p class="xl:text-xl">
 					to learn more about how it all works, head to the
 					<a href="/about">about</a> page.
-				</p>
+				</p> -->
 			</div>
 		</div>
 	</div>

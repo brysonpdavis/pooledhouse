@@ -3,7 +3,7 @@ import { prisma } from '$lib/server/prisma';
 import { error } from '@sveltejs/kit';
 
 
-export const load = (async ({ locals, params }) => {
+export const load = (async ({ locals }) => {
     const userEmail = (await locals.getSession())?.user?.email
 
     if (!userEmail) {

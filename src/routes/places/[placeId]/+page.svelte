@@ -16,7 +16,7 @@
 	);
 
 	const workplaceSections: { key: keyof typeof data.comments.workplace; heading: string }[] = [
-		{ key: 'general', heading: 'general comments' },
+		{ key: 'general', heading: 'what everyone should know' },
 		{ key: 'compensation', heading: 'compensation' },
 		{ key: 'culture', heading: "what's the culture like?" },
 		{ key: 'guest', heading: 'how are the guests?' }

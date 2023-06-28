@@ -64,7 +64,7 @@ model User {
 
 model VerificationToken {
     identifier String
-    token      String   @unique
+    token      String   @id @unique
     expires    DateTime
 
     @@unique([identifier, token])
@@ -207,7 +207,7 @@ model ExperienceReview {
 }
 
 model IndustryVerificationToken {
-    token                String                @unique
+    token                String                @id @unique
     createdAt            DateTime              @default(now()) @map("created_at")
     createdByUserId      String                @map("created_by_user_id")
     createdByUser        User                  @relation("CreatedByUser", fields: [createdByUserId], references: [id], onDelete: Cascade)
@@ -218,7 +218,7 @@ model IndustryVerificationToken {
 }
 
 model WorkplaceReviewToken {
-    token            String           @unique @default(cuid())
+    token            String           @id @unique @default(cuid())
     createdAt        DateTime         @default(now()) @map("created_at")
     associatedUserId String           @map("associated_by_user_id")
     associatedUser   User             @relation("AssociatedUser", fields: [associatedUserId], references: [id], onDelete: Cascade)
