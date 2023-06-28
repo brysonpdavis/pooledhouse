@@ -29,43 +29,48 @@
 		verified too!
 	</p>
 	<div
-		class="m-auto flex w-full max-w-md flex-col justify-items-center gap-4 lg:grid lg:max-w-full lg:grid-cols-2"
+		class="m-auto flex w-full max-w-md flex-col justify-items-center md:max-w-full"
 	>
-		{#each tokens as token}
-			<div class="card-bordered card w-full max-w-md p-4 shadow-md">
-				<div class="flex flex-row items-center gap-12">
-					{#if token.consumed}
-						<iconify-icon class="text-2xl text-accent" icon="material-symbols:check-box-outline" />
-					{:else}
-						<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline-blank" />
-					{/if}
-					<div
-						class="justify-characters flex-grow font-mono text-2xl"
-						class:line-through={token.consumed}
-					>
-						{token.token}
+		<div class="flex flex-col justify-items-center gap-4 md:grid m-auto md:grid-cols-2 lg:grid-cols-3">
+			{#each tokens as token}
+				<div class="card-bordered card w-80 p-4">
+					<div class="flex flex-row items-center gap-12">
+						{#if token.consumed}
+							<iconify-icon
+								class="text-2xl text-accent"
+								icon="material-symbols:check-box-outline"
+							/>
+						{:else}
+							<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline-blank" />
+						{/if}
+						<div
+							class="justify-characters flex-grow font-mono text-2xl"
+							class:line-through={token.consumed}
+						>
+							{token.token}
+						</div>
+						<button class="btn" class:btn-disabled={token.consumed} use:copy={token.token}>
+							<iconify-icon
+								class="text-lg"
+								class:text-accent={!token.consumed}
+								icon="material-symbols:content-copy-outline"
+							/>
+						</button>
 					</div>
-					<button class="btn" class:btn-disabled={token.consumed} use:copy={token.token}>
-						<iconify-icon
-							class="text-lg"
-							class:text-accent={!token.consumed}
-							icon="material-symbols:content-copy-outline"
-						/>
-					</button>
 				</div>
-			</div>
-		{/each}
-		{#if loading}
-			<div class="card-bordered card w-full max-w-md p-4 shadow-md">
-				<div class="flex h-full animate-pulse flex-row items-center justify-center space-x-5">
-					<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline-blank" />
-					<div class="h-6 w-36 flex-grow rounded-md bg-gray-300" />
-					<button class="btn-neutral btn">
-						<iconify-icon class="text-lg" icon="material-symbols:content-copy-outline" />
-					</button>
+			{/each}
+			{#if loading}
+				<div class="card-bordered card w-full max-w-md p-4 shadow-md">
+					<div class="flex h-full animate-pulse flex-row items-center justify-center space-x-5">
+						<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline-blank" />
+						<div class="h-6 w-36 flex-grow rounded-md bg-gray-300" />
+						<button class="btn-neutral btn">
+							<iconify-icon class="text-lg" icon="material-symbols:content-copy-outline" />
+						</button>
+					</div>
 				</div>
-			</div>
-		{/if}
+			{/if}
+		</div>
 	</div>
 	<div>
 		<form
@@ -81,7 +86,7 @@
 			}}
 		>
 			<button
-				class="btn-outline btn-secondary btn w-full"
+				class="btn-secondary btn w-full"
 				class:loading
 				class:btn-disabled={disableTokenGeneration}
 				type="submit"

@@ -1,7 +1,7 @@
 import { error, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/server/prisma';
-import { findUserByRequestEvent } from '$lib/server/utils/user';
+import { findUserByRequestEvent } from '$lib/server/crud/user';
 
 export const load = (async (event) => {
 	const session = await event.locals.getSession();
