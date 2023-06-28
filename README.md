@@ -1,4 +1,4 @@
-# kitchen-sync || pooled-house
+# pooledhouse
 
 ## a workplace review webapp for restaurant workers
 
