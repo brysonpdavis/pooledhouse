@@ -58,7 +58,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="card w-full max-w-7xl bg-base-200 p-8">
+	<div class="card w-full max-w-7xl bg-base-200 p-4">
 		<div class="text-2xl font-extrabold uppercase tracking-wider text-accent">for the culture</div>
 		<p class="mb-0 lg:text-xl">
 			pooledhouse was created purely as a project intended for the good of the culture of the
