@@ -23,7 +23,7 @@
 				placeholder="you@example.com"
 				class="input-bordered input w-full"
 			/>
-			<span class="w-20 flex-shrink-0 text-secondary">email</span>
+			<span class="w-20 flex-shrink-0">email</span>
 		</label>
 		<label class="input-group" for="phone">
 			<input
@@ -46,7 +46,7 @@
 				placeholder="3141592653"
 				class="input-bordered input min-w-0 flex-grow"
 			/>
-			<span class="w-20 flex-shrink-0 text-secondary">phone</span>
+			<span class="w-20 flex-shrink-0">phone</span>
 		</label>
 		<label class="label">
 			<span class="label-text text-accent">have a verification code?</span>
@@ -56,7 +56,7 @@
 			<label
 				class="input-group"
 				class:hidden={!hasVerificationCode}
-				transition:slide|local={{ duration: 150 }}
+				transition:slide={{ duration: 150 }}
 			>
 				<input
 					name="code"
@@ -66,10 +66,10 @@
 					maxlength="6"
 					minlength="6"
 				/>
-				<span class="w-20 flex-shrink-0 text-secondary">code</span>
+				<span class="w-20 flex-shrink-0">code</span>
 			</label>
 		{/if}
-		<button type="submit" class="btn-outline btn-secondary btn" class:loading> submit </button>
+		<button type="submit" class="btn-secondary btn" class:loading> submit </button>
 	</form>
 	<div class="max-w-xl">
 		<p>

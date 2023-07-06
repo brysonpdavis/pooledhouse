@@ -6,19 +6,17 @@ export const load = (async ({locals}) => {
     const sessionUserEmail = (await locals.getSession())?.user?.email
 
     if (!sessionUserEmail) {
-        return {}
+        throw redirect(303, '/home')
     }
 
     const user = await prisma.user.findUnique({where: {email: sessionUserEmail}})
 
-    if (!user) {
-        return {}
+    // if user is logged in and verified, take them to the explore page
+    if (user && user.industryVerificationToken !== null) {
+        throw redirect(303, '/explore')
     }
 
-    // if user is logged in and verified, take them to the explore page
-    if (user.industryVerificationToken !== null) {
-        throw redirect(302, '/explore')
-    }
+    throw redirect(303, '/home')
 
     return {}
 }) satisfies PageServerLoad

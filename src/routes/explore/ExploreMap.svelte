@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { slide } from 'svelte/transition';
 	import { Loader } from '@googlemaps/js-api-loader';
+	import 'iconify-icon';
+
 	import { PUBLIC_GOOGLE_MAPS_API_KEY, PUBLIC_GOOGLE_MAPS_MAP_ID } from '$env/static/public';
 	import { postPlace } from '$lib/handlers/places';
 	import { page } from '$app/stores';
@@ -28,8 +31,10 @@
 		core: google.maps.CoreLibrary;
 	};
 
-	const placeIdToExistingPlaceDict: Map<string, { data: Place; marker: InfoWindowOpenAnchorType }> =
-		new Map();
+	const googlePlaceIdToExistingPlaceDict: Map<
+		string,
+		{ data: Place; marker: google.maps.marker.AdvancedMarkerElement }
+	> = new Map();
 
 	let map: google.maps.Map;
 	let tempMarker: google.maps.marker.AdvancedMarkerElement;
@@ -37,6 +42,35 @@
 	let autocompletePlaceInfoWindow: google.maps.InfoWindow;
 	let infoWindow: google.maps.InfoWindow;
 	let popUpInfoWindowPlace: Place | undefined = places.at(0);
+
+	let showFilters = false;
+	let showUnreviewed = true;
+
+	let placeIdsToHide = new Set<string>();
+
+	$: {
+		const placeIdsToHideTemp = new Set<string>();
+
+		if (!showUnreviewed) {
+			for (const p of places) {
+				if (p.workplaceScore === null) {
+					placeIdsToHideTemp.add(p.googlePlaceId);
+				}
+			}
+		}
+
+		placeIdsToHide = placeIdsToHideTemp;
+	}
+
+	$: {
+		for (const {data, marker} of googlePlaceIdToExistingPlaceDict.values()) {
+			if (placeIdsToHide.has(data.googlePlaceId)) {
+				marker.map = null
+			} else {
+				marker.map = map
+			}
+		}
+	}
 
 	let initialLoading = true;
 	let uploadSuccess = false;
@@ -115,6 +149,10 @@
 		// this will position the location input
 		map.controls[ControlPosition.TOP_LEFT].push(pacInputContainer);
 
+		const filterButton = document.getElementById('filter-button-container')!;
+
+		map.controls[ControlPosition.TOP_RIGHT].push(filterButton);
+
 		autocomplete.addListener('place_changed', () => {
 			const place = autocomplete.getPlace();
 
@@ -133,7 +171,7 @@
 				map.setZoom(17);
 			}
 
-			const existingPlace = placeIdToExistingPlaceDict.get(place.place_id!);
+			const existingPlace = googlePlaceIdToExistingPlaceDict.get(place.place_id!);
 
 			if (existingPlace) {
 				popUpInfoWindow(existingPlace.data, existingPlace.marker);
@@ -194,7 +232,7 @@
 			popUpInfoWindow(place, marker);
 		});
 
-		placeIdToExistingPlaceDict.set(place.googlePlaceId, { data: place, marker });
+		googlePlaceIdToExistingPlaceDict.set(place.googlePlaceId, { data: place, marker });
 
 		return marker;
 	}
@@ -236,7 +274,7 @@
 	function popUpInfoWindowForCurrentAutocompletePlace() {
 		if (!currentAutocompletePlace?.place_id) return;
 
-		const existingPlace = placeIdToExistingPlaceDict.get(currentAutocompletePlace.place_id);
+		const existingPlace = googlePlaceIdToExistingPlaceDict.get(currentAutocompletePlace.place_id);
 
 		if (!!existingPlace) {
 			popUpInfoWindow(existingPlace.data, existingPlace.marker);
@@ -261,6 +299,17 @@
 	<Loading />
 {/if}
 
+<div class="flex h-full w-full flex-col gap-4">
+	{#if showFilters}
+		<div class="h-1/3 bg-base-200 p-4" transition:slide>
+			<input type="checkbox" id="show-unreviewed" bind:checked={showUnreviewed} />
+			<label for="show-unreviewed">hide places with no reviews</label>
+		</div>
+	{/if}
+
+	<div id="map" class="flex w-full flex-grow" />
+</div>
+
 <div id="pac-input-container" class="animate-fade">
 	<input
 		id="pac-input"
@@ -272,7 +321,6 @@
 		<AddPlaceButton {handleClickAdd} {uploadInProgress} />
 	{/if}
 </div>
-<div id="map" class="flex h-full w-full" />
 <div id="autocomplete-place-info-window-content">
 	{#if currentAutocompletePlace?.name}
 		<div id="place-name" class="font-sans text-lg font-semibold text-accent">
@@ -296,6 +344,13 @@
 		{popUpInfoWindowPlace?.address || 'address'}
 	</div>
 </div>
+<div id="filter-button-container">
+	<button
+		class="btn-ghost btn-square btn m-4 bg-base-200 hover:bg-secondary"
+		on:click={() => (showFilters = !showFilters)}
+		><iconify-icon class="text-2xl" class:text-accent={showFilters} icon="ph:sliders" /></button
+	>
+</div>
 
 <style>
 	/* these css properties will make the elements hidden  
@@ -315,6 +370,14 @@
 	}
 
 	:global(#map #pac-input-container) {
+		display: inline;
+	}
+
+	#filter-button-container {
+		display: none;
+	}
+
+	:global(#map #filter-button-container) {
 		display: inline;
 	}
 </style>

@@ -2,14 +2,14 @@ import { SvelteKitAuth } from '@auth/sveltekit';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import EmailProvider from '@auth/core/providers/email';
 import CredentialsProvider from '@auth/core/providers/credentials';
-import { prisma } from '$lib/server/prisma';
-import { sendVerificationRequest } from '$lib/server/auth/send-email-verification-request';
 import { sequence } from '@sveltejs/kit/hooks';
+import { error } from '@sveltejs/kit';
 
 import { SENDGRID_API_KEY } from '$env/static/private';
-import { error } from '@sveltejs/kit';
 import { lookupUserByPhoneNumber } from '$lib/server/auth/phone-authorization';
 import { checkPhoneVerificationCode } from '$lib/server/auth/contact-verification';
+import { prisma } from '$lib/server/prisma';
+import { sendVerificationRequest } from '$lib/server/auth/send-email-verification-request';
 
 export const handle = sequence(
 	// authenticate

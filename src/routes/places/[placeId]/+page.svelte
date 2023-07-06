@@ -45,12 +45,12 @@
 			<button
 				on:click={() => (showSection = 'workplace')}
 				class:btn-active={showSection === 'workplace'}
-				class="btn-secondary btn flex flex-1 tracking-wider">workplace</button
+				class="btn flex flex-1 tracking-wider">workplace</button
 			>
 			<button
 				on:click={() => (showSection = 'experience')}
 				class:btn-active={showSection === 'experience'}
-				class="btn-secondary btn flex flex-1 tracking-wider">visit</button
+				class="btn flex flex-1 tracking-wider">visit</button
 			>
 		</div>
 	</div>
@@ -58,8 +58,8 @@
 	<div class="flex w-full flex-col gap-4">
 		{#if showSection === 'workplace'}
 			<div
-				transition:slide|local={{ axis: 'y' }}
-				class="card-bordered card flex flex-grow overflow-hidden border-primary p-4"
+				transition:slide={{ axis: 'y' }}
+				class="flex flex-grow overflow-hidden p-4"
 			>
 				<div class="flex w-full flex-col gap-4">
 					<div class="flex flex-col items-center gap-4 xl:flex-row xl:justify-between">
@@ -108,8 +108,8 @@
 
 		{#if showSection === 'experience'}
 			<div
-				transition:slide|local={{ axis: 'y' }}
-				class="card-bordered card flex flex-grow overflow-hidden border-primary p-4"
+				transition:slide={{ axis: 'y' }}
+				class="flex flex-grow overflow-hidden p-4"
 			>
 				<div class="flex w-full flex-col gap-4">
 					<div class="flex flex-col items-center gap-4 xl:flex-row xl:justify-between">
