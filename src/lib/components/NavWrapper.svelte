@@ -1,6 +1,4 @@
 <script lang="ts">
-	import 'iconify-icon';
-
 	export let loggedIn: boolean;
 
 	let navOpen: boolean = false;
