@@ -7,7 +7,7 @@ import { createOrFindContactVerification } from '$lib/server/auth/contact-verifi
 
 export const load = (async ({ locals }) => {
     if ((await locals.getSession())?.user) {
-        throw redirect(302, '/')
+        throw redirect(303, '/')
     }
 
     return

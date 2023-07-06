@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { signIn } from '@auth/sveltekit/client';
-	import Link from '$lib/components/Link.svelte';
 	import { page } from '$app/stores';
 
 	let identifier = '';
@@ -61,10 +60,7 @@
 				<option value="phone">phone</option>
 			</select>
 		</div>
-		<button
-			type="submit"
-			class={`btn-outline btn-secondary btn mt-4 w-full ${submitting ? 'loading' : ''}`}
-		>
+		<button type="submit" class={`btn-secondary btn mt-4 w-full ${submitting ? 'loading' : ''}`}>
 			let's go
 		</button>
 
@@ -75,6 +71,6 @@
 			<hr class="m-0 w-full border-primary" />
 		</div>
 
-		<Link href="/auth/register">register</Link>
+		<a href="/auth/register" class="btn-primary btn-outline btn mt-4 w-full">register</a>
 	</form>
 </div>

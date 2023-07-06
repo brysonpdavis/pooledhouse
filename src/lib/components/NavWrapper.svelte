@@ -1,17 +1,32 @@
 <script lang="ts">
 	import 'iconify-icon';
-	import { signOut } from '@auth/sveltekit/client';
 
 	export let loggedIn: boolean;
 
 	let navOpen: boolean = false;
 
-	function closeNav() {
-		navOpen = false;
-	}
+	const constantMenuOptions: { href: string; name: string }[] = [
+		{ name: 'explore', href: '/explore' },
+		{ name: 'about', href: '/about' }
+	];
+
+	const loggedInMenuOptions: { href: string; name: string }[] = [
+		{ name: 'profile', href: '/profile' },
+		{ name: 'verify', href: '/verify' },
+		{ name: 'logout', href: '/auth/logout' }
+	];
+
+	const loggedOutMenuOptions: { href: string; name: string }[] = [
+		{ name: 'login', href: '/auth/login' },
+		{ name: 'sign up', href: '/auth/register' }
+	];
+
+	$: menuOptions = [
+		...constantMenuOptions,
+		...(loggedIn ? loggedInMenuOptions : loggedOutMenuOptions)
+	];
 </script>
 
-<!-- <header class="flex h-12 w-full bg-base-200 md:h-16"> -->
 <div class="drawer drawer-end">
 	<input id="nav-drawer" type="checkbox" class="drawer-toggle" bind:checked={navOpen} />
 	<div class="drawer-content flex flex-col">
@@ -20,7 +35,7 @@
 			<div class="dynamic-layout justify-between">
 				<div class="flex-shrink">
 					<a href="/" class="flex font-mono text-xl font-bold text-accent hover:text-accent"
-						>pooled<span class="text-secondary">house</span></a
+						>pooled<span class="text-white">house</span></a
 					>
 				</div>
 				<div class="flex-none lg:hidden">
@@ -42,16 +57,9 @@
 				<div class="hidden flex-none lg:block">
 					<ul class="menu menu-horizontal">
 						<!-- Navbar menu content here -->
-						<li><a href="/explore">explore</a></li>
-						<li><a href="/about">about</a></li>
-						{#if loggedIn}
-							<li><a href="/profile">profile</a></li>
-							<li><a href="/verify">verify</a></li>
-							<li><button on:click={() => signOut()}>logout</button></li>
-						{:else}
-							<li><a href="/auth/login">login</a></li>
-							<li><a href="/auth/register">sign up</a></li>
-						{/if}
+						{#each menuOptions as { href, name }}
+							<li><a {href}>{name}</a></li>
+						{/each}
 					</ul>
 				</div>
 			</div>
@@ -61,19 +69,11 @@
 	</div>
 	<div class="nav-drawer drawer-side">
 		<label for="nav-drawer" class="drawer-overlay" />
-		<ul class="menu h-full w-80 bg-base-200 p-4" on:click={closeNav} on:keydown={closeNav}>
+		<ul class="menu h-full w-80 bg-base-200 p-4">
 			<!-- Sidebar content here -->
-			<li><a href="/explore">explore</a></li>
-			<li><a href="/about">about</a></li>
-			{#if loggedIn}
-				<li><a href="/profile">profile</a></li>
-				<li><a href="/verify">verify</a></li>
-				<li><button on:click={() => signOut()}>logout</button></li>
-			{:else}
-				<li><a href="/auth/login">login</a></li>
-				<li><a href="/auth/register">sign up</a></li>
-			{/if}
+			{#each menuOptions as { href, name }}
+				<li><a on:click={() => (navOpen = false)} {href}>{name}</a></li>
+			{/each}
 		</ul>
 	</div>
 </div>
-<!-- </header> -->
