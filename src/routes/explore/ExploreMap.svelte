@@ -20,6 +20,7 @@
 
 	const NO_SCORE_MARKER_COLOR = '#777777';
 	const INITIAL_MARKER_DROP_ANIMATION_SECONDS = 1.5;
+	const NYC_COORDINATES = { lat: 40.73, lng: -73.9 };
 
 	let googleLibraries: {
 		maps: google.maps.MapsLibrary;
@@ -45,6 +46,14 @@
 
 	let placeIdsToHide = new Set<string>();
 
+	let initialLoading = true;
+	let uploadSuccess = false;
+	let uploadInProgress = false;
+
+	$: popUpInfoWindowPlacePageUrl = !!popUpInfoWindowPlace
+		? `/places/${popUpInfoWindowPlace.id}`
+		: '/';
+
 	$: canAddPlace =
 		!!loggedIn &&
 		!!currentAutocompletePlace &&
@@ -61,6 +70,8 @@
 			}
 		}
 
+		// TODO: add new filters here vvv
+
 		placeIdsToHide = placeIdsToHideTemp;
 	}
 
@@ -74,16 +85,6 @@
 		}
 	}
 
-	let initialLoading = true;
-	let uploadSuccess = false;
-	let uploadInProgress = false;
-
-	$: popUpInfoWindowPlacePageUrl = !!popUpInfoWindowPlace
-		? `/places/${popUpInfoWindowPlace.id}`
-		: '/';
-
-	const nycCoordinates = { lat: 40.73, lng: -73.9 };
-
 	const loader = new Loader({
 		apiKey: PUBLIC_GOOGLE_MAPS_API_KEY,
 		version: 'beta',
@@ -92,7 +93,7 @@
 	});
 
 	const mapOptions: google.maps.MapOptions = {
-		center: nycCoordinates,
+		center: NYC_COORDINATES,
 		zoom: 11,
 		clickableIcons: false,
 		disableDefaultUI: true,
@@ -140,7 +141,7 @@
 			fields: ['place_id', 'name', 'formatted_address', 'geometry'],
 			types: ['restaurant', 'night_club', 'cafe', 'bar', 'casino'],
 			bounds: new Circle({
-				center: new LatLng(nycCoordinates.lat, nycCoordinates.lng),
+				center: new LatLng(NYC_COORDINATES.lat, NYC_COORDINATES.lng),
 				radius: 12000
 			}).getBounds()!,
 			strictBounds: true
@@ -240,11 +241,20 @@
 
 		marker.addEventListener('gmp-click', () => {
 			popUpInfoWindow(place, marker);
+			bounceAnimation(marker);
 		});
 
 		googlePlaceIdToExistingPlaceDict.set(place.googlePlaceId, { data: place, marker });
 
 		return marker;
+	}
+
+	function bounceAnimation(marker: google.maps.marker.AdvancedMarkerElement) {
+		marker.content?.classList.add('bounce');
+
+		marker.content?.addEventListener('animationend', () =>
+			marker.content?.classList.remove('bounce')
+		);
 	}
 
 	async function handleClickAdd() {
@@ -392,6 +402,8 @@
 		display: inline;
 	}
 
+	/* these css properties and keyframes are for adding css animations to the google maps markers */
+
 	@keyframes -global-drop {
 		0% {
 			transform: translateY(-350px) scaleY(0.9);
@@ -420,5 +432,23 @@
 
 	:global(.drop) {
 		animation: drop 0.3s linear normal;
+	}
+
+	@keyframes -global-bounce {
+		0% {
+			transform: scaleY(1);
+		}
+
+		10% {
+			transform: translateY(8px) scaleY(0.8);
+		}
+
+		100% {
+			transform: scaleY(1);
+		}
+	}
+
+	:global(.bounce) {
+		animation: bounce 0.2s linear normal;
 	}
 </style>
