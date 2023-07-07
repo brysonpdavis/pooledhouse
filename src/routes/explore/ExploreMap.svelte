@@ -20,7 +20,7 @@
 
 	const NO_SCORE_MARKER_COLOR = '#777777';
 	const INITIAL_MARKER_DROP_ANIMATION_SECONDS = 1.5;
-	const NYC_COORDINATES = { lat: 40.73, lng: -73.9 };
+	const NYC_COORDINATES = { lat: 40.73, lng: -73.93 };
 
 	let googleLibraries: {
 		maps: google.maps.MapsLibrary;
@@ -367,7 +367,7 @@
 </div>
 <div id="filter-button-container">
 	<button
-		class="btn-ghost btn-square btn m-4 border-secondary bg-base-200 hover:bg-base-100 hover:text-accent"
+		class="btn-square btn m-4 border-secondary bg-base-200 hover:bg-base-100 hover:text-accent"
 		on:click={() => (showFilters = !showFilters)}
 		><iconify-icon class="text-2xl" class:text-accent={showFilters} icon="ph:sliders" /></button
 	>
