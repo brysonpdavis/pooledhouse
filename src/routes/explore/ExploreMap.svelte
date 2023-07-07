@@ -12,17 +12,15 @@
 	import Loading from '$lib/components/Loading.svelte';
 	import AddPlaceButton from './AddPlaceButton.svelte';
 	import { scoreColorGradient } from '$lib/utils/colors';
+	import { sleep } from '$lib/utils/async';
 
 	export let places: Place[];
 
 	const loggedIn = $page.data.session?.user;
 
-	$: canAddPlace =
-		!!loggedIn &&
-		!!currentAutocompletePlace &&
-		!places.find((p) => p.googlePlaceId === currentAutocompletePlace?.place_id);
-
 	const NO_SCORE_MARKER_COLOR = '#777777';
+	const INITIAL_MARKER_DROP_ANIMATION_SECONDS = 1.5;
+	const NYC_COORDINATES = { lat: 40.73, lng: -73.9 };
 
 	let googleLibraries: {
 		maps: google.maps.MapsLibrary;
@@ -44,33 +42,9 @@
 	let popUpInfoWindowPlace: Place | undefined = places.at(0);
 
 	let showFilters = false;
-	let showUnreviewed = true;
+	let hideUnreviewed = false;
 
 	let placeIdsToHide = new Set<string>();
-
-	$: {
-		const placeIdsToHideTemp = new Set<string>();
-
-		if (!showUnreviewed) {
-			for (const p of places) {
-				if (p.workplaceScore === null) {
-					placeIdsToHideTemp.add(p.googlePlaceId);
-				}
-			}
-		}
-
-		placeIdsToHide = placeIdsToHideTemp;
-	}
-
-	$: {
-		for (const {data, marker} of googlePlaceIdToExistingPlaceDict.values()) {
-			if (placeIdsToHide.has(data.googlePlaceId)) {
-				marker.map = null
-			} else {
-				marker.map = map
-			}
-		}
-	}
 
 	let initialLoading = true;
 	let uploadSuccess = false;
@@ -80,7 +54,36 @@
 		? `/places/${popUpInfoWindowPlace.id}`
 		: '/';
 
-	const nycCoordinates = { lat: 40.73, lng: -73.9 };
+	$: canAddPlace =
+		!!loggedIn &&
+		!!currentAutocompletePlace &&
+		!places.find((p) => p.googlePlaceId === currentAutocompletePlace?.place_id);
+
+	$: {
+		const placeIdsToHideTemp = new Set<string>();
+
+		if (hideUnreviewed) {
+			for (const p of places) {
+				if (p.workplaceScore === null) {
+					placeIdsToHideTemp.add(p.googlePlaceId);
+				}
+			}
+		}
+
+		// TODO: add new filters here vvv
+
+		placeIdsToHide = placeIdsToHideTemp;
+	}
+
+	$: {
+		for (const { data, marker } of googlePlaceIdToExistingPlaceDict.values()) {
+			if (placeIdsToHide.has(data.googlePlaceId)) {
+				marker.map = null;
+			} else {
+				marker.map = map;
+			}
+		}
+	}
 
 	const loader = new Loader({
 		apiKey: PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -90,7 +93,7 @@
 	});
 
 	const mapOptions: google.maps.MapOptions = {
-		center: nycCoordinates,
+		center: NYC_COORDINATES,
 		zoom: 11,
 		clickableIcons: false,
 		disableDefaultUI: true,
@@ -138,7 +141,7 @@
 			fields: ['place_id', 'name', 'formatted_address', 'geometry'],
 			types: ['restaurant', 'night_club', 'cafe', 'bar', 'casino'],
 			bounds: new Circle({
-				center: new LatLng(nycCoordinates.lat, nycCoordinates.lng),
+				center: new LatLng(NYC_COORDINATES.lat, NYC_COORDINATES.lng),
 				radius: 12000
 			}).getBounds()!,
 			strictBounds: true
@@ -188,14 +191,16 @@
 
 	async function createPlaceMarkers(places: Place[]) {
 		// change color of each marker based on value
-		places.forEach((place) => {
+		for (const place of places) {
 			const markerColor =
 				place.workplaceScore !== null
 					? `#${scoreColorGradient.colorAt(place.workplaceScore)}`
 					: NO_SCORE_MARKER_COLOR;
 
 			createMarkerFromPlace(place, markerColor);
-		});
+
+			await sleep((INITIAL_MARKER_DROP_ANIMATION_SECONDS * 1000) / places.length);
+		}
 	}
 
 	function createMarkerFromPlace(place: Place, markerColor: string) {
@@ -209,6 +214,12 @@
 			}).element,
 			map
 		});
+
+		marker.content!.classList.add('drop');
+
+		marker.content!.addEventListener('animationend', () =>
+			marker.content!.classList.remove('drop')
+		);
 
 		const markerElement = marker.element;
 
@@ -230,11 +241,20 @@
 
 		marker.addEventListener('gmp-click', () => {
 			popUpInfoWindow(place, marker);
+			bounceAnimation(marker);
 		});
 
 		googlePlaceIdToExistingPlaceDict.set(place.googlePlaceId, { data: place, marker });
 
 		return marker;
+	}
+
+	function bounceAnimation(marker: google.maps.marker.AdvancedMarkerElement) {
+		marker.content?.classList.add('bounce');
+
+		marker.content?.addEventListener('animationend', () =>
+			marker.content?.classList.remove('bounce')
+		);
 	}
 
 	async function handleClickAdd() {
@@ -277,6 +297,7 @@
 		const existingPlace = googlePlaceIdToExistingPlaceDict.get(currentAutocompletePlace.place_id);
 
 		if (!!existingPlace) {
+			existingPlace.marker.map = map;
 			popUpInfoWindow(existingPlace.data, existingPlace.marker);
 		} else {
 			autocompletePlaceInfoWindow.open(map, tempMarker);
@@ -301,8 +322,8 @@
 
 <div class="flex h-full w-full flex-col gap-4">
 	{#if showFilters}
-		<div class="h-1/3 bg-base-200 p-4" transition:slide>
-			<input type="checkbox" id="show-unreviewed" bind:checked={showUnreviewed} />
+		<div class="h-1/4 bg-base-200 p-4" transition:slide>
+			<input type="checkbox" id="show-unreviewed" bind:checked={hideUnreviewed} />
 			<label for="show-unreviewed">hide places with no reviews</label>
 		</div>
 	{/if}
@@ -346,7 +367,7 @@
 </div>
 <div id="filter-button-container">
 	<button
-		class="btn-ghost btn-square btn m-4 bg-base-200 hover:bg-secondary"
+		class="btn-ghost btn-square btn m-4 border-secondary bg-base-200 hover:bg-base-100 hover:text-accent"
 		on:click={() => (showFilters = !showFilters)}
 		><iconify-icon class="text-2xl" class:text-accent={showFilters} icon="ph:sliders" /></button
 	>
@@ -379,5 +400,55 @@
 
 	:global(#map #filter-button-container) {
 		display: inline;
+	}
+
+	/* these css properties and keyframes are for adding css animations to the google maps markers */
+
+	@keyframes -global-drop {
+		0% {
+			transform: translateY(-350px) scaleY(0.9);
+			opacity: 0;
+		}
+		5% {
+			opacity: 0.7;
+		}
+		50% {
+			transform: translateY(0px) scaleY(1);
+			opacity: 1;
+		}
+		65% {
+			transform: translateY(-17px) scaleY(0.9);
+			opacity: 1;
+		}
+		75% {
+			transform: translateY(-22px) scaleY(0.8);
+			opacity: 1;
+		}
+		100% {
+			transform: translateY(0px) scaleY(1);
+			opacity: 1;
+		}
+	}
+
+	:global(.drop) {
+		animation: drop 0.3s linear normal;
+	}
+
+	@keyframes -global-bounce {
+		0% {
+			transform: scaleY(1);
+		}
+
+		10% {
+			transform: translateY(8px) scaleY(0.8);
+		}
+
+		100% {
+			transform: scaleY(1);
+		}
+	}
+
+	:global(.bounce) {
+		animation: bounce 0.2s linear normal;
 	}
 </style>

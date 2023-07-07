@@ -71,6 +71,6 @@
 			<hr class="m-0 w-full border-primary" />
 		</div>
 
-		<a href="/auth/register" class="btn-primary btn-outline btn mt-4 w-full">register</a>
+		<a href="/auth/register" class="btn-primary btn-outline btn w-full">register</a>
 	</form>
 </div>
