@@ -19,7 +19,7 @@
 	const loggedIn = $page.data.session?.user;
 
 	const NO_SCORE_MARKER_COLOR = '#777777';
-	const INITIAL_MARKER_DROP_ANIMATION_SECONDS = 1.5;
+	const INITIAL_MARKER_DROP_ANIMATION_SECONDS = 1;
 	const NYC_COORDINATES = { lat: 40.73, lng: -73.93 };
 
 	let googleLibraries: {
@@ -406,6 +406,23 @@
 
 	@keyframes -global-drop {
 		0% {
+			transform: translateY(50px) scaleY(0);
+			opacity: 0;
+		}
+		5% {
+			transform: translateY(10px) scaleY(0.8);
+			opacity: 0.7;
+		}
+		50% {
+			transform: translateY(-10px) scaleY(1.2);
+			opacity: 1;
+		}
+		100% {
+			transform: translateY(0px) scaleY(1);
+		}
+
+		/* old animation */
+		/* 0% {
 			transform: translateY(-350px) scaleY(0.9);
 			opacity: 0;
 		}
@@ -427,7 +444,7 @@
 		100% {
 			transform: translateY(0px) scaleY(1);
 			opacity: 1;
-		}
+		} */
 	}
 
 	:global(.drop) {

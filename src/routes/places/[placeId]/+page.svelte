@@ -45,7 +45,7 @@
 			<button
 				on:click={() => (showSection = 'workplace')}
 				class:btn-active={showSection === 'workplace'}
-				class="btn flex flex-1 tracking-wider">workplace</button
+				class="btn flex flex-1 tracking-wider rounded-full">workplace</button
 			>
 			<button
 				on:click={() => (showSection = 'experience')}

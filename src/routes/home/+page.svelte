@@ -1,17 +1,17 @@
 <script lang="ts">
 	// @ts-ignore
-	import MapExample from '$lib/assets/map-example.png?format=webp'
+	import MapExample from '$lib/assets/map-example.png?format=webp';
 	import SplashSection from './SplashSection.svelte';
 </script>
 
 <div class="flex flex-col items-center gap-8 lg:gap-16">
 	<div class="flex flex-col items-center pt-10 sm:pt-24 lg:pt-32 ">
-		<h3
-			class="my-0 max-w-5xl text-center text-3xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl"
+		<h1
+			class="text-balance my-0 max-w-5xl text-center text-3xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl"
 		>
 			workplace transparency for restaurant workers in NYC
-		</h3>
-		<p class="mt-6 mb-0 max-w-3xl text-center text-xl">
+		</h1>
+		<p class="text-balance mb-0 mt-6 max-w-3xl text-center text-xl" style="text-wrap:balance;">
 			pooledhouse is a platform for restaurant workers to share their experiences and help each
 			other find better jobs
 		</p>
