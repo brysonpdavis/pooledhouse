@@ -10,7 +10,7 @@
 {#if data.userVerified}
 	<!-- verified -->
 	<ContributeVerifiedPage />
-{:else if !!data.session?.user?.email}
+{:else if !!data.session?.user?.userId}
 	<!-- logged in -->
 	<ContributeLoggedInPage />
 {:else}

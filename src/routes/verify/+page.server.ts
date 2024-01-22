@@ -6,10 +6,10 @@ import { createIndustryVerificationToken } from '$lib/server/crud/verification-t
 
 export const load = (async ({ locals }) => {
 
-    const sessionUser = (await locals.getSession())?.user
+    const sessionUser = (await locals.auth.validate())?.user
 
     if (!sessionUser) {
-        throw redirect(302, '/auth/nope')
+        redirect(302, '/auth/nope');
     }
 
     const user = await prisma.user.findUnique({
@@ -18,7 +18,7 @@ export const load = (async ({ locals }) => {
     })
 
     if (!user) {
-        throw error(403, { message: 'could not look up user?' })
+        error(403, { message: 'could not look up user?' });
     }
 
     const createdTokens = user.createdIndustryTokens.map((token) => {
@@ -36,11 +36,11 @@ export const actions = {
         const user = await findUserByRequestEvent(event)
 
         if (!user) {
-            throw error(403, { message: 'user not logged in' })
+            error(403, { message: 'user not logged in' });
         }
 
         if (!user?.industryVerificationToken) {
-            throw error(403, 'user must be verified to create a new verification token')
+            error(403, 'user must be verified to create a new verification token');
         }
 
         const newToken = await createIndustryVerificationToken(user.id)
@@ -52,7 +52,7 @@ export const actions = {
         const user = await findUserByRequestEvent(event)
 
         if (!user) {
-            throw error(403, { message: 'user not logged in' })
+            error(403, { message: 'user not logged in' });
         }
 
         const providedToken = (await event.request.formData()).get('verificationToken')

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition';
-
+	export let form;
 	let countryCode = '+1';
 	let hasVerificationCode: boolean = false;
 	let loading = false;
@@ -12,7 +12,6 @@
 	<form
 		class="form-control max-w-xl gap-4"
 		method="post"
-		action="?/register"
 		on:submit={() => (loading = true)}
 	>
 		<label class="input-group">
@@ -28,6 +27,7 @@
 		<label class="input-group" for="phone">
 			<input
 				required
+				disabled
 				name="country-code"
 				type="text"
 				inputmode="numeric"
@@ -69,7 +69,10 @@
 				<span class="w-20 flex-shrink-0">code</span>
 			</label>
 		{/if}
-		<button type="submit" class="btn-secondary btn" class:loading> submit </button>
+		<button type="submit" class="btn-secondary btn" class:loading disabled={loading}> submit </button>
+		{#if form?.message}
+			<div class="text-red-400">{form.message}</div>
+		{/if}
 	</form>
 	<div class="max-w-xl">
 		<p>

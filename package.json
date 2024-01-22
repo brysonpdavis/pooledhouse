@@ -2,6 +2,9 @@
 	"name": "brigade",
 	"version": "0.0.1",
 	"private": true,
+	"engines": {
+		"node": ">=20.0.0"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -13,29 +16,26 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
-		"@auth/core": "^0.5.1",
-		"@auth/sveltekit": "^0.3.0",
 		"@googlemaps/js-api-loader": "^1.16.0",
 		"@indot/rainbowvis": "^1.0.2",
-		"@next-auth/prisma-adapter": "^1.0.5",
-		"@prisma/client": "^4.13.0",
-		"@sveltejs/adapter-vercel": "^5.1.0",
+		"@prisma/client": "^5.8.1",
+		"@sveltejs/adapter-vercel": "^4.0.0",
 		"@sveltejs/kit": "^2.4.1",
+		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@tailwindcss/typography": "^0.5.9",
 		"@types/google.maps": "^3.53.2",
 		"@types/nodemailer": "^6.4.7",
 		"@types/validator": "^13.7.14",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
-		"@vercel/analytics": "^1.0.1",
+		"@vercel/analytics": "^1.1.2",
 		"autoprefixer": "^10.4.13",
-		"daisyui": "^4.6.0",
+		"daisyui": "^2.50.1",
 		"date-fns": "^3.3.0",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
-		"eslint-plugin-svelte3": "^4.0.0",
+		"eslint-plugin-svelte": "^2.35.1",
 		"iconify-icon": "^1.0.7",
-		"nodemailer": "^6.9.1",
 		"postcss": "^8.4.21",
 		"prettier": "^3.2.4",
 		"prettier-plugin-svelte": "^3.1.2",
@@ -51,13 +51,13 @@
 		"twilio": "^4.9.0",
 		"typescript": "5.3.3",
 		"validator": "^13.9.0",
-		"vite": "^4.0.0",
+		"vite": "^5.0.0",
 		"vite-imagetools": "^5.0.4",
-		"vitest": "^0.25.3",
-		"zod": "^3.21.4"
+		"vitest": "^1.0.0",
+		"zod": "^3.21.4",
+		"@lucia-auth/adapter-prisma": "^3.0.2",
+		"lucia": "^2.7.6",
+		"resend": "^2.0.0"
 	},
-	"type": "module",
-	"dependencies": {
-		"@sveltejs/vite-plugin-svelte": "^3.0.1"
-	}
+	"type": "module"
 }

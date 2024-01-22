@@ -31,7 +31,7 @@
 	{:else}
 		<p>you're out of workplace reviews :(</p>
 	{/if}
-{:else if !!data.session?.user?.email}
+{:else if !!data.session?.user?.userId}
 	<!-- logged in, not verified -->
 {:else}
 	<!-- not logged in -->

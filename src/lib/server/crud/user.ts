@@ -2,13 +2,13 @@ import type { RequestEvent } from "@sveltejs/kit";
 import { prisma } from "../prisma";
 
 export const findUserByRequestEvent = async (event: RequestEvent) => {
-        const sessionUser = (await event.locals.getSession())?.user
+        const sessionUser = (await event.locals.auth.validate())?.user
 
-        if (!sessionUser?.email) {
+        if (!sessionuser?.userId) {
             return null
         }
 
-        const user = await prisma.user.findUnique({where: {email: sessionUser?.email}})
+        const user = await prisma.user.findUnique({where: {email: sessionuser?.userId}})
 
         return user
 }

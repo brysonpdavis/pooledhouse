@@ -4,7 +4,7 @@ import { error } from '@sveltejs/kit';
 
 
 export const load = (async ({ locals }) => {
-    const userEmail = (await locals.getSession())?.user?.email
+    const userEmail = (await locals.auth.validate())?.user?.userId
 
     if (!userEmail) {
         return { userVerified: false }
@@ -13,7 +13,7 @@ export const load = (async ({ locals }) => {
     const user = await prisma.user.findUnique({ where: { email: userEmail }, include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } } })
 
     if (!user) {
-        throw error(404, "unexpected error")
+        error(404, "unexpected error");
     }
 
     const unusedWorkplaceReviewTokens = user?.workplaceReviewTokens.filter(({ workplaceReview }) => workplaceReview === null)

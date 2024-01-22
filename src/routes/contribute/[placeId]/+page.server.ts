@@ -4,16 +4,16 @@ import { error, fail } from '@sveltejs/kit';
 import { postWorkplaceReviewFormDataSchema } from './post-workplace-review-form-zod-schema';
 
 export const load = (async ({ locals, params }) => {
-    const userEmail = (await locals.getSession())?.user?.email
+    const userId = (await locals.auth.validate())?.user?.userId
 
-    if (!userEmail) {
+    if (!userId) {
         return { userVerified: false }
     }
 
-    const user = await prisma.user.findUnique({ where: { email: userEmail }, include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } } })
+    const user = await prisma.user.findUnique({ where: { id: userId }, include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } } })
 
     if (!user) {
-        throw error(404, "unexpected error")
+        error(404, "unexpected error");
     }
 
     const previousWorkplaceReview = await prisma.workplaceReview.findFirst({ where: { createdByUserId: user.id, placeId: params.placeId } })
@@ -27,15 +27,15 @@ export const load = (async ({ locals, params }) => {
 
 export const actions: Actions = {
     postWorkplaceReview: async ({ request, locals, params, fetch }) => {
-        const session = await locals.getSession()
+        const session = await locals.auth.validate()
 
-        const email = session?.user?.email
+        const userId = session?.user?.userId
 
-        if (email === null) {
+        if (userId === null) {
             return { reviewFailed: true, failureReason: 'user not logged in' }
         }
 
-        const user = await prisma.user.findUnique({ where: { email } })
+        const user = await prisma.user.findUnique({ where: { id: userId } })
 
         if (!user || !user.industryVerificationToken) {
             return { reviewFailed: true, failureReason: 'user not verified' }
@@ -49,7 +49,7 @@ export const actions: Actions = {
             return fail(400, { workplaceReviewSchemaErrors: parsedData.error.format() })
         }
 
-        const { id } = await prisma.review.create({ data: { createdByUser: { connect: { email } } } })
+        const { id } = await prisma.review.create({ data: { createdByUser: { connect: { id: userId } } } })
 
         console.log('review id: ', id)
 
@@ -57,7 +57,7 @@ export const actions: Actions = {
             data: {
                 review: { connect: { id } },
                 createdByUser: {
-                    connect: { email }
+                    connect: { id: userId }
                 },
                 place: { connect: { id: params.placeId } },
                 overallDescriptionComment: { create: { text: parsedData.data.general, review: { connect: { id } } } },

@@ -29,7 +29,7 @@ export const load = (async ({ params, locals }) => {
     })
 
     if (!placeResult) {
-        throw error(404, 'place not found')
+        error(404, 'place not found');
     }
 
     const { workplaceReviews, experienceReviews, ...place } = placeResult
@@ -49,19 +49,19 @@ export const load = (async ({ params, locals }) => {
     }
 
     if (!place) {
-        throw error(404, "couldn't find a place with that id")
+        error(404, "couldn't find a place with that id");
     }
 
-    const userEmail = (await locals.getSession())?.user?.email
+    const userId = (await locals.auth.validate())?.user?.userId
 
-    if (!userEmail) {
+    if (!userId) {
         return { comments, place, userVerified: false }
     }
 
-    const user = await prisma.user.findUnique({ where: { email: userEmail }, include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } } })
+    const user = await prisma.user.findUnique({ where: { id: userId }, include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } } })
 
     if (!user) {
-        throw error(404, "unexpected error")
+        error(404, "unexpected error");
     }
 
     const usersCommentReactions = await prisma.reviewCommentReaction.findMany({
@@ -89,19 +89,13 @@ export const actions: Actions = {
         const reactionBool = agree === "agree" || (agree === "disagree" ? false : null)
 
         if (commentId === undefined || reactionBool === null) {
-            throw error(404, "required info not provied")
+            error(404, "required info not provied");
         }
 
-        const userEmail = (await locals.getSession())?.user?.email
-
-        if (!userEmail) {
-            throw error(404, 'user not logged in')
-        }
-
-        const userId = (await prisma.user.findUnique({ where: { email: userEmail } }))?.id
+        const userId = (await locals.auth.validate())?.user?.userId
 
         if (!userId) {
-            throw error(404, 'user not found')
+            error(404, 'user not logged in');
         }
 
         const reactions = await prisma.reviewCommentReaction.findMany({ where: { reviewCommentId: commentId } })

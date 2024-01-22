@@ -1,4 +1,4 @@
-import { error, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { z } from 'zod'
 import validator from 'validator'
@@ -6,11 +6,13 @@ import { prisma } from '$lib/server/prisma';
 import { createOrFindContactVerification } from '$lib/server/auth/contact-verification';
 
 export const load = (async ({ locals }) => {
-    if ((await locals.getSession())?.user) {
-        throw redirect(303, '/')
+    const session = await locals.auth.validate();
+
+    if (session) {
+        redirect(303, '/');
     }
 
-    return
+    return {}
 }) satisfies PageServerLoad;
 
 const credentialsSchema = z.object({
@@ -29,7 +31,7 @@ const credentialsSchema = z.object({
 })
 
 export const actions: Actions = {
-    register: async ({ request }) => {
+    default: async ({ request }) => {
         const formData = await request.formData()
 
         const credentials = {
@@ -41,7 +43,7 @@ export const actions: Actions = {
         const validatedCredentials = await credentialsSchema.safeParseAsync(credentials)
 
         if (validatedCredentials.success === false) {
-            throw error(400, validatedCredentials.error.issues[0].message)
+            return fail(400, {message: validatedCredentials.error.issues[0].message});
         }
 
         const user = await prisma.user.findFirst({
@@ -55,7 +57,7 @@ export const actions: Actions = {
         })
 
         if (user !== null) {
-            throw error(409, { message: 'a user already exists with that info' })
+            return fail(409, { message: 'a user already exists with that info' });
         }
 
         console.log('creating new verification...')
@@ -63,9 +65,9 @@ export const actions: Actions = {
         const verification = await createOrFindContactVerification(validatedCredentials.data, validatedCredentials.data.code)
 
         if (verification === null) {
-            throw error(404, 'could not create or find contact verification')
+            return fail(404, {message: 'could not create or find contact verification'});
         } else {
-            throw redirect(303, `/auth/register/contact-verify/${verification.id}`)
+            redirect(303, `/auth/register/contact-verify/${verification.id}`);
         }
     }
 }

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
-	import { Loader } from '@googlemaps/js-api-loader';
+	import * as Gmaps from '@googlemaps/js-api-loader';
+	const { Loader } = Gmaps;
 	import 'iconify-icon';
 
 	import { PUBLIC_GOOGLE_MAPS_API_KEY, PUBLIC_GOOGLE_MAPS_MAP_ID } from '$env/static/public';
@@ -204,21 +205,25 @@
 	}
 
 	function createMarkerFromPlace(place: Place, markerColor: string) {
-		const marker = new googleLibraries.markers.AdvancedMarkerElement({
-			position: { lat: place.lat, lng: place.lng },
-			content: new googleLibraries.markers.PinElement({
+		const content = new googleLibraries.markers.PinElement({
 				borderColor: shadeColor(markerColor, -30),
 				background: markerColor,
 				glyphColor: shadeColor(markerColor, -30),
 				glyph: null
-			}).element,
+			}).element
+
+		content.classList.add('drop')
+		
+
+		const marker = new googleLibraries.markers.AdvancedMarkerElement({
+			position: { lat: place.lat, lng: place.lng },
+			content,
 			map
 		});
 
-		marker.content!.classList.add('drop');
 
 		marker.content!.addEventListener('animationend', () =>
-			marker.content!.classList.remove('drop')
+			content.classList.remove('drop')
 		);
 
 		const markerElement = marker.element;
@@ -239,9 +244,9 @@
 			popUpInfoWindow(place, marker);
 		});
 
-		marker.addEventListener('gmp-click', () => {
+		marker.addListener('gmp-click', () => {
 			popUpInfoWindow(place, marker);
-			bounceAnimation(marker);
+			bounceAnimation(content);
 		});
 
 		googlePlaceIdToExistingPlaceDict.set(place.googlePlaceId, { data: place, marker });
@@ -249,11 +254,11 @@
 		return marker;
 	}
 
-	function bounceAnimation(marker: google.maps.marker.AdvancedMarkerElement) {
-		marker.content?.classList.add('bounce');
+	function bounceAnimation(markerContent: Element) {
+		markerContent.classList.add('bounce');
 
-		marker.content?.addEventListener('animationend', () =>
-			marker.content?.classList.remove('bounce')
+		markerContent.addEventListener('animationend', () =>
+			markerContent.classList.remove('bounce')
 		);
 	}
 
@@ -270,7 +275,7 @@
 			address: currentAutocompletePlace.formatted_address || currentAutocompletePlace.adr_address!,
 			lat: currentAutocompletePlace.geometry?.location?.lat()!,
 			lng: currentAutocompletePlace.geometry?.location?.lng()!,
-			createdByUserEmail: $page.data.session?.user?.email!
+			createdByUserEmail: $page.data.session?.user?.userId!
 		});
 
 		if (postedPlace !== 'error') {

@@ -6,7 +6,7 @@ export async function upsertReaction(userEmail: string, commentId: string, agree
     const userId = (await prisma.user.findUnique({ where: { email: userEmail } }))?.id
 
     if (!userId) {
-        throw error(404, 'user not found')
+        error(404, 'user not found');
     }
 
     const reactions = await prisma.reviewCommentReaction.findMany({ where: { reviewCommentId: commentId } })

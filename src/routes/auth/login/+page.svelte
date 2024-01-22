@@ -1,19 +1,13 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
-	import { signIn } from '@auth/sveltekit/client';
 	import { page } from '$app/stores';
+
+	export let form;
 
 	let identifier = '';
 	let loginMethod: 'email' | 'phone' = 'email';
 	let submitting = false;
-
-	async function handleSubmit() {
-		if (loginMethod === 'email') {
-			await signIn('email', { email: identifier });
-		} else {
-			await goto(`/auth/login/sms-otp/${identifier}`, { replaceState: true });
-		}
-	}
 </script>
 
 <div class="m-auto flex h-full w-fit flex-col gap-4 lg:justify-center">
@@ -24,10 +18,19 @@
 	<h2 class="m-0 font-light">no passwords, we'll send you a link or a code</h2>
 
 	<form
-		on:submit={async (event) => {
+		action="?/login"
+		method="post"
+		use:enhance={() => {
 			submitting = true;
-			event.preventDefault();
-			await handleSubmit();
+
+			if (loginMethod === 'phone') {
+				goto(`/auth/login/sms-otp/${identifier}`);
+			}
+
+			return ({result, update}) => {
+				submitting = false;
+				update({reset: false})
+			}
 		}}
 		class="flex flex-col"
 	>
@@ -63,7 +66,9 @@
 		<button type="submit" class={`btn-secondary btn mt-4 w-full ${submitting ? 'loading' : ''}`}>
 			let's go
 		</button>
-
+		{#if form?.message}
+			<div class="text-red-400">{form.message}</div>
+		{/if}
 		<!-- horizontal divider with text in center -->
 		<div class="flex items-center py-2">
 			<hr class="m-0 w-full border-primary" />

@@ -8,19 +8,20 @@ import {
     checkPhoneVerificationCode
 } from '$lib/server/auth/contact-verification';
 import type { PageServerLoad, Actions } from './$types';
+import { auth } from '$lib/server/lucia';
 
 export const load = (async ({ params, locals }) => {
-
+    const session = await locals.auth.validate();
     // if user logged in, redirect
-    if ((await locals.getSession())?.user) {
-        throw redirect(303, '/')
+    if (session) {
+        redirect(303, '/');
     }
 
     const contactVerification = await prisma.contactVerification.findUnique({ where: { id: params.contactVerificationId } })
 
     // if there is no verification present in db already, throw error
     if (contactVerification === null) {
-        throw error(404, { message: 'could not find verification' })
+        error(404, { message: 'could not find verification' });
     }
 
     const { email, phone } = contactVerification
@@ -37,7 +38,7 @@ export const load = (async ({ params, locals }) => {
 
     // if there is a user associated with the email or phone already, throw error
     if (user !== null) {
-        throw error(404, { message: 'info already verified for another user' })
+        error(404, { message: 'info already verified for another user' });
     }
 
     // otherwise, if email and phone have already been verified, create new user with associated info
@@ -46,7 +47,7 @@ export const load = (async ({ params, locals }) => {
 
         await createUser(email, phone)
 
-        throw redirect(303, '/auth/login')
+        redirect(303, '/auth/login');
     }
 
     if (
@@ -79,7 +80,7 @@ export const actions: Actions = {
         const verification = await prisma.contactVerification.findUnique({ where: { id: params.contactVerificationId } })
 
         if (verification === null) {
-            throw error(404, 'in-progress verification not found')
+            error(404, 'in-progress verification not found');
         }
 
         const code = (await request.formData()).get('code') as string
@@ -103,7 +104,7 @@ export const actions: Actions = {
         const verification = await prisma.contactVerification.findUnique({ where: { id: params.contactVerificationId } })
 
         if (verification === null) {
-            throw error(404, 'in-progress verification not found')
+            error(404, 'in-progress verification not found');
         }
 
         const code = (await request.formData()).get('code') as string
@@ -128,7 +129,7 @@ export const actions: Actions = {
         const verification = await prisma.contactVerification.findUnique({ where: { id: params.contactVerificationId } })
 
         if (verification === null) {
-            throw error(404, 'in-progress verification not found')
+            error(404, 'in-progress verification not found');
         }
 
         console.log('resending phone verification to :', verification.phone)
@@ -141,7 +142,7 @@ export const actions: Actions = {
         const verification = await prisma.contactVerification.findUnique({ where: { id: params.contactVerificationId } })
 
         if (verification === null) {
-            throw error(404, 'in-progress verification not found')
+            error(404, 'in-progress verification not found');
         }
 
         console.log('resending email verification to :', verification.email)
@@ -153,12 +154,14 @@ export const actions: Actions = {
 }
 
 async function createUser(email: string, phone: string) {
-    const createdUser = await prisma.user.create({
-        data: {
-            email,
-            phone
-        }
-    })
+    const createdUser = await auth.createUser({attributes: {
+        email,
+        phone
+    }, key: {
+        password: null,
+        providerId: 'email',
+        providerUserId: email
+    }})
 
-    console.log('created new user: ', createdUser.id)
+    console.log('created new user: ', createdUser.userId)
 }

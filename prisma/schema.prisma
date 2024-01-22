@@ -1,5 +1,6 @@
 generator client {
-    provider        = "prisma-client-js"
+    provider = "prisma-client-js"
+    output = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -7,49 +8,38 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-/// auth.js model for a user's associated provider accounts
-model Account {
-    id                String  @id @default(cuid())
-    userId            String  @map("user_id")
-    type              String
-    provider          String
-    providerAccountId String  @map("provider_account_id")
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@unique([provider, providerAccountId])
-    @@map("accounts")
-}
-
-/// auth.js model for a client's session
+/// lucia session model
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique @map("session_token")
-    userId       String   @map("user_id")
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id             String @id @unique
+    user_id        String
+    active_expires BigInt
+    idle_expires   BigInt
+    user           User   @relation(references: [id], fields: [user_id], onDelete: Cascade)
 
-    @@map("sessions")
+    @@index([user_id])
 }
 
-/// auth.js model for a user
+/// lucia key model
+model Key {
+    id              String       @id @unique
+    hashed_password String?
+    user_id         String
+    user            User         @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+    @@index([user_id])
+}
+
+/// lucia user model, snake_case attributes are lucia-specific
 model User {
     id                        String                      @id @default(cuid())
     name                      String?
     email                     String                      @unique
     emailVerified             DateTime?                   @map("email_verified")
     phone                     String                      @unique
-    image                     String?
     industryVerificationToken String?                     @unique
+    auth_sessions             Session[]
+    key                       Key[]
     verification              IndustryVerificationToken?  @relation("ConsumedByUser", fields: [industryVerificationToken], references: [token])
-    accounts                  Account[]
-    sessions                  Session[]
     createdPlaces             Place[]
     createdWorkplaceReviews   WorkplaceReview[]           @relation("CreatedByUser")
     createdExperienceReview   ExperienceReview[]          @relation("CreatedByUser")
@@ -57,17 +47,19 @@ model User {
     workplaceReviewTokens     WorkplaceReviewToken[]      @relation("AssociatedUser")
     reviews                   Review[]                    @relation("CreatedByUser")
     reviewCommentReactions    ReviewCommentReaction[]     @relation("UserCommentReactions")
+    loginTokens                LoginToken[]
 
     @@map("users")
 }
 
-model VerificationToken {
-    identifier String
-    token      String   @id @unique
-    expires    DateTime
+model LoginToken {
+    token   String   @id @unique
+    userId  String   @map("user_id")
+    expires DateTime
 
-    @@unique([identifier, token])
-    @@map("verification_tokens")
+    user User @relation(fields: [userId], references: [id])
+
+    @@map("login_tokens")
 }
 
 model Place {

@@ -8,35 +8,20 @@ declare global {
 		// }
 		// interface PageData {}
 		// interface Platform {}
+
+		interface Locals {
+			auth: import("lucia").AuthRequest;
+		}
 	}
 }
 
-declare module "@auth" {
-	interface Session {
-		user: {
-			id: string,
-			email: string,
-			phone: string,
-			industryVerificationToken: string
-		}
-	}
-
-	interface DefaultSession {
-		user: {
-			id: string,
-			email: string,
-			phone: string,
-			industryVerificationToken: string
-		}
-	}
-
-	interface User {
-		id: string,
-		email: string,
-		phone: string,
-		industryVerificationToken: string
-
+/// <reference types="lucia" />
+declare global {
+	namespace Lucia {
+		type Auth = import("$lib/server/lucia").Auth;
+		type DatabaseUserAttributes = {};
+		type DatabaseSessionAttributes = {};
 	}
 }
 
-export {};
+export { };
