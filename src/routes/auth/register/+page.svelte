@@ -27,7 +27,7 @@
 		<label class="input-group" for="phone">
 			<input
 				required
-				disabled
+				readonly
 				name="country-code"
 				type="text"
 				inputmode="numeric"
