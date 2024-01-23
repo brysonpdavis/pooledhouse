@@ -1,11 +1,11 @@
 import { prisma } from '$lib/server/prisma'
 import { error } from '@sveltejs/kit'
 
-export async function upsertReaction(userEmail: string, commentId: string, agree: boolean) {
+export async function upsertReaction(userId: string, commentId: string, agree: boolean) {
 
-    const userId = (await prisma.user.findUnique({ where: { email: userEmail } }))?.id
+    const user = (await prisma.user.findUnique({ where: { id: userId } }))
 
-    if (!userId) {
+    if (user) {
         error(404, 'user not found');
     }
 

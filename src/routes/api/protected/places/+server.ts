@@ -13,7 +13,7 @@ export const POST = (async ({ request }) => {
             name: postedPlace.name,
             createdByUser: {
                 connect: {
-                    email: postedPlace.createdByUserEmail
+                    id: postedPlace.createdByUserId
                 }
             }
         }

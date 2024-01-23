@@ -13,7 +13,7 @@ export const load = (async ({ locals }) => {
     }
 
     const user = await prisma.user.findUnique({
-        where: { email: sessionUser.email! },
+        where: { id: sessionUser.userId },
         include: { createdIndustryTokens: { include: { consumedByUser: { select: { id: true } } } } }
     })
 

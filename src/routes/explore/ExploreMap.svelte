@@ -275,7 +275,7 @@
 			address: currentAutocompletePlace.formatted_address || currentAutocompletePlace.adr_address!,
 			lat: currentAutocompletePlace.geometry?.location?.lat()!,
 			lng: currentAutocompletePlace.geometry?.location?.lng()!,
-			createdByUserEmail: $page.data.session?.user?.userId!
+			createdByUserId: $page.data.session?.user?.userId!
 		});
 
 		if (postedPlace !== 'error') {

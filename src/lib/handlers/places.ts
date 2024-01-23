@@ -7,7 +7,7 @@ export type PostPlaceInput = {
     name: string,
     googlePlaceId: string,
     address: string,
-    createdByUserEmail: string
+    createdByUserId: string
 }
 
 export const postPlace: Handler<PostPlaceInput, Place> = async (placeData) => {
