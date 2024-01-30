@@ -19,20 +19,20 @@
 	<div class="flex w-full flex-col gap-8 lg:flex-row">
 		<SplashSection
 			href="/explore"
-			titleText="take a peek"
-			bodyText="see what other industry workers say about their workplace, or compare places in the city to find the best fit for you"
+			titleText="discover & compare"
+			bodyText="dive into real insights from fellow industry professionals. browse honest reviews and compare workplaces across NYC to find your ideal job match."
 			buttonText="explore"
 		/>
 		<SplashSection
 			href="/auth/register"
-			titleText="do some paperwork"
-			bodyText="after registering as a verified restaurant worker, you are free to post, react, or verify your friends and coworkers"
+			titleText="connect & engage"
+			bodyText="as a verified restaurant worker, engage freely on our platform. post your experiences, react to others' stories, and connect with your peers."
 			buttonText="register"
 		/>
 		<SplashSection
 			href="/contribute"
-			titleText="share your perspective"
-			bodyText="join the conversation and help other restaurant workers make informed decisisons about where to work"
+			titleText="voice your experience"
+			bodyText="your perspective matters. join the community dialogue and guide others in making well-informed employment decision."
 			buttonText="contribute"
 		/>
 	</div>
@@ -46,8 +46,8 @@
 			<div class="h-full flex-col justify-center lg:flex">
 				<div class="text-2xl font-extrabold uppercase tracking-wider text-accent">get started</div>
 				<p class="xl:text-xl">
-					if you just want to peruse, no need to create an account. just head to the
-					<a href="/explore">explore</a> page to see what people are saying.
+					just browsing? no account needed. simply visit the <a href="/explore">explore</a>
+					page to gauge the pulse of the NYC restaurant scene.
 				</p>
 				<!-- <div class="hidden text-2xl font-extrabold uppercase tracking-wider text-accent lg:flex">
 					learn more
@@ -62,8 +62,8 @@
 	<div class="card w-full max-w-7xl bg-base-200 p-4">
 		<div class="text-2xl font-extrabold uppercase tracking-wider text-accent">for the culture</div>
 		<p class="mb-0 lg:text-xl">
-			pooledhouse was created purely as a project intended for the good of the culture of the
-			restaurant industry. it will always be completely free, and reviews will always be anonymous.
+			built for the heart of the restaurant industry. pooledhouse remains free, 
+			dedicated to the culture, and guarantees anonymity of reviews.
 		</p>
 	</div>
 </div>

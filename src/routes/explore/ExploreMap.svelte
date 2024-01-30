@@ -184,6 +184,8 @@
 				tempMarker.title = place.name || '';
 			}
 
+			infoWindow.close()
+
 			popUpInfoWindowForCurrentAutocompletePlace();
 		});
 
@@ -278,11 +280,14 @@
 			createdByUserId: $page.data.session?.user?.userId!
 		});
 
+		console.log({ postedPlace })
+
 		if (postedPlace !== 'error') {
 			places.push(postedPlace);
 			places = places;
 			popUpInfoWindow(postedPlace, createMarkerFromPlace(postedPlace, NO_SCORE_MARKER_COLOR));
 			autocompletePlaceInfoWindow.close();
+			tempMarker.position = null;
 		}
 
 		uploadInProgress = false;
@@ -304,6 +309,7 @@
 		if (!!existingPlace) {
 			existingPlace.marker.map = map;
 			popUpInfoWindow(existingPlace.data, existingPlace.marker);
+			autocompletePlaceInfoWindow.close()
 		} else {
 			autocompletePlaceInfoWindow.open(map, tempMarker);
 		}
