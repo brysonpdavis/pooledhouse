@@ -16,6 +16,7 @@ model Session {
     user           User   @relation(references: [id], fields: [user_id], onDelete: Cascade)
 
     @@index([user_id])
+    @@map("sessions")
 }
 
 /// lucia key model
@@ -26,6 +27,7 @@ model Key {
     user            User         @relation(references: [id], fields: [user_id], onDelete: Cascade)
 
     @@index([user_id])
+    @@map("keys")
 }
 
 /// lucia user model, snake_case attributes are lucia-specific
