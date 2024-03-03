@@ -1,8 +1,8 @@
 <script lang="ts">
-	export let id: string;
-	export let buttonText: string;
+	export let id: string
+	export let buttonText: string
 
-	let show: boolean = false;
+	let show: boolean = false
 </script>
 
 <!-- The button to open modal -->

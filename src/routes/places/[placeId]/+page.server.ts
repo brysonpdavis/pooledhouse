@@ -1,154 +1,187 @@
-import { prisma } from '$lib/server/prisma';
-import { error } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from './$types';
-import type { ReviewComment } from '@prisma/client';
+import { prisma } from '$lib/server/prisma'
+import { error } from '@sveltejs/kit'
+import type { Actions, PageServerLoad } from './$types'
+import type { ReviewComment } from '@prisma/client'
 
 export const load = (async ({ params, locals }) => {
+	const placeResult = await prisma.place.findUnique({
+		where: { id: params.placeId },
+		include: {
+			workplaceReviews: {
+				include: {
+					overallDescriptionComment: true,
+					compensationDescriptionComment: true,
+					guestDescriptionComment: true,
+					idealForComment: true,
+					cultureDescriptionComment: true
+				}
+			},
+			experienceReviews: {
+				include: {
+					fnbDescriptionComment: true,
+					vibeDescriptionComment: true,
+					overallDescriptionComment: true
+				}
+			}
+		}
+	})
 
-    const placeResult = await prisma.place.findUnique({
-        where: { id: params.placeId },
-        include: {
-            workplaceReviews: {
-                include:
-                {
-                    overallDescriptionComment: true,
-                    compensationDescriptionComment: true,
-                    guestDescriptionComment: true,
-                    idealForComment: true,
-                    cultureDescriptionComment: true
-                }
-            },
-            experienceReviews: {
-                include: {
-                    fnbDescriptionComment: true,
-                    vibeDescriptionComment: true,
-                    overallDescriptionComment: true
-                }
-            }
-        }
-    })
+	if (!placeResult) {
+		error(404, 'place not found')
+	}
 
-    if (!placeResult) {
-        error(404, 'place not found');
-    }
+	const { workplaceReviews, experienceReviews, ...place } = placeResult
 
-    const { workplaceReviews, experienceReviews, ...place } = placeResult
+	const comments = {
+		workplace: {
+			general: workplaceReviews
+				.map((wr) => wr.overallDescriptionComment)
+				.filter(notNull)
+				.sort(commentsComparator),
+			compensation: workplaceReviews
+				.map((wr) => wr.compensationDescriptionComment)
+				.filter(notNull)
+				.sort(commentsComparator),
+			guest: workplaceReviews
+				.map((wr) => wr.guestDescriptionComment)
+				.filter(notNull)
+				.sort(commentsComparator),
+			culture: workplaceReviews
+				.map((wr) => wr.cultureDescriptionComment)
+				.filter(notNull)
+				.sort(commentsComparator)
+		},
+		experience: {
+			general: experienceReviews
+				.map((er) => er.overallDescriptionComment)
+				.filter(notNull)
+				.sort(commentsComparator),
+			fnb: experienceReviews
+				.map((er) => er.fnbDescriptionComment)
+				.filter(notNull)
+				.sort(commentsComparator),
+			vibe: experienceReviews
+				.map((er) => er.vibeDescriptionComment)
+				.filter(notNull)
+				.sort(commentsComparator)
+		}
+	}
 
-    const comments = {
-        workplace: {
-            general: workplaceReviews.map(wr => wr.overallDescriptionComment).filter(notNull).sort(commentsComparator),
-            compensation: workplaceReviews.map(wr => wr.compensationDescriptionComment).filter(notNull).sort(commentsComparator),
-            guest: workplaceReviews.map(wr => wr.guestDescriptionComment).filter(notNull).sort(commentsComparator),
-            culture: workplaceReviews.map(wr => wr.cultureDescriptionComment).filter(notNull).sort(commentsComparator)
-        },
-        experience: {
-            general: experienceReviews.map(er => er.overallDescriptionComment).filter(notNull).sort(commentsComparator),
-            fnb: experienceReviews.map(er => er.fnbDescriptionComment).filter(notNull).sort(commentsComparator),
-            vibe: experienceReviews.map(er => er.vibeDescriptionComment).filter(notNull).sort(commentsComparator)
-        }
-    }
+	if (!place) {
+		error(404, "couldn't find a place with that id")
+	}
 
-    if (!place) {
-        error(404, "couldn't find a place with that id");
-    }
+	const userId = (await locals.auth.validate())?.user?.userId
 
-    const userId = (await locals.auth.validate())?.user?.userId
+	if (!userId) {
+		return { comments, place, userVerified: false }
+	}
 
-    if (!userId) {
-        return { comments, place, userVerified: false }
-    }
+	const user = await prisma.user.findUnique({
+		where: { id: userId },
+		include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } }
+	})
 
-    const user = await prisma.user.findUnique({ where: { id: userId }, include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } } })
+	if (!user) {
+		error(404, 'unexpected error')
+	}
 
-    if (!user) {
-        error(404, "unexpected error");
-    }
+	const usersCommentReactions = await prisma.reviewCommentReaction.findMany({
+		where: {
+			userId: user.id,
+			reviewComment: {
+				review: {
+					OR: [
+						{ workplaceReview: { placeId: place.id } },
+						{ experienceReview: { placeId: place.id } }
+					]
+				}
+			}
+		}
+	})
 
-    const usersCommentReactions = await prisma.reviewCommentReaction.findMany({
-        where: {
-            userId: user.id,
-            reviewComment: {
-                review: { OR: [{ workplaceReview: { placeId: place.id } }, { experienceReview: { placeId: place.id } }] }
-            }
-        }
-    })
+	const userVerified = !!user?.industryVerificationToken
 
-    const userVerified = !!user?.industryVerificationToken
-
-
-    return { comments, usersCommentReactions, place, userVerified };
-}) satisfies PageServerLoad;
-
+	return { comments, usersCommentReactions, place, userVerified }
+}) satisfies PageServerLoad
 
 export const actions: Actions = {
-    commentReaction: async ({ request, locals }) => {
-        const formData = await request.formData()
-        const commentId = formData.get('commentId')?.valueOf()
-        const agree = formData.get('agree')?.valueOf()
+	commentReaction: async ({ request, locals }) => {
+		const formData = await request.formData()
+		const commentId = formData.get('commentId')?.valueOf()
+		const agree = formData.get('agree')?.valueOf()
 
-        const reactionBool = agree === "agree" || (agree === "disagree" ? false : null)
+		const reactionBool = agree === 'agree' || (agree === 'disagree' ? false : null)
 
-        if (commentId === undefined || reactionBool === null) {
-            error(404, "required info not provied");
-        }
+		if (commentId === undefined || reactionBool === null) {
+			error(404, 'required info not provied')
+		}
 
-        const userId = (await locals.auth.validate())?.user?.userId
+		const userId = (await locals.auth.validate())?.user?.userId
 
-        if (!userId) {
-            error(404, 'user not logged in');
-        }
+		if (!userId) {
+			error(404, 'user not logged in')
+		}
 
-        const reactions = await prisma.reviewCommentReaction.findMany({ where: { reviewCommentId: commentId } })
+		const reactions = await prisma.reviewCommentReaction.findMany({
+			where: { reviewCommentId: commentId }
+		})
 
-        const existingReaction = reactions.find(r => r.userId === userId)
+		const existingReaction = reactions.find((r) => r.userId === userId)
 
-        if (existingReaction) {
-            if (existingReaction.agree === reactionBool) {
-                return
-            }
+		if (existingReaction) {
+			if (existingReaction.agree === reactionBool) {
+				return
+			}
 
-            await prisma.$transaction([
-                prisma.reviewComment.update({
-                    where: { id: commentId as string },
-                    data: {
-                        numberOfAgreements: { increment: reactionBool ? 1 : -1 },
-                        reactionScore: calculateReactionScore({
-                            reactions: reactions.length,
-                            agreements: reactions.filter(r => r.agree).length + (reactionBool ? 1 : -1)
-                        })
-                    }
-                }),
-                prisma.reviewCommentReaction.update({
-                    where: { id: existingReaction.id },
-                    data: { agree: reactionBool }
-                })
-            ])
+			await prisma.$transaction([
+				prisma.reviewComment.update({
+					where: { id: commentId as string },
+					data: {
+						numberOfAgreements: { increment: reactionBool ? 1 : -1 },
+						reactionScore: calculateReactionScore({
+							reactions: reactions.length,
+							agreements: reactions.filter((r) => r.agree).length + (reactionBool ? 1 : -1)
+						})
+					}
+				}),
+				prisma.reviewCommentReaction.update({
+					where: { id: existingReaction.id },
+					data: { agree: reactionBool }
+				})
+			])
 
-            return
-        }
+			return
+		}
 
-        await prisma.reviewComment.update({
-            where: { id: commentId as string },
-            data: {
-                numberOfAgreements: { increment: reactionBool ? 1 : 0 },
-                numberOfReactions: { increment: 1 },
-                reactionScore: reactionBool ? 1 : -1,
-                reactions: { create: { agree: reactionBool, user: { connect: { id: userId } } } }
-            }
-        })
+		await prisma.reviewComment.update({
+			where: { id: commentId as string },
+			data: {
+				numberOfAgreements: { increment: reactionBool ? 1 : 0 },
+				numberOfReactions: { increment: 1 },
+				reactionScore: reactionBool ? 1 : -1,
+				reactions: { create: { agree: reactionBool, user: { connect: { id: userId } } } }
+			}
+		})
 
-        return
-    }
+		return
+	}
 }
 
 function notNull<T>(x: T | undefined | null): x is T {
-    return x !== undefined && x !== null
+	return x !== undefined && x !== null
 }
 
 function commentsComparator(comment1: ReviewComment, comment2: ReviewComment): number {
-    return comment2.reactionScore - comment1.reactionScore
+	return comment2.reactionScore - comment1.reactionScore
 }
 
-function calculateReactionScore({ reactions, agreements }: { reactions: number, agreements: number }): number {
-    return ((2 * agreements) - reactions) / reactions
+function calculateReactionScore({
+	reactions,
+	agreements
+}: {
+	reactions: number
+	agreements: number
+}): number {
+	return (2 * agreements - reactions) / reactions
 }

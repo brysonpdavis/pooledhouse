@@ -1,25 +1,25 @@
 <script lang="ts">
-	import type { ActionData, PageData } from './$types';
-	import { copy } from 'svelte-copy';
-	import 'iconify-icon';
-	import { enhance } from '$app/forms';
+	import type { ActionData, PageData } from './$types'
+	import { copy } from 'svelte-copy'
+	import 'iconify-icon'
+	import { enhance } from '$app/forms'
 
-	export let data: PageData;
-	export let form: ActionData;
+	export let data: PageData
+	export let form: ActionData
 
-	let tokens = data.createdTokens;
+	let tokens = data.createdTokens
 
 	$: if (form?.newToken) {
-		tokens = [...tokens, form.newToken];
+		tokens = [...tokens, form.newToken]
 	}
 
-	$: consumedTokensCount = tokens.filter((t) => t.consumed).length;
+	$: consumedTokensCount = tokens.filter((t) => t.consumed).length
 
-	$: disableTokenGeneration = tokens.length >= 20 && consumedTokensCount !== tokens.length;
+	$: disableTokenGeneration = tokens.length >= 20 && consumedTokensCount !== tokens.length
 
-	$: console.log(tokens.length);
+	$: console.log(tokens.length)
 
-	let loading = false;
+	let loading = false
 </script>
 
 {#if data.userVerified}
@@ -28,10 +28,10 @@
 		here you can generate some verification codes. send them to your industry friends to get them
 		verified too!
 	</p>
-	<div
-		class="m-auto flex w-full max-w-md flex-col justify-items-center md:max-w-full"
-	>
-		<div class="flex flex-col justify-items-center gap-4 md:grid m-auto md:grid-cols-2 lg:grid-cols-3">
+	<div class="m-auto flex w-full max-w-md flex-col justify-items-center md:max-w-full">
+		<div
+			class="flex flex-col justify-items-center gap-4 md:grid m-auto md:grid-cols-2 lg:grid-cols-3"
+		>
 			{#each tokens as token}
 				<div class="card-bordered card w-80 p-4">
 					<div class="flex flex-row items-center gap-12">
@@ -78,11 +78,11 @@
 			method="post"
 			action="?/createToken"
 			use:enhance={() => {
-				loading = true;
+				loading = true
 				return async ({ update }) => {
-					loading = false;
-					await update();
-				};
+					loading = false
+					await update()
+				}
 			}}
 		>
 			<button
@@ -118,11 +118,11 @@
 		method="post"
 		action="?/verifyMe"
 		use:enhance={() => {
-			loading = true;
+			loading = true
 			return async ({ update }) => {
-				await update();
-				loading = false;
-			};
+				await update()
+				loading = false
+			}
 		}}
 	>
 		<div class="flex w-full max-w-lg flex-row gap-4">

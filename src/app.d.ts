@@ -10,7 +10,7 @@ declare global {
 		// interface Platform {}
 
 		interface Locals {
-			auth: import("lucia").AuthRequest;
+			auth: import('lucia').AuthRequest
 		}
 	}
 }
@@ -18,10 +18,10 @@ declare global {
 /// <reference types="lucia" />
 declare global {
 	namespace Lucia {
-		type Auth = import("$lib/server/lucia").Auth;
-		type DatabaseUserAttributes = {};
-		type DatabaseSessionAttributes = {};
+		type Auth = import('$lib/server/lucia').Auth
+		type DatabaseUserAttributes = NonNullable<unknown>
+		type DatabaseSessionAttributes = NonNullable<unknown>
 	}
 }
 
-export { };
+export {}

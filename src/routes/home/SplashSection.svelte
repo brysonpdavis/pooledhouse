@@ -1,8 +1,8 @@
 <script lang="ts">
-	export let href: string;
-	export let titleText: string;
-	export let bodyText: string;
-    export let buttonText: string;
+	export let href: string
+	export let titleText: string
+	export let bodyText: string
+	export let buttonText: string
 </script>
 
 <div class="card bg-base-200 p-4 lg:p-8 lg:w-1/3">

@@ -1,8 +1,6 @@
-import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import { redirect } from '@sveltejs/kit'
+import type { PageServerLoad } from './$types'
 
 export const load = (async () => {
-
-	redirect(303, '/auth/login?redirectFrom=nope');
-
-}) satisfies PageServerLoad;
+	redirect(303, '/auth/login?redirectFrom=nope')
+}) satisfies PageServerLoad

@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition';
-	import { page } from '$app/stores';
-	import type { PageData, ActionData } from './$types';
+	import { slide } from 'svelte/transition'
+	import { page } from '$app/stores'
+	import type { PageData, ActionData } from './$types'
 
-	export let data: PageData;
-	export let form: ActionData;
+	export let data: PageData
+	export let form: ActionData
 
-	let showControls = false;
-	let showUserData = false;
-	let refreshed = false;
+	let showControls = false
+	let showUserData = false
+	let refreshed = false
 
 	const numWorkplaceReviewsWritten = data.user.workplaceReviewTokens.filter(
 		(wrt) => !!wrt.workplaceReview
-	).length;
+	).length
 </script>
 
 <h1>welcome to the other side</h1>
@@ -50,8 +50,8 @@
 			<button
 				class="btn-outline btn-accent btn"
 				on:click={async () => {
-					const response = await fetch('/api/places/randomize', { method: 'POST' });
-					console.log(await response.json());
+					const response = await fetch('/api/places/randomize', { method: 'POST' })
+					console.log(await response.json())
 				}}
 			>
 				randomize scores
@@ -60,8 +60,8 @@
 			<button
 				class="btn-outline btn-secondary btn"
 				on:click={async () => {
-					const response = await fetch('/api/places/refresh-all', { method: 'POST' });
-					console.log(await response.json());
+					const response = await fetch('/api/places/refresh-all', { method: 'POST' })
+					console.log(await response.json())
 				}}
 			>
 				refresh scores
@@ -70,9 +70,9 @@
 			<button
 				class="btn-outline btn-secondary btn"
 				on:click={async () => {
-					const response = await fetch('/api/places/clear', { method: 'POST' });
-					console.log(await response.json());
-					refreshed = true;
+					const response = await fetch('/api/places/clear', { method: 'POST' })
+					console.log(await response.json())
+					refreshed = true
 				}}
 			>
 				clear scores

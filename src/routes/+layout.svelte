@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { inject } from '@vercel/analytics';
-	import NavWrapper from '$lib/components/NavWrapper.svelte';
-	import Loading from '$lib/components/Loading.svelte';
-	import type { PageData } from './$types';
-	import { navigating } from '$app/stores';
-	import { dev } from '$app/environment';
-	import '../app.css';
+	import { inject } from '@vercel/analytics'
+	import NavWrapper from '$lib/components/NavWrapper.svelte'
+	import Loading from '$lib/components/Loading.svelte'
+	import type { PageData } from './$types'
+	import { navigating } from '$app/stores'
+	import { dev } from '$app/environment'
+	import '../app.css'
 
-	inject({ mode: dev ? 'development' : 'production' });
+	inject({ mode: dev ? 'development' : 'production' })
 
-	export let data: PageData;
+	export let data: PageData
 </script>
 
 <svelte:head>

@@ -1,4 +1,4 @@
 export type PostPlacePayload = {
-    googlePlaceId: string
-    name: string
+	googlePlaceId: string
+	name: string
 }

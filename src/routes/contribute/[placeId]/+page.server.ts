@@ -1,105 +1,135 @@
-import type { PageServerLoad, Actions } from './$types';
-import { prisma } from '$lib/server/prisma';
-import { error, fail } from '@sveltejs/kit';
-import { postWorkplaceReviewFormDataSchema } from './post-workplace-review-form-zod-schema';
+import type { PageServerLoad, Actions } from './$types'
+import { prisma } from '$lib/server/prisma'
+import { error, fail } from '@sveltejs/kit'
+import { postWorkplaceReviewFormDataSchema } from './post-workplace-review-form-zod-schema'
 
 export const load = (async ({ locals, params }) => {
-    const userId = (await locals.auth.validate())?.user?.userId
+	const userId = (await locals.auth.validate())?.user?.userId
 
-    if (!userId) {
-        return { userVerified: false }
-    }
+	if (!userId) {
+		return { userVerified: false }
+	}
 
-    const user = await prisma.user.findUnique({ where: { id: userId }, include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } } })
+	const user = await prisma.user.findUnique({
+		where: { id: userId },
+		include: { workplaceReviewTokens: { include: { workplaceReview: { select: { id: true } } } } }
+	})
 
-    if (!user) {
-        error(404, "unexpected error");
-    }
+	if (!user) {
+		error(404, 'unexpected error')
+	}
 
-    const previousWorkplaceReview = await prisma.workplaceReview.findFirst({ where: { createdByUserId: user.id, placeId: params.placeId } })
+	const previousWorkplaceReview = await prisma.workplaceReview.findFirst({
+		where: { createdByUserId: user.id, placeId: params.placeId }
+	})
 
-    const previousExperienceReview = await prisma.experienceReview.findFirst({ where: { createdByUserId: user.id, placeId: params.placeId } })
+	const previousExperienceReview = await prisma.experienceReview.findFirst({
+		where: { createdByUserId: user.id, placeId: params.placeId }
+	})
 
-    const unusedWorkplaceReviewTokens = user?.workplaceReviewTokens.filter(({ workplaceReview }) => workplaceReview === null)
+	const unusedWorkplaceReviewTokens = user?.workplaceReviewTokens.filter(
+		({ workplaceReview }) => workplaceReview === null
+	)
 
-    return { previousWorkplaceReview, previousExperienceReview, userVerified: user.industryVerificationToken !== null, reviewToken: unusedWorkplaceReviewTokens.at(0)?.token };
-}) satisfies PageServerLoad;
+	return {
+		previousWorkplaceReview,
+		previousExperienceReview,
+		userVerified: user.industryVerificationToken !== null,
+		reviewToken: unusedWorkplaceReviewTokens.at(0)?.token
+	}
+}) satisfies PageServerLoad
 
 export const actions: Actions = {
-    postWorkplaceReview: async ({ request, locals, params, fetch }) => {
-        const session = await locals.auth.validate()
+	postWorkplaceReview: async ({ request, locals, params, fetch }) => {
+		const session = await locals.auth.validate()
 
-        const userId = session?.user?.userId
+		const userId = session?.user?.userId
 
-        if (userId === null) {
-            return { reviewFailed: true, failureReason: 'user not logged in' }
-        }
+		if (userId === null) {
+			return { reviewFailed: true, failureReason: 'user not logged in' }
+		}
 
-        const user = await prisma.user.findUnique({ where: { id: userId } })
+		const user = await prisma.user.findUnique({ where: { id: userId } })
 
-        if (!user || !user.industryVerificationToken) {
-            return { reviewFailed: true, failureReason: 'user not verified' }
-        }
+		if (!user || !user.industryVerificationToken) {
+			return { reviewFailed: true, failureReason: 'user not verified' }
+		}
 
-        const formData = Object.fromEntries(await request.formData())
+		const formData = Object.fromEntries(await request.formData())
 
-        const parsedData = await postWorkplaceReviewFormDataSchema.safeParseAsync(formData)
+		const parsedData = await postWorkplaceReviewFormDataSchema.safeParseAsync(formData)
 
-        if (!parsedData.success) {
-            return fail(400, { workplaceReviewSchemaErrors: parsedData.error.format() })
-        }
+		if (!parsedData.success) {
+			return fail(400, { workplaceReviewSchemaErrors: parsedData.error.format() })
+		}
 
-        const { id } = await prisma.review.create({ data: { createdByUser: { connect: { id: userId } } } })
+		const { id } = await prisma.review.create({
+			data: { createdByUser: { connect: { id: userId } } }
+		})
 
-        console.log('review id: ', id)
+		console.log('review id: ', id)
 
-        const result = await prisma.workplaceReview.create({
-            data: {
-                review: { connect: { id } },
-                createdByUser: {
-                    connect: { id: userId }
-                },
-                place: { connect: { id: params.placeId } },
-                overallDescriptionComment: { create: { text: parsedData.data.general, review: { connect: { id } } } },
-                overallRating: parsedData.data.rating,
-                compensationRating: parsedData.data.compensation,
-                compensationDescriptionComment: parsedData.data.compensationDescription ? { create: { text: parsedData.data.compensationDescription!, review: { connect: { id } } } } : undefined,
-                guestDescriptionComment: parsedData.data.guestDescription ? { create: { text: parsedData.data.guestDescription, review: { connect: { id } } } } : undefined,
-                cultureDescriptionComment: parsedData.data.cultureDescription ? { create: { text: parsedData.data.cultureDescription, review: { connect: { id } } } } : undefined,
-                idealForComment: parsedData.data.idealFor ? { create: { text: parsedData.data.idealFor, review: { connect: { id } } } } : undefined,
-                workplaceReviewToken: { connect: { token: parsedData.data.workplaceReviewToken } },
-            }
-        })
+		const result = await prisma.workplaceReview.create({
+			data: {
+				review: { connect: { id } },
+				createdByUser: {
+					connect: { id: userId }
+				},
+				place: { connect: { id: params.placeId } },
+				overallDescriptionComment: {
+					create: { text: parsedData.data.general, review: { connect: { id } } }
+				},
+				overallRating: parsedData.data.rating,
+				compensationRating: parsedData.data.compensation,
+				compensationDescriptionComment: parsedData.data.compensationDescription
+					? {
+							create: {
+								text: parsedData.data.compensationDescription!,
+								review: { connect: { id } }
+							}
+						}
+					: undefined,
+				guestDescriptionComment: parsedData.data.guestDescription
+					? { create: { text: parsedData.data.guestDescription, review: { connect: { id } } } }
+					: undefined,
+				cultureDescriptionComment: parsedData.data.cultureDescription
+					? { create: { text: parsedData.data.cultureDescription, review: { connect: { id } } } }
+					: undefined,
+				idealForComment: parsedData.data.idealFor
+					? { create: { text: parsedData.data.idealFor, review: { connect: { id } } } }
+					: undefined,
+				workplaceReviewToken: { connect: { token: parsedData.data.workplaceReviewToken } }
+			}
+		})
 
-        console.log(JSON.stringify(result, undefined, 2))
+		console.log(JSON.stringify(result, undefined, 2))
 
-        await refreshPlaceScores(params.placeId, fetch).catch(console.warn)
+		await refreshPlaceScores(params.placeId, fetch).catch(console.warn)
 
-        return { postWorkplaceReviewSuccess: true }
-    },
-    postExperienceReview: async ({ request, params, fetch }) => {
-        console.log('posting experience review..........', await request.formData())
+		return { postWorkplaceReviewSuccess: true }
+	},
+	postExperienceReview: async ({ request, params, fetch }) => {
+		console.log('posting experience review..........', await request.formData())
 
-        // TODO: implement this action...
+		// TODO: implement this action...
 
-        await refreshPlaceScores(params.placeId, fetch)
+		await refreshPlaceScores(params.placeId, fetch)
 
-        return { postExperienceReviewSuccess: true }
-    },
-    deleteReview: async ({ request }) => {
+		return { postExperienceReviewSuccess: true }
+	},
+	deleteReview: async ({ request }) => {
+		const reviewId = (await request.formData()).get('reviewId')?.valueOf()
 
-        const reviewId = (await request.formData()).get('reviewId')?.valueOf()
+		if (!reviewId || typeof reviewId !== 'string') {
+			return { deleteFailed: true }
+		}
 
-        if (!reviewId || typeof reviewId !== "string") {
-            return { deleteFailed: true }
-        }
+		const res = await prisma.workplaceReview.delete({ where: { id: reviewId } })
 
-        const res = await prisma.workplaceReview.delete({ where: { id: reviewId } })
-
-        console.log('deleted: ', res)
-    }
+		console.log('deleted: ', res)
+	}
 }
 
 async function refreshPlaceScores(placeId: string, fetchMethod: typeof fetch) {
-    await fetchMethod(`/api/places/${placeId}/refresh`, { method: 'POST' })
+	await fetchMethod(`/api/places/${placeId}/refresh`, { method: 'POST' })
 }

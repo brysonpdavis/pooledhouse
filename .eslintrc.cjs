@@ -21,5 +21,12 @@ module.exports = {
 		browser: true,
 		es2017: true,
 		node: true
+	},
+	rules: {
+		'@typescript-eslint/no-inferrable-types': 'off',
+		'no-undef': 'off',
+		'no-extra-boolean-cast': 'off',
+		'no-self-assign': 'off',
+		'@typescript-eslint/ban-ts-comment': 'off'
 	}
-};
+}

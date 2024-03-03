@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { enhance } from '$app/forms'
 
-	export let placeId: string;
-	export let successfullyPosted: boolean = false;
+	export let placeId: string
+	export let successfullyPosted: boolean = false
 </script>
 
 {#if successfullyPosted}

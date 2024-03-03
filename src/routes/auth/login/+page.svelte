@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { enhance } from '$app/forms'
+	import { goto } from '$app/navigation'
+	import { page } from '$app/stores'
 
-	export let form;
+	export let form
 
-	let identifier = '';
-	let loginMethod: 'email' | 'phone' = 'email';
-	let submitting = false;
+	let identifier = ''
+	let loginMethod: 'email' | 'phone' = 'email'
+	let submitting = false
 </script>
 
 <div class="m-auto flex h-full w-fit flex-col gap-4 lg:justify-center">
@@ -21,15 +21,15 @@
 		action="?/login"
 		method="post"
 		use:enhance={() => {
-			submitting = true;
+			submitting = true
 
 			if (loginMethod === 'phone') {
-				goto(`/auth/login/sms-otp/${identifier}`);
+				goto(`/auth/login/sms-otp/${identifier}`)
 			}
 
-			return ({result, update}) => {
-				submitting = false;
-				update({reset: false})
+			return ({ result, update }) => {
+				submitting = false
+				update({ reset: false })
 			}
 		}}
 		class="flex flex-col"

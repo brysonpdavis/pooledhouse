@@ -1,19 +1,15 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition';
-	export let form;
-	let countryCode = '+1';
-	let hasVerificationCode: boolean = false;
-	let loading = false;
+	import { slide } from 'svelte/transition'
+	export let form
+	let countryCode = '+1'
+	let hasVerificationCode: boolean = false
+	let loading = false
 </script>
 
 <div class="m-auto w-fit h-full flex lg:justify-center flex-col gap-4">
 	<h1 class="m-0 font-extralight uppercase tracking-wide text-accent">register</h1>
 	<h2 class="m-0 font-light">let's get you in the system</h2>
-	<form
-		class="form-control max-w-xl gap-4"
-		method="post"
-		on:submit={() => (loading = true)}
-	>
+	<form class="form-control max-w-xl gap-4" method="post" on:submit={() => (loading = true)}>
 		<label class="input-group">
 			<input
 				required
@@ -69,7 +65,9 @@
 				<span class="w-20 flex-shrink-0">code</span>
 			</label>
 		{/if}
-		<button type="submit" class="btn-secondary btn" class:loading disabled={loading}> submit </button>
+		<button type="submit" class="btn-secondary btn" class:loading disabled={loading}>
+			submit
+		</button>
 		{#if form?.message}
 			<div class="text-red-400">{form.message}</div>
 		{/if}

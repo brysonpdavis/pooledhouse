@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-	import ContributeLoggedInPage from './ContributeLoggedInPage.svelte';
-	import ContributeLoggedOutPage from './ContributeLoggedOutPage.svelte';
-	import ContributeVerifiedPage from './ContributeVerifiedPage.svelte';
+	import type { PageData } from './$types'
+	import ContributeLoggedInPage from './ContributeLoggedInPage.svelte'
+	import ContributeLoggedOutPage from './ContributeLoggedOutPage.svelte'
+	import ContributeVerifiedPage from './ContributeVerifiedPage.svelte'
 
-	export let data: PageData;
+	export let data: PageData
 </script>
 
 {#if data.userVerified}

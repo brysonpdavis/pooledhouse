@@ -1,17 +1,18 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { slide } from 'svelte/transition';
-	import FormError from '$lib/components/FormError.svelte';
-	import type { ZodFormattedError } from 'zod';
-	import type { postWorkplaceReviewFormDataSchema } from './post-workplace-review-form-zod-schema';
+	import { enhance } from '$app/forms'
+	import { slide } from 'svelte/transition'
+	import FormError from '$lib/components/FormError.svelte'
+	import type { ZodFormattedError } from 'zod'
+	import type { postWorkplaceReviewFormDataSchema } from './post-workplace-review-form-zod-schema'
 
+	export let placeId: string
+	export let successfullyPosted: boolean = false
+	export let workplaceReviewToken: string
+	export let zodErrors:
+		| ZodFormattedError<(typeof postWorkplaceReviewFormDataSchema)['_type']>
+		| undefined
 
-	export let placeId: string;
-	export let successfullyPosted: boolean = false;
-	export let workplaceReviewToken: string;
-	export let zodErrors: ZodFormattedError<(typeof postWorkplaceReviewFormDataSchema)['_type']> | undefined;
-
-	let showOptionalQuestions: boolean = false;
+	let showOptionalQuestions: boolean = false
 </script>
 
 {#if successfullyPosted}
@@ -51,10 +52,12 @@
 			<input value={100} type="radio" name="compensation" class="mask-dollar mask bg-green-700" />
 		</div>
 		<label class="label">
-			<span class="label-text text-accent">have an extra second to answer a few more questions?</span>
+			<span class="label-text text-accent"
+				>have an extra second to answer a few more questions?</span
+			>
 			<input type="checkbox" class="toggle-accent toggle" bind:checked={showOptionalQuestions} />
 		</label>
-	
+
 		{#if showOptionalQuestions}
 			<label
 				class:hidden={!showOptionalQuestions}

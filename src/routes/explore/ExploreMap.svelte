@@ -1,87 +1,87 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
-	import * as Gmaps from '@googlemaps/js-api-loader';
-	const { Loader } = Gmaps;
-	import 'iconify-icon';
+	import { onMount } from 'svelte'
+	import { slide } from 'svelte/transition'
+	import * as Gmaps from '@googlemaps/js-api-loader'
+	const { Loader } = Gmaps
+	import 'iconify-icon'
 
-	import { PUBLIC_GOOGLE_MAPS_API_KEY, PUBLIC_GOOGLE_MAPS_MAP_ID } from '$env/static/public';
-	import { postPlace } from '$lib/handlers/places';
-	import { page } from '$app/stores';
-	import type { Place } from '@prisma/client';
-	import { shadeColor } from '$lib/utils/colors';
-	import Loading from '$lib/components/Loading.svelte';
-	import AddPlaceButton from './AddPlaceButton.svelte';
-	import { scoreColorGradient } from '$lib/utils/colors';
-	import { sleep } from '$lib/utils/async';
+	import { PUBLIC_GOOGLE_MAPS_API_KEY, PUBLIC_GOOGLE_MAPS_MAP_ID } from '$env/static/public'
+	import { postPlace } from '$lib/handlers/places'
+	import { page } from '$app/stores'
+	import type { Place } from '@prisma/client'
+	import { shadeColor } from '$lib/utils/colors'
+	import Loading from '$lib/components/Loading.svelte'
+	import AddPlaceButton from './AddPlaceButton.svelte'
+	import { scoreColorGradient } from '$lib/utils/colors'
+	import { sleep } from '$lib/utils/async'
 
-	export let places: Place[];
+	export let places: Place[]
 
-	const loggedIn = $page.data.session?.user;
+	const loggedIn = $page.data.session?.user
 
-	const NO_SCORE_MARKER_COLOR = '#777777';
-	const INITIAL_MARKER_DROP_ANIMATION_SECONDS = 1;
-	const NYC_COORDINATES = { lat: 40.73, lng: -73.93 };
+	const NO_SCORE_MARKER_COLOR = '#777777'
+	const INITIAL_MARKER_DROP_ANIMATION_SECONDS = 1
+	const NYC_COORDINATES = { lat: 40.73, lng: -73.93 }
 
 	let googleLibraries: {
-		maps: google.maps.MapsLibrary;
-		markers: google.maps.MarkerLibrary;
-		places: google.maps.PlacesLibrary;
-		core: google.maps.CoreLibrary;
-	};
+		maps: google.maps.MapsLibrary
+		markers: google.maps.MarkerLibrary
+		places: google.maps.PlacesLibrary
+		core: google.maps.CoreLibrary
+	}
 
 	const googlePlaceIdToExistingPlaceDict: Map<
 		string,
 		{ data: Place; marker: google.maps.marker.AdvancedMarkerElement }
-	> = new Map();
+	> = new Map()
 
-	let map: google.maps.Map;
-	let tempMarker: google.maps.marker.AdvancedMarkerElement;
-	let currentAutocompletePlace: google.maps.places.PlaceResult | undefined;
-	let autocompletePlaceInfoWindow: google.maps.InfoWindow;
-	let infoWindow: google.maps.InfoWindow;
-	let popUpInfoWindowPlace: Place | undefined = places.at(0);
+	let map: google.maps.Map
+	let tempMarker: google.maps.marker.AdvancedMarkerElement
+	let currentAutocompletePlace: google.maps.places.PlaceResult | undefined
+	let autocompletePlaceInfoWindow: google.maps.InfoWindow
+	let infoWindow: google.maps.InfoWindow
+	let popUpInfoWindowPlace: Place | undefined = places.at(0)
 
-	let showFilters = false;
-	let hideUnreviewed = false;
+	let showFilters = false
+	let hideUnreviewed = false
 
-	let placeIdsToHide = new Set<string>();
+	let placeIdsToHide = new Set<string>()
 
-	let initialLoading = true;
-	let uploadSuccess = false;
-	let uploadInProgress = false;
+	let initialLoading = true
+	let uploadSuccess = false
+	let uploadInProgress = false
 
 	$: popUpInfoWindowPlacePageUrl = !!popUpInfoWindowPlace
 		? `/places/${popUpInfoWindowPlace.id}`
-		: '/';
+		: '/'
 
 	$: canAddPlace =
 		!!loggedIn &&
 		!!currentAutocompletePlace &&
-		!places.find((p) => p.googlePlaceId === currentAutocompletePlace?.place_id);
+		!places.find((p) => p.googlePlaceId === currentAutocompletePlace?.place_id)
 
 	$: {
-		const placeIdsToHideTemp = new Set<string>();
+		const placeIdsToHideTemp = new Set<string>()
 
 		if (hideUnreviewed) {
 			for (const p of places) {
 				if (p.workplaceScore === null) {
-					placeIdsToHideTemp.add(p.googlePlaceId);
+					placeIdsToHideTemp.add(p.googlePlaceId)
 				}
 			}
 		}
 
 		// TODO: add new filters here vvv
 
-		placeIdsToHide = placeIdsToHideTemp;
+		placeIdsToHide = placeIdsToHideTemp
 	}
 
 	$: {
 		for (const { data, marker } of googlePlaceIdToExistingPlaceDict.values()) {
 			if (placeIdsToHide.has(data.googlePlaceId)) {
-				marker.map = null;
+				marker.map = null
 			} else {
-				marker.map = map;
+				marker.map = map
 			}
 		}
 	}
@@ -91,7 +91,7 @@
 		version: 'beta',
 		libraries: ['places', 'marker'],
 		authReferrerPolicy: 'origin'
-	});
+	})
 
 	const mapOptions: google.maps.MapOptions = {
 		center: NYC_COORDINATES,
@@ -99,21 +99,19 @@
 		clickableIcons: false,
 		disableDefaultUI: true,
 		mapId: PUBLIC_GOOGLE_MAPS_MAP_ID
-	};
+	}
 
-	onMount(initializeMap);
+	const initializeMap = async () => {
+		places.sort((p1, p2) => p2.lat - p1.lat)
 
-	async function initializeMap() {
-		places.sort((p1, p2) => p2.lat - p1.lat);
+		await importGoogleMapsLibraries()
 
-		await importGoogleMapsLibraries();
+		const { Map, Circle, InfoWindow } = googleLibraries.maps
+		const { AdvancedMarkerElement, PinElement } = googleLibraries.markers
+		const { Autocomplete } = googleLibraries.places
+		const { LatLng, ControlPosition } = googleLibraries.core
 
-		const { Map, Circle, InfoWindow } = googleLibraries.maps;
-		const { AdvancedMarkerElement, PinElement } = googleLibraries.markers;
-		const { Autocomplete } = googleLibraries.places;
-		const { LatLng, ControlPosition } = googleLibraries.core;
-
-		map = new Map(document.getElementById('map')!, mapOptions);
+		map = new Map(document.getElementById('map')!, mapOptions)
 
 		// temp marker for searched places
 		tempMarker = new AdvancedMarkerElement({
@@ -123,21 +121,21 @@
 				background: '#007FFF',
 				glyphColor: 'white'
 			}).element
-		});
+		})
 
-		tempMarker.element.onmouseover = () => popUpInfoWindowForCurrentAutocompletePlace();
+		tempMarker.element.onmouseover = () => popUpInfoWindowForCurrentAutocompletePlace()
 
-		initialLoading = false;
+		initialLoading = false
 
-		const infoWindowContent = document.getElementById('info-window-content') as HTMLElement;
-		infoWindow = new InfoWindow({ content: infoWindowContent });
+		const infoWindowContent = document.getElementById('info-window-content') as HTMLElement
+		infoWindow = new InfoWindow({ content: infoWindowContent })
 
 		const autocompletePlaceInfoWindowContent = document.getElementById(
 			'autocomplete-place-info-window-content'
-		) as HTMLElement;
-		autocompletePlaceInfoWindow = new InfoWindow({ content: autocompletePlaceInfoWindowContent });
+		) as HTMLElement
+		autocompletePlaceInfoWindow = new InfoWindow({ content: autocompletePlaceInfoWindowContent })
 
-		const input = document.getElementById('pac-input') as HTMLInputElement;
+		const input = document.getElementById('pac-input') as HTMLInputElement
 		const autocomplete = new Autocomplete(input, {
 			fields: ['place_id', 'name', 'formatted_address', 'geometry'],
 			types: ['restaurant', 'night_club', 'cafe', 'bar', 'casino'],
@@ -146,185 +144,181 @@
 				radius: 12000
 			}).getBounds()!,
 			strictBounds: true
-		});
+		})
 
-		const pacInputContainer = document.getElementById('pac-input-container')!;
+		const pacInputContainer = document.getElementById('pac-input-container')!
 
 		// this will position the location input
-		map.controls[ControlPosition.TOP_LEFT].push(pacInputContainer);
+		map.controls[ControlPosition.TOP_LEFT].push(pacInputContainer)
 
-		const filterButton = document.getElementById('filter-button-container')!;
+		const filterButton = document.getElementById('filter-button-container')!
 
-		map.controls[ControlPosition.TOP_RIGHT].push(filterButton);
+		map.controls[ControlPosition.TOP_RIGHT].push(filterButton)
 
 		autocomplete.addListener('place_changed', () => {
-			const place = autocomplete.getPlace();
+			const place = autocomplete.getPlace()
 
-			console.log('place: ', place);
+			console.log('place: ', place)
 
-			currentAutocompletePlace = autocomplete.getPlace();
+			currentAutocompletePlace = autocomplete.getPlace()
 
 			if (!place.geometry || !place.geometry.location) {
-				return;
+				return
 			}
 
 			if (place.geometry.viewport) {
-				map.fitBounds(place.geometry.viewport);
+				map.fitBounds(place.geometry.viewport)
 			} else {
-				map.setCenter(place.geometry.location);
-				map.setZoom(17);
+				map.setCenter(place.geometry.location)
+				map.setZoom(17)
 			}
 
-			const existingPlace = googlePlaceIdToExistingPlaceDict.get(place.place_id!);
+			const existingPlace = googlePlaceIdToExistingPlaceDict.get(place.place_id!)
 
 			if (existingPlace) {
-				popUpInfoWindow(existingPlace.data, existingPlace.marker);
+				popUpInfoWindow(existingPlace.data, existingPlace.marker)
 			} else {
-				tempMarker.position = place.geometry.location;
-				tempMarker.title = place.name || '';
+				tempMarker.position = place.geometry.location
+				tempMarker.title = place.name || ''
 			}
 
 			infoWindow.close()
 
-			popUpInfoWindowForCurrentAutocompletePlace();
-		});
+			popUpInfoWindowForCurrentAutocompletePlace()
+		})
 
-		createPlaceMarkers(places);
+		createPlaceMarkers(places)
 	}
 
-	async function createPlaceMarkers(places: Place[]) {
+	const createPlaceMarkers = async (places: Place[]) => {
 		// change color of each marker based on value
 		for (const place of places) {
 			const markerColor =
 				place.workplaceScore !== null
 					? `#${scoreColorGradient.colorAt(place.workplaceScore)}`
-					: NO_SCORE_MARKER_COLOR;
+					: NO_SCORE_MARKER_COLOR
 
-			createMarkerFromPlace(place, markerColor);
+			createMarkerFromPlace(place, markerColor)
 
-			await sleep((INITIAL_MARKER_DROP_ANIMATION_SECONDS * 1000) / places.length);
+			await sleep((INITIAL_MARKER_DROP_ANIMATION_SECONDS * 1000) / places.length)
 		}
 	}
 
-	function createMarkerFromPlace(place: Place, markerColor: string) {
+	const createMarkerFromPlace = (place: Place, markerColor: string) => {
 		const content = new googleLibraries.markers.PinElement({
-				borderColor: shadeColor(markerColor, -30),
-				background: markerColor,
-				glyphColor: shadeColor(markerColor, -30),
-				glyph: null
-			}).element
+			borderColor: shadeColor(markerColor, -30),
+			background: markerColor,
+			glyphColor: shadeColor(markerColor, -30),
+			glyph: null
+		}).element
 
 		content.classList.add('drop')
-		
 
 		const marker = new googleLibraries.markers.AdvancedMarkerElement({
 			position: { lat: place.lat, lng: place.lng },
 			content,
 			map
-		});
+		})
 
+		marker.content!.addEventListener('animationend', () => content.classList.remove('drop'))
 
-		marker.content!.addEventListener('animationend', () =>
-			content.classList.remove('drop')
-		);
-
-		const markerElement = marker.element;
+		const markerElement = marker.element
 
 		if (markerElement) {
 			markerElement.onmouseover = () => {
-				popUpInfoWindow(place, marker);
-			};
+				popUpInfoWindow(place, marker)
+			}
 		}
 
 		marker.addListener('dblclick', () => {
-			map.setCenter({ lat: place.lat, lng: place.lng });
-			map.setZoom(17);
-		});
+			map.setCenter({ lat: place.lat, lng: place.lng })
+			map.setZoom(17)
+		})
 
 		marker.addListener('mouseover', () => {
 			// pop up info card
-			popUpInfoWindow(place, marker);
-		});
+			popUpInfoWindow(place, marker)
+		})
 
 		marker.addListener('gmp-click', () => {
-			popUpInfoWindow(place, marker);
-			bounceAnimation(content);
-		});
+			popUpInfoWindow(place, marker)
+			bounceAnimation(content)
+		})
 
-		googlePlaceIdToExistingPlaceDict.set(place.googlePlaceId, { data: place, marker });
+		googlePlaceIdToExistingPlaceDict.set(place.googlePlaceId, { data: place, marker })
 
-		return marker;
+		return marker
 	}
 
-	function bounceAnimation(markerContent: Element) {
-		markerContent.classList.add('bounce');
+	const bounceAnimation = (markerContent: Element) => {
+		markerContent.classList.add('bounce')
 
-		markerContent.addEventListener('animationend', () =>
-			markerContent.classList.remove('bounce')
-		);
+		markerContent.addEventListener('animationend', () => markerContent.classList.remove('bounce'))
 	}
 
-	async function handleClickAdd() {
+	const handleClickAdd = async () => {
 		if (!currentAutocompletePlace) {
-			return;
+			return
 		}
 
-		uploadInProgress = true;
+		uploadInProgress = true
 
 		const postedPlace = await postPlace({
 			name: currentAutocompletePlace.name!,
 			googlePlaceId: currentAutocompletePlace.place_id!,
 			address: currentAutocompletePlace.formatted_address || currentAutocompletePlace.adr_address!,
-			lat: currentAutocompletePlace.geometry?.location?.lat()!,
-			lng: currentAutocompletePlace.geometry?.location?.lng()!,
-			createdByUserId: $page.data.session?.user?.userId!
-		});
+			lat: currentAutocompletePlace.geometry!.location!.lat(),
+			lng: currentAutocompletePlace.geometry!.location!.lng(),
+			createdByUserId: $page.data.session!.user!.userId
+		})
 
 		console.log({ postedPlace })
 
 		if (postedPlace !== 'error') {
-			places.push(postedPlace);
-			places = places;
-			popUpInfoWindow(postedPlace, createMarkerFromPlace(postedPlace, NO_SCORE_MARKER_COLOR));
-			autocompletePlaceInfoWindow.close();
-			tempMarker.position = null;
+			places.push(postedPlace)
+			places = places
+			popUpInfoWindow(postedPlace, createMarkerFromPlace(postedPlace, NO_SCORE_MARKER_COLOR))
+			autocompletePlaceInfoWindow.close()
+			tempMarker.position = null
 		}
 
-		uploadInProgress = false;
-		uploadSuccess = postedPlace !== 'error';
+		uploadInProgress = false
+		uploadSuccess = postedPlace !== 'error'
 	}
 
-	type InfoWindowOpenAnchorType = Parameters<(typeof infoWindow)['open']>[1];
+	type InfoWindowOpenAnchorType = Parameters<(typeof infoWindow)['open']>[1]
 
-	function popUpInfoWindow(place: Place, anchor: InfoWindowOpenAnchorType) {
-		popUpInfoWindowPlace = place;
-		infoWindow.open(map, anchor);
+	const popUpInfoWindow = (place: Place, anchor: InfoWindowOpenAnchorType) => {
+		popUpInfoWindowPlace = place
+		infoWindow.open(map, anchor)
 	}
 
-	function popUpInfoWindowForCurrentAutocompletePlace() {
-		if (!currentAutocompletePlace?.place_id) return;
+	const popUpInfoWindowForCurrentAutocompletePlace = () => {
+		if (!currentAutocompletePlace?.place_id) return
 
-		const existingPlace = googlePlaceIdToExistingPlaceDict.get(currentAutocompletePlace.place_id);
+		const existingPlace = googlePlaceIdToExistingPlaceDict.get(currentAutocompletePlace.place_id)
 
 		if (!!existingPlace) {
-			existingPlace.marker.map = map;
-			popUpInfoWindow(existingPlace.data, existingPlace.marker);
+			existingPlace.marker.map = map
+			popUpInfoWindow(existingPlace.data, existingPlace.marker)
 			autocompletePlaceInfoWindow.close()
 		} else {
-			autocompletePlaceInfoWindow.open(map, tempMarker);
+			autocompletePlaceInfoWindow.open(map, tempMarker)
 		}
 	}
 
-	async function importGoogleMapsLibraries() {
+	const importGoogleMapsLibraries = async () => {
 		const [maps, markers, placesLibrary, core] = await Promise.all([
 			loader.importLibrary('maps'),
 			loader.importLibrary('marker'),
 			loader.importLibrary('places'),
 			loader.importLibrary('core')
-		]);
+		])
 
-		googleLibraries = { maps, markers, places: placesLibrary, core };
+		googleLibraries = { maps, markers, places: placesLibrary, core }
 	}
+
+	onMount(initializeMap)
 </script>
 
 {#if initialLoading}

@@ -1,26 +1,26 @@
 <script lang="ts">
-	import Comment from './Comment.svelte';
-	import type { PageData } from './$types';
-	import type { ReviewCommentReaction } from '@prisma/client';
-	import { slide } from 'svelte/transition';
-	import { scoreColorGradient } from '$lib/utils/colors';
-	import {page} from '$app/stores'
+	import Comment from './Comment.svelte'
+	import type { PageData } from './$types'
+	import type { ReviewCommentReaction } from '@prisma/client'
+	import { slide } from 'svelte/transition'
+	import { scoreColorGradient } from '$lib/utils/colors'
+	import { page } from '$app/stores'
 
-	export let data: PageData;
+	export let data: PageData
 
-	let showSection: 'workplace' | 'experience' = 'workplace';
+	let showSection: 'workplace' | 'experience' = 'workplace'
 
 	const usersCommentReactionsByCommentId = data.usersCommentReactions?.reduce(
 		(map, cr) => map.set(cr.reviewCommentId, cr),
 		new Map<string, ReviewCommentReaction>()
-	);
+	)
 
 	const workplaceSections: { key: keyof typeof data.comments.workplace; heading: string }[] = [
 		{ key: 'general', heading: 'what everyone should know' },
 		{ key: 'compensation', heading: 'compensation' },
 		{ key: 'culture', heading: "what's the culture like?" },
 		{ key: 'guest', heading: 'how are the guests?' }
-	];
+	]
 
 	// TODO: uncomment this out when experience reviews are implemented
 	// const experienceSections: { key: keyof typeof data.comments.experience; heading: string }[] = [
@@ -57,10 +57,7 @@
 
 	<div class="flex w-full flex-col gap-4">
 		{#if showSection === 'workplace'}
-			<div
-				transition:slide={{ axis: 'y' }}
-				class="flex flex-grow overflow-hidden p-4"
-			>
+			<div transition:slide={{ axis: 'y' }} class="flex flex-grow overflow-hidden p-4">
 				<div class="flex w-full flex-col gap-4">
 					<div class="flex flex-col items-center gap-4 xl:flex-row xl:justify-between">
 						<div
@@ -107,10 +104,7 @@
 		{/if}
 
 		{#if showSection === 'experience'}
-			<div
-				transition:slide={{ axis: 'y' }}
-				class="flex flex-grow overflow-hidden p-4"
-			>
+			<div transition:slide={{ axis: 'y' }} class="flex flex-grow overflow-hidden p-4">
 				<div class="flex w-full flex-col gap-4">
 					<div class="flex flex-col items-center gap-4 xl:flex-row xl:justify-between">
 						<div

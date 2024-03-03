@@ -1,11 +1,11 @@
 <script lang="ts">
 	// @ts-ignore
-	import MapExample from '$lib/assets/map-example.png?format=webp';
-	import SplashSection from './SplashSection.svelte';
+	import MapExample from '$lib/assets/map-example.png?format=webp'
+	import SplashSection from './SplashSection.svelte'
 </script>
 
 <div class="flex flex-col items-center gap-8 lg:gap-16">
-	<div class="flex flex-col items-center pt-10 sm:pt-24 lg:pt-32 ">
+	<div class="flex flex-col items-center pt-10 sm:pt-24 lg:pt-32">
 		<h1
 			class="text-balance my-0 max-w-5xl text-center text-3xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl"
 		>
@@ -62,8 +62,8 @@
 	<div class="card w-full max-w-7xl bg-base-200 p-4">
 		<div class="text-2xl font-extrabold uppercase tracking-wider text-accent">for the culture</div>
 		<p class="mb-0 lg:text-xl">
-			built for the heart of the restaurant industry. pooledhouse remains free, 
-			dedicated to the culture, and guarantees anonymity of reviews.
+			built for the heart of the restaurant industry. pooledhouse remains free, dedicated to the
+			culture, and guarantees anonymity of reviews.
 		</p>
 	</div>
 </div>

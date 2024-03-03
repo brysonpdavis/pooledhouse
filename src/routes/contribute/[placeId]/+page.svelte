@@ -1,15 +1,15 @@
 <script lang="ts">
-	import type { ActionData, PageData } from './$types';
-	import { enhance } from '$app/forms';
-	import { page } from '$app/stores';
-	import Modal from '$lib/components/Modal.svelte';
-	import WorkplaceReviewForm from './WorkplaceReviewForm.svelte';
-	import ExperienceReviewForm from './ExperienceReviewForm.svelte';
+	import type { ActionData, PageData } from './$types'
+	import { enhance } from '$app/forms'
+	import { page } from '$app/stores'
+	import Modal from '$lib/components/Modal.svelte'
+	import WorkplaceReviewForm from './WorkplaceReviewForm.svelte'
+	import ExperienceReviewForm from './ExperienceReviewForm.svelte'
 
-	export let data: PageData;
-	export let form: ActionData;
+	export let data: PageData
+	export let form: ActionData
 
-	const workplaceReviewToken = data.reviewToken;
+	const workplaceReviewToken = data.reviewToken
 </script>
 
 {#if data.userVerified}

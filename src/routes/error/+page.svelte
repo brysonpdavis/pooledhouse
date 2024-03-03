@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Link from '$lib/components/Link.svelte';
-	import type { PageData } from './$types';
+	import Link from '$lib/components/Link.svelte'
+	import type { PageData } from './$types'
 
-	export let data: PageData;
+	export let data: PageData
 </script>
 
 <div class="flex h-full w-full items-center justify-center">

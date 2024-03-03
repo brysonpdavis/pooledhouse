@@ -1,28 +1,28 @@
 <script lang="ts">
-	export let loggedIn: boolean;
+	export let loggedIn: boolean
 
-	let navOpen: boolean = false;
+	let navOpen: boolean = false
 
 	const constantMenuOptions: { href: string; name: string }[] = [
 		{ name: 'explore', href: '/explore' },
 		{ name: 'about', href: '/about' }
-	];
+	]
 
 	const loggedInMenuOptions: { href: string; name: string }[] = [
 		{ name: 'profile', href: '/profile' },
 		{ name: 'verify', href: '/verify' },
 		{ name: 'logout', href: '/auth/logout' }
-	];
+	]
 
 	const loggedOutMenuOptions: { href: string; name: string }[] = [
 		{ name: 'login', href: '/auth/login' },
 		{ name: 'sign up', href: '/auth/register' }
-	];
+	]
 
 	$: menuOptions = [
 		...constantMenuOptions,
 		...(loggedIn ? loggedInMenuOptions : loggedOutMenuOptions)
-	];
+	]
 </script>
 
 <div class="drawer drawer-end">
