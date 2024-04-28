@@ -1,6 +1,6 @@
 import { DO_NOT_REPLY_EMAIL } from '$lib/utils/emails'
 import { auth } from '$lib/server/lucia'
-import { resend } from '$lib/server/resend'
+import { ResendError, resend } from '$lib/server/resend'
 import { generateVerificationToken } from './verification-token'
 import { BASE_URL } from '$env/static/private'
 
@@ -25,7 +25,7 @@ export async function sendVerificationRequest(email: string) {
 		})
 
 		if (result.error) {
-			throw new Error(`Email(s) (${email}) could not be sent: ${result.error.message}`)
+			throw new ResendError(`Email(s) (${email}) could not be sent: ${result.error.message}`)
 		}
 	} catch (e) {
 		console.error(e)

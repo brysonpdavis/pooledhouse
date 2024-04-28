@@ -8,6 +8,7 @@
 	export let form: ActionData
 
 	let tokens = data.createdTokens
+	let tokenInput = ''
 
 	$: if (form?.newToken) {
 		tokens = [...tokens, form.newToken]
@@ -133,10 +134,11 @@
 					required
 					minlength="6"
 					maxlength="8"
+					bind:value={tokenInput}
 				/>
 				<span class="text-accent">code</span>
 			</label>
-			<button class="btn-outline btn-secondary btn" class:loading type="submit">submit</button>
+			<button class="btn-outline btn-secondary btn" class:loading disabled={tokenInput.length < 6} type="submit">submit</button>
 		</div>
 	</form>
 	{#if form?.invalidToken}
