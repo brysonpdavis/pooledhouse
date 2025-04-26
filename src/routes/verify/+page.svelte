@@ -1,17 +1,10 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
-	import type { ActionData, PageData } from './$types'
+	import type { PageProps } from './$types'
 	import { copy } from 'svelte-copy'
 	import 'iconify-icon'
 	import { enhance } from '$app/forms'
 
-	interface Props {
-		data: PageData;
-		form: ActionData;
-	}
-
-	let { data, form }: Props = $props();
+	let { data, form }: PageProps = $props();
 
 	let tokens = $state(data.createdTokens)
 	let tokenInput = $state('')

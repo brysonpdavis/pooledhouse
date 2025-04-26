@@ -1,14 +1,9 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition'
 	import { page } from '$app/state'
-	import type { PageData, ActionData } from './$types'
+	import type { PageProps } from './$types'
 
-	interface Props {
-		data: PageData;
-		form: ActionData;
-	}
-
-	let { data, form }: Props = $props();
+	let { data, form }: PageProps = $props();
 
 	let showControls = $state(false)
 	let showUserData = $state(false)

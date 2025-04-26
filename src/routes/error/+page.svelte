@@ -1,12 +1,8 @@
 <script lang="ts">
 	import Link from '$lib/components/Link.svelte'
-	import type { PageData } from './$types'
+	import type { PageProps } from './$types'
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 </script>
 
 <div class="flex h-full w-full items-center justify-center">

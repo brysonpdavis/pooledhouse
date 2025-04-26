@@ -1,17 +1,12 @@
 <script lang="ts">
-	import type { ActionData, PageData } from './$types'
+	import type { PageProps } from './$types'
 	import { enhance } from '$app/forms'
 	import { page } from '$app/state'
 	import Modal from '$lib/components/Modal.svelte'
 	import WorkplaceReviewForm from './WorkplaceReviewForm.svelte'
 	import ExperienceReviewForm from './ExperienceReviewForm.svelte'
 
-	interface Props {
-		data: PageData;
-		form: ActionData;
-	}
-
-	let { data, form }: Props = $props();
+	let { data, form }: PageProps = $props()
 
 	const workplaceReviewToken = data.reviewToken
 </script>

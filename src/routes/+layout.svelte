@@ -2,19 +2,14 @@
 	import { inject } from '@vercel/analytics'
 	import NavWrapper from '$lib/components/NavWrapper.svelte'
 	import Loading from '$lib/components/Loading.svelte'
-	import type { PageData } from './$types'
+	import type { LayoutProps } from './$types'
 	import { navigating } from '$app/stores'
 	import { dev } from '$app/environment'
 	import '../app.css'
 
 	inject({ mode: dev ? 'development' : 'production' })
 
-	interface Props {
-		data: PageData;
-		children?: import('svelte').Snippet;
-	}
-
-	let { data, children }: Props = $props();
+	let { data, children }: LayoutProps = $props();
 </script>
 
 <svelte:head>

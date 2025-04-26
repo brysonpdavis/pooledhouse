@@ -1,15 +1,13 @@
 <!-- @migration-task Error while migrating Svelte code: `<form>` cannot be a child of `<form>`. The browser will 'repair' the HTML (by moving, removing, or inserting elements) which breaks Svelte's assumptions about the structure of your components.
 https://svelte.dev/e/node_invalid_placement -->
 <script lang="ts">
-	import type { PageData, ActionData } from './$types'
+	import type { PageProps } from './$types'
 	import { enhance } from '$app/forms'
 
 	import 'iconify-icon'
 	import { fly } from 'svelte/transition'
 
-	export let data: PageData
-
-	export let form: ActionData
+	let {data, form}: PageProps = $props()
 </script>
 
 <div class="w-fit m-auto h-full flex justify-center flex-col">

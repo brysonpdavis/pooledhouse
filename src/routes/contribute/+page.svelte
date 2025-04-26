@@ -1,14 +1,10 @@
 <script lang="ts">
-	import type { PageData } from './$types'
+	import type { PageProps } from './$types'
 	import ContributeLoggedInPage from './ContributeLoggedInPage.svelte'
 	import ContributeLoggedOutPage from './ContributeLoggedOutPage.svelte'
 	import ContributeVerifiedPage from './ContributeVerifiedPage.svelte'
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 </script>
 
 {#if data.userVerified}

@@ -1,16 +1,12 @@
 <script lang="ts">
 	import Comment from './Comment.svelte'
-	import type { PageData } from './$types'
+	import type { PageProps, RouteParams } from './$types'
 	import type { ReviewCommentReaction } from '@prisma/client'
 	import { slide } from 'svelte/transition'
 	import { scoreColorGradient } from '$lib/utils/colors'
 	import { page } from '$app/state'
 
-	interface Props {
-		data: PageData;
-	}
-
-	let { data }: Props = $props();
+	let { data }: PageProps = $props();
 
 	let showSection: 'workplace' | 'experience' = $state('workplace')
 
@@ -168,6 +164,6 @@
 
 		<p>if you would like to contribute your own experience, we would love to hear about it</p>
 
-		<a class="btn" href={`/contribute/${page.params.placeId}`}>contribute</a>
+		<a class="btn" href={`/contribute/${(page.params as RouteParams).placeId}`}>contribute</a>
 	{/if}
 </div>
