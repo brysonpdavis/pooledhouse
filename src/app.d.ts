@@ -1,4 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
+
+import type { Session } from 'lucia'
+
 // for information about these interfaces
 declare global {
 	namespace App {
@@ -11,6 +14,10 @@ declare global {
 
 		interface Locals {
 			auth: import('lucia').AuthRequest
+		}
+
+		interface PageData {
+			session?: Session | null
 		}
 	}
 }

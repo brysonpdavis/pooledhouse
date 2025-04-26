@@ -2,7 +2,7 @@
 	import { slide } from 'svelte/transition'
 	import { enhance } from '$app/forms'
 	import type { ReviewComment, ReviewCommentReaction } from '@prisma/client'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 
 
 	let focused = $state(false)
@@ -39,7 +39,7 @@
 	<div>{comment.text}</div>
 	<div in:slide={{ duration: 200 }} class="flex w-full flex-row justify-between items-end">
 		<!-- TODO: make this conditional upon a user being verified, not just logged in -->
-		{#if $page.data.session?.user}
+		{#if page.data.session?.user}
 			<div class="flex w-fit flex-row gap-2 card bg-black p-2">
 				<form
 					method="post"

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import type { PageData, ActionData } from './$types'
 
 	interface Props {
@@ -21,7 +21,7 @@
 
 <h1>welcome to the other side</h1>
 
-{#if $page.url.searchParams.get('fromLogin') !== null}
+{#if page.url.searchParams.get('fromLogin') !== null}
 	<h3>you're now logged in</h3>
 {/if}
 

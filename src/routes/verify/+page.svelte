@@ -16,7 +16,7 @@
 	let tokens = $state(data.createdTokens)
 	let tokenInput = $state('')
 
-	run(() => {
+	$effect(() => {
 		if (form?.newToken) {
 			tokens = [...tokens, form.newToken]
 		}
@@ -26,9 +26,7 @@
 
 	let disableTokenGeneration = $derived(tokens.length >= 20 && consumedTokensCount !== tokens.length)
 
-	run(() => {
-		console.log(tokens.length)
-	});
+	$inspect(console.log(tokens.length));
 
 	let loading = $state(false)
 </script>

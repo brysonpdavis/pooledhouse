@@ -23,9 +23,9 @@ https://svelte.dev/e/node_invalid_placement -->
 			<form action="?/verifyPhone" method="post" use:enhance>
 				<input class="input-bordered input" name="code" />
 				<button class="btn-accent btn" type="submit">submit</button>
-				<form action="?/resendPhone" method="post" class="btn-primary btn" use:enhance>
-					<button type="submit">resend</button>
-				</form>
+			</form>
+			<form action="?/resendPhone" method="post" class="btn-primary btn" use:enhance>
+				<button type="submit">resend</button>
 			</form>
 			{#if form?.phoneFailed}
 				<div in:fly><span class="text-error"> oops, looks like that code didn't work </span></div>
@@ -41,9 +41,9 @@ https://svelte.dev/e/node_invalid_placement -->
 			<form action="?/verifyEmail" method="post" use:enhance>
 				<input class="input-bordered input" name="code" />
 				<button class="btn-accent btn" type="submit">submit</button>
-				<form action="?/resendEmail" method="post" class="btn-primary btn" use:enhance>
-					<button type="submit">resend</button>
-				</form>
+			</form>
+			<form action="?/resendEmail" method="post" class="btn-primary btn" use:enhance>
+				<button type="submit">resend</button>
 			</form>
 			{#if form?.emailFailed}
 				<div class="text-error" in:fly>oops, looks like that code didn't work</div>

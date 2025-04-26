@@ -4,7 +4,7 @@
 	import type { ReviewCommentReaction } from '@prisma/client'
 	import { slide } from 'svelte/transition'
 	import { scoreColorGradient } from '$lib/utils/colors'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 
 	interface Props {
 		data: PageData;
@@ -168,6 +168,6 @@
 
 		<p>if you would like to contribute your own experience, we would love to hear about it</p>
 
-		<a class="btn" href={`/contribute/${$page.params.placeId}`}>contribute</a>
+		<a class="btn" href={`/contribute/${page.params.placeId}`}>contribute</a>
 	{/if}
 </div>

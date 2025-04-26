@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ActionData, PageData } from './$types'
 	import { enhance } from '$app/forms'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import Modal from '$lib/components/Modal.svelte'
 	import WorkplaceReviewForm from './WorkplaceReviewForm.svelte'
 	import ExperienceReviewForm from './ExperienceReviewForm.svelte'
@@ -28,7 +28,7 @@
 		<h3>have you worked at this establishment?</h3>
 		<WorkplaceReviewForm
 			zodErrors={form?.workplaceReviewSchemaErrors}
-			placeId={$page.params.placeId}
+			placeId={page.params.placeId}
 			successfullyPosted={form?.postWorkplaceReviewSuccess}
 			{workplaceReviewToken}
 		/>
@@ -46,7 +46,7 @@
 {:else}
 	<Modal id="experienceReview" buttonText="write a review">
 		<ExperienceReviewForm
-			placeId={$page.params.placeId}
+			placeId={page.params.placeId}
 			successfullyPosted={form?.postExperienceReviewSuccess}
 		/>
 	</Modal>

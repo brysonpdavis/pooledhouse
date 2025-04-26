@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { onMount } from 'svelte'
 	import { slide } from 'svelte/transition'
 	import * as Gmaps from '@googlemaps/js-api-loader'
@@ -9,7 +7,7 @@
 
 	import { PUBLIC_GOOGLE_MAPS_API_KEY, PUBLIC_GOOGLE_MAPS_MAP_ID } from '$env/static/public'
 	import { postPlace } from '$lib/handlers/places'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import type { Place } from '@prisma/client'
 	import { shadeColor } from '$lib/utils/colors'
 	import Loading from '$lib/components/Loading.svelte'
@@ -18,12 +16,12 @@
 	import { sleep } from '$lib/utils/async'
 
 	interface Props {
-		places: Place[];
+		places: Place[]
 	}
 
-	let { places = $bindable() }: Props = $props();
+	let { places = $bindable() }: Props = $props()
 
-	const loggedIn = $page.data.session?.user
+	const loggedIn = !!page.data.session?.user
 
 	const NO_SCORE_MARKER_COLOR = '#777777'
 	const INITIAL_MARKER_DROP_ANIMATION_SECONDS = 1
@@ -41,7 +39,7 @@
 		{ data: Place; marker: google.maps.marker.AdvancedMarkerElement }
 	> = new Map()
 
-	let map: google.maps.Map = $state()
+	let map: google.maps.Map | undefined = $state()
 	let tempMarker: google.maps.marker.AdvancedMarkerElement
 	let currentAutocompletePlace: google.maps.places.PlaceResult | undefined = $state()
 	let autocompletePlaceInfoWindow: google.maps.InfoWindow
@@ -54,19 +52,20 @@
 	let placeIdsToHide = $state(new Set<string>())
 
 	let initialLoading = $state(true)
-	let uploadSuccess = false
+	let uploadSuccess = $state(false)
 	let uploadInProgress = $state(false)
 
-	let popUpInfoWindowPlacePageUrl = $derived(!!popUpInfoWindowPlace
-		? `/places/${popUpInfoWindowPlace.id}`
-		: '/')
+	let popUpInfoWindowPlacePageUrl = $derived(
+		!!popUpInfoWindowPlace ? `/places/${popUpInfoWindowPlace.id}` : '/'
+	)
 
-	let canAddPlace =
-		$derived(!!loggedIn &&
-		!!currentAutocompletePlace &&
-		!places.find((p) => p.googlePlaceId === currentAutocompletePlace?.place_id))
+	const canAddPlace = $derived(
+		!!loggedIn &&
+			!!currentAutocompletePlace &&
+			!places.find((p) => p.googlePlaceId === currentAutocompletePlace?.place_id)
+	)
 
-	run(() => {
+	$effect(() => {
 		const placeIdsToHideTemp = new Set<string>()
 
 		if (hideUnreviewed) {
@@ -80,9 +79,9 @@
 		// TODO: add new filters here vvv
 
 		placeIdsToHide = placeIdsToHideTemp
-	});
+	})
 
-	run(() => {
+	$effect(() => {
 		for (const { data, marker } of googlePlaceIdToExistingPlaceDict.values()) {
 			if (placeIdsToHide.has(data.googlePlaceId)) {
 				marker.map = null
@@ -90,7 +89,7 @@
 				marker.map = map
 			}
 		}
-	});
+	})
 
 	const loader = new Loader({
 		apiKey: PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -172,6 +171,10 @@
 				return
 			}
 
+			if (!map) {
+				return
+			}
+
 			if (place.geometry.viewport) {
 				map.fitBounds(place.geometry.viewport)
 			} else {
@@ -237,6 +240,10 @@
 		}
 
 		marker.addListener('dblclick', () => {
+			if (!map) {
+				return
+			}
+
 			map.setCenter({ lat: place.lat, lng: place.lng })
 			map.setZoom(17)
 		})
@@ -275,7 +282,7 @@
 			address: currentAutocompletePlace.formatted_address || currentAutocompletePlace.adr_address!,
 			lat: currentAutocompletePlace.geometry!.location!.lat(),
 			lng: currentAutocompletePlace.geometry!.location!.lng(),
-			createdByUserId: $page.data.session!.user!.userId
+			createdByUserId: page.data.session!.user!.userId
 		})
 
 		console.log({ postedPlace })
@@ -380,7 +387,8 @@
 	<button
 		class="btn-square btn m-4 border-secondary bg-base-200 hover:bg-base-100 hover:text-accent"
 		onclick={() => (showFilters = !showFilters)}
-		><iconify-icon class="text-2xl" class:text-accent={showFilters} icon="ph:sliders"></iconify-icon></button
+		><iconify-icon class="text-2xl" class:text-accent={showFilters} icon="ph:sliders"
+		></iconify-icon></button
 	>
 </div>
 

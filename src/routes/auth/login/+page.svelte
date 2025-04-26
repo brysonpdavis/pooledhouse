@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 	import { goto } from '$app/navigation'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 
 	let { form } = $props();
 
@@ -11,7 +11,7 @@
 </script>
 
 <div class="m-auto flex h-full w-fit flex-col gap-4 lg:justify-center">
-	{#if $page.url.searchParams.get('redirectFrom') === 'nope'}
+	{#if page.url.searchParams.get('redirectFrom') === 'nope'}
 		<h1>oops! you can't go there!</h1>
 	{/if}
 	<h1 class="m-0 font-extralight uppercase tracking-wide text-accent">login</h1>
