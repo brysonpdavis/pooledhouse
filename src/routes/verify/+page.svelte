@@ -1,26 +1,36 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import type { ActionData, PageData } from './$types'
 	import { copy } from 'svelte-copy'
 	import 'iconify-icon'
 	import { enhance } from '$app/forms'
 
-	export let data: PageData
-	export let form: ActionData
-
-	let tokens = data.createdTokens
-	let tokenInput = ''
-
-	$: if (form?.newToken) {
-		tokens = [...tokens, form.newToken]
+	interface Props {
+		data: PageData;
+		form: ActionData;
 	}
 
-	$: consumedTokensCount = tokens.filter((t) => t.consumed).length
+	let { data, form }: Props = $props();
 
-	$: disableTokenGeneration = tokens.length >= 20 && consumedTokensCount !== tokens.length
+	let tokens = $state(data.createdTokens)
+	let tokenInput = $state('')
 
-	$: console.log(tokens.length)
+	run(() => {
+		if (form?.newToken) {
+			tokens = [...tokens, form.newToken]
+		}
+	});
 
-	let loading = false
+	let consumedTokensCount = $derived(tokens.filter((t) => t.consumed).length)
+
+	let disableTokenGeneration = $derived(tokens.length >= 20 && consumedTokensCount !== tokens.length)
+
+	run(() => {
+		console.log(tokens.length)
+	});
+
+	let loading = $state(false)
 </script>
 
 {#if data.userVerified}
@@ -40,9 +50,9 @@
 							<iconify-icon
 								class="text-2xl text-accent"
 								icon="material-symbols:check-box-outline"
-							/>
+							></iconify-icon>
 						{:else}
-							<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline-blank" />
+							<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline-blank"></iconify-icon>
 						{/if}
 						<div
 							class="justify-characters flex-grow font-mono text-2xl"
@@ -55,7 +65,7 @@
 								class="text-lg"
 								class:text-accent={!token.consumed}
 								icon="material-symbols:content-copy-outline"
-							/>
+							></iconify-icon>
 						</button>
 					</div>
 				</div>
@@ -63,10 +73,10 @@
 			{#if loading}
 				<div class="card-bordered card w-full max-w-md p-4 shadow-md">
 					<div class="flex h-full animate-pulse flex-row items-center justify-center space-x-5">
-						<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline-blank" />
-						<div class="h-6 w-36 flex-grow rounded-md bg-gray-300" />
+						<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline-blank"></iconify-icon>
+						<div class="h-6 w-36 flex-grow rounded-md bg-gray-300"></div>
 						<button class="btn-neutral btn">
-							<iconify-icon class="text-lg" icon="material-symbols:content-copy-outline" />
+							<iconify-icon class="text-lg" icon="material-symbols:content-copy-outline"></iconify-icon>
 						</button>
 					</div>
 				</div>

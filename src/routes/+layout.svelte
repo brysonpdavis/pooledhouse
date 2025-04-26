@@ -9,7 +9,12 @@
 
 	inject({ mode: dev ? 'development' : 'production' })
 
-	export let data: PageData
+	interface Props {
+		data: PageData;
+		children?: import('svelte').Snippet;
+	}
+
+	let { data, children }: Props = $props();
 </script>
 
 <svelte:head>
@@ -24,7 +29,7 @@
 					{#if $navigating}
 						<Loading />
 					{:else}
-						<slot />
+						{@render children?.()}
 					{/if}
 				</content>
 			</div>

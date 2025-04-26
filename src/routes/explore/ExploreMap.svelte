@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { onMount } from 'svelte'
 	import { slide } from 'svelte/transition'
 	import * as Gmaps from '@googlemaps/js-api-loader'
@@ -15,7 +17,11 @@
 	import { scoreColorGradient } from '$lib/utils/colors'
 	import { sleep } from '$lib/utils/async'
 
-	export let places: Place[]
+	interface Props {
+		places: Place[];
+	}
+
+	let { places = $bindable() }: Props = $props();
 
 	const loggedIn = $page.data.session?.user
 
@@ -35,32 +41,32 @@
 		{ data: Place; marker: google.maps.marker.AdvancedMarkerElement }
 	> = new Map()
 
-	let map: google.maps.Map
+	let map: google.maps.Map = $state()
 	let tempMarker: google.maps.marker.AdvancedMarkerElement
-	let currentAutocompletePlace: google.maps.places.PlaceResult | undefined
+	let currentAutocompletePlace: google.maps.places.PlaceResult | undefined = $state()
 	let autocompletePlaceInfoWindow: google.maps.InfoWindow
 	let infoWindow: google.maps.InfoWindow
-	let popUpInfoWindowPlace: Place | undefined = places.at(0)
+	let popUpInfoWindowPlace: Place | undefined = $state(places.at(0))
 
-	let showFilters = false
-	let hideUnreviewed = false
+	let showFilters = $state(false)
+	let hideUnreviewed = $state(false)
 
-	let placeIdsToHide = new Set<string>()
+	let placeIdsToHide = $state(new Set<string>())
 
-	let initialLoading = true
+	let initialLoading = $state(true)
 	let uploadSuccess = false
-	let uploadInProgress = false
+	let uploadInProgress = $state(false)
 
-	$: popUpInfoWindowPlacePageUrl = !!popUpInfoWindowPlace
+	let popUpInfoWindowPlacePageUrl = $derived(!!popUpInfoWindowPlace
 		? `/places/${popUpInfoWindowPlace.id}`
-		: '/'
+		: '/')
 
-	$: canAddPlace =
-		!!loggedIn &&
+	let canAddPlace =
+		$derived(!!loggedIn &&
 		!!currentAutocompletePlace &&
-		!places.find((p) => p.googlePlaceId === currentAutocompletePlace?.place_id)
+		!places.find((p) => p.googlePlaceId === currentAutocompletePlace?.place_id))
 
-	$: {
+	run(() => {
 		const placeIdsToHideTemp = new Set<string>()
 
 		if (hideUnreviewed) {
@@ -74,9 +80,9 @@
 		// TODO: add new filters here vvv
 
 		placeIdsToHide = placeIdsToHideTemp
-	}
+	});
 
-	$: {
+	run(() => {
 		for (const { data, marker } of googlePlaceIdToExistingPlaceDict.values()) {
 			if (placeIdsToHide.has(data.googlePlaceId)) {
 				marker.map = null
@@ -84,7 +90,7 @@
 				marker.map = map
 			}
 		}
-	}
+	});
 
 	const loader = new Loader({
 		apiKey: PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -333,7 +339,7 @@
 		</div>
 	{/if}
 
-	<div id="map" class="flex w-full flex-grow" />
+	<div id="map" class="flex w-full flex-grow"></div>
 </div>
 
 <div id="pac-input-container" class="animate-fade">
@@ -373,8 +379,8 @@
 <div id="filter-button-container">
 	<button
 		class="btn-square btn m-4 border-secondary bg-base-200 hover:bg-base-100 hover:text-accent"
-		on:click={() => (showFilters = !showFilters)}
-		><iconify-icon class="text-2xl" class:text-accent={showFilters} icon="ph:sliders" /></button
+		onclick={() => (showFilters = !showFilters)}
+		><iconify-icon class="text-2xl" class:text-accent={showFilters} icon="ph:sliders"></iconify-icon></button
 	>
 </div>
 

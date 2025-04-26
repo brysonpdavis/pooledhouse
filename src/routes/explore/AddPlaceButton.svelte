@@ -1,6 +1,10 @@
 <script lang="ts">
-	export let uploadInProgress = false
-	export let handleClickAdd: () => void
+	interface Props {
+		uploadInProgress?: boolean;
+		handleClickAdd: () => void;
+	}
+
+	let { uploadInProgress = false, handleClickAdd }: Props = $props();
 </script>
 
 <div class="card-bordered card mx-4 h-fit w-[235px] bg-primary">
@@ -10,7 +14,7 @@
 	<button
 		class="loading btn-outline btn-accent btn"
 		class:loading={uploadInProgress}
-		on:click={() => handleClickAdd()}
+		onclick={() => handleClickAdd()}
 	>
 		{#if !uploadInProgress}add{/if}
 	</button>

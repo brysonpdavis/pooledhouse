@@ -1,5 +1,9 @@
 <script lang="ts">
-	export let errors: { _errors?: string[] } | undefined
+	interface Props {
+		errors: { _errors?: string[] } | undefined;
+	}
+
+	let { errors }: Props = $props();
 </script>
 
 {#if errors && errors._errors && errors._errors.length}

@@ -6,9 +6,13 @@
 	import { scoreColorGradient } from '$lib/utils/colors'
 	import { page } from '$app/stores'
 
-	export let data: PageData
+	interface Props {
+		data: PageData;
+	}
 
-	let showSection: 'workplace' | 'experience' = 'workplace'
+	let { data }: Props = $props();
+
+	let showSection: 'workplace' | 'experience' = $state('workplace')
 
 	const usersCommentReactionsByCommentId = data.usersCommentReactions?.reduce(
 		(map, cr) => map.set(cr.reviewCommentId, cr),
@@ -43,12 +47,12 @@
 		</h3>
 		<div class="btn-group btn-group-horizontal">
 			<button
-				on:click={() => (showSection = 'workplace')}
+				onclick={() => (showSection = 'workplace')}
 				class:btn-active={showSection === 'workplace'}
 				class="btn flex flex-1 tracking-wider rounded-full">workplace</button
 			>
 			<button
-				on:click={() => (showSection = 'experience')}
+				onclick={() => (showSection = 'experience')}
 				class:btn-active={showSection === 'experience'}
 				class="btn flex flex-1 tracking-wider">visit</button
 			>

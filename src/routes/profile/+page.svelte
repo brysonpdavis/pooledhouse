@@ -3,12 +3,16 @@
 	import { page } from '$app/stores'
 	import type { PageData, ActionData } from './$types'
 
-	export let data: PageData
-	export let form: ActionData
+	interface Props {
+		data: PageData;
+		form: ActionData;
+	}
 
-	let showControls = false
-	let showUserData = false
-	let refreshed = false
+	let { data, form }: Props = $props();
+
+	let showControls = $state(false)
+	let showUserData = $state(false)
+	let refreshed = $state(false)
 
 	const numWorkplaceReviewsWritten = data.user.workplaceReviewTokens.filter(
 		(wrt) => !!wrt.workplaceReview
@@ -49,7 +53,7 @@
 		<div transition:slide={{ duration: 150 }}>
 			<button
 				class="btn-outline btn-accent btn"
-				on:click={async () => {
+				onclick={async () => {
 					const response = await fetch('/api/places/randomize', { method: 'POST' })
 					console.log(await response.json())
 				}}
@@ -59,7 +63,7 @@
 
 			<button
 				class="btn-outline btn-secondary btn"
-				on:click={async () => {
+				onclick={async () => {
 					const response = await fetch('/api/places/refresh-all', { method: 'POST' })
 					console.log(await response.json())
 				}}
@@ -69,7 +73,7 @@
 
 			<button
 				class="btn-outline btn-secondary btn"
-				on:click={async () => {
+				onclick={async () => {
 					const response = await fetch('/api/places/clear', { method: 'POST' })
 					console.log(await response.json())
 					refreshed = true

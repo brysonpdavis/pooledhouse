@@ -4,7 +4,11 @@
 	import ContributeLoggedOutPage from './ContributeLoggedOutPage.svelte'
 	import ContributeVerifiedPage from './ContributeVerifiedPage.svelte'
 
-	export let data: PageData
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 {#if data.userVerified}

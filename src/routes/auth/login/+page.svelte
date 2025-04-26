@@ -3,11 +3,11 @@
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
 
-	export let form
+	let { form } = $props();
 
-	let identifier = ''
-	let loginMethod: 'email' | 'phone' = 'email'
-	let submitting = false
+	let identifier = $state('')
+	let loginMethod: 'email' | 'phone' = $state('email')
+	let submitting = $state(false)
 </script>
 
 <div class="m-auto flex h-full w-fit flex-col gap-4 lg:justify-center">
@@ -34,7 +34,7 @@
 		}}
 		class="flex flex-col"
 	>
-		<!-- svelte-ignore a11y-autofocus -->
+		<!-- svelte-ignore a11y_autofocus -->
 		<div class="input-group">
 			{#if loginMethod === 'email'}
 				<input

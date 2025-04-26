@@ -1,5 +1,5 @@
 <script>
-	let show = true
+	let show = $state(true)
 </script>
 
 <input class="modal-toggle" type="checkbox" id="show-footer" bind:checked={show} />

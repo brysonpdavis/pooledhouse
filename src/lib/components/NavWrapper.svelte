@@ -1,7 +1,12 @@
 <script lang="ts">
-	export let loggedIn: boolean
+	interface Props {
+		loggedIn: boolean;
+		children?: import('svelte').Snippet;
+	}
 
-	let navOpen: boolean = false
+	let { loggedIn, children }: Props = $props();
+
+	let navOpen: boolean = $state(false)
 
 	const constantMenuOptions: { href: string; name: string }[] = [
 		{ name: 'explore', href: '/explore' },
@@ -19,10 +24,10 @@
 		{ name: 'sign up', href: '/auth/register' }
 	]
 
-	$: menuOptions = [
+	let menuOptions = $derived([
 		...constantMenuOptions,
 		...(loggedIn ? loggedInMenuOptions : loggedOutMenuOptions)
-	]
+	])
 </script>
 
 <div class="drawer drawer-end">
@@ -63,14 +68,14 @@
 			</div>
 		</div>
 		<!-- Page content here -->
-		<slot />
+		{@render children?.()}
 	</div>
 	<div class="nav-drawer drawer-side">
-		<label for="nav-drawer" class="drawer-overlay" />
+		<label for="nav-drawer" class="drawer-overlay"></label>
 		<ul class="menu h-full w-80 bg-base-200 p-4">
 			<!-- Sidebar content here -->
 			{#each menuOptions as { href, name }}
-				<li><a on:click={() => (navOpen = false)} {href}>{name}</a></li>
+				<li><a onclick={() => (navOpen = false)} {href}>{name}</a></li>
 			{/each}
 		</ul>
 	</div>

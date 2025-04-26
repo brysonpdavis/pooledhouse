@@ -1,8 +1,13 @@
 <script lang="ts">
-	export let id: string
-	export let buttonText: string
+	interface Props {
+		id: string;
+		buttonText: string;
+		children?: import('svelte').Snippet;
+	}
 
-	let show: boolean = false
+	let { id, buttonText, children }: Props = $props();
+
+	let show: boolean = $state(false)
 </script>
 
 <!-- The button to open modal -->
@@ -14,7 +19,7 @@
 	<label for={`modal-${id}`} class="modal cursor-pointer">
 		<label class="modal-box relative" for="">
 			<label for={`modal-${id}`} class="btn-sm btn-circle btn absolute right-2 top-2">✕</label>
-			<slot />
+			{@render children?.()}
 		</label>
 	</label>
 {/key}

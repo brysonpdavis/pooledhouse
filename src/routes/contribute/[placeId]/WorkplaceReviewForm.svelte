@@ -5,14 +5,23 @@
 	import type { ZodFormattedError } from 'zod'
 	import type { postWorkplaceReviewFormDataSchema } from './post-workplace-review-form-zod-schema'
 
-	export let placeId: string
-	export let successfullyPosted: boolean = false
-	export let workplaceReviewToken: string
-	export let zodErrors:
+	interface Props {
+		placeId: string;
+		successfullyPosted?: boolean;
+		workplaceReviewToken: string;
+		zodErrors: 
 		| ZodFormattedError<(typeof postWorkplaceReviewFormDataSchema)['_type']>
-		| undefined
+		| undefined;
+	}
 
-	let showOptionalQuestions: boolean = false
+	let {
+		placeId,
+		successfullyPosted = false,
+		workplaceReviewToken,
+		zodErrors
+	}: Props = $props();
+
+	let showOptionalQuestions: boolean = $state(false)
 </script>
 
 {#if successfullyPosted}
@@ -27,7 +36,7 @@
 			name="general"
 			placeholder="well, you see..."
 			maxlength={2000}
-		/>
+		></textarea>
 		<FormError errors={zodErrors?.general} />
 		<label for="rating" class="label">how much did you enjoy working here?</label>
 		<div class="rating gap-1">
@@ -73,7 +82,7 @@
 					name="compensationDescription"
 					placeholder="i mean, you know..."
 					maxlength={1000}
-				/>
+				></textarea>
 				<label for="guestDescription" class="label">
 					how would you describe the general clientele?
 				</label>
@@ -83,7 +92,7 @@
 					name="guestDescription"
 					placeholder="funny you should ask..."
 					maxlength={1000}
-				/>
+				></textarea>
 				<label for="cultureDescription" class="label">
 					tell us a little about the work culture here
 				</label>
@@ -93,7 +102,7 @@
 					name="cultureDescription"
 					placeholder="it's kind of interesting..."
 					maxlength={1000}
-				/>
+				></textarea>
 				<label for="idealFor" class="label">who would this workplace be ideal for?</label>
 				<textarea
 					class="textarea-bordered textarea h-16 w-full max-w-lg"
@@ -101,7 +110,7 @@
 					name="idealFor"
 					placeholder="hmm..."
 					maxlength={1000}
-				/>
+				></textarea>
 			</label>
 		{/if}
 

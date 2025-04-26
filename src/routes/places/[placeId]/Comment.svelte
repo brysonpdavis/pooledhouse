@@ -4,31 +4,35 @@
 	import type { ReviewComment, ReviewCommentReaction } from '@prisma/client'
 	import { page } from '$app/stores'
 
-	export let comment: ReviewComment
 
-	let focused = false
-	let reactionLoading = false
+	let focused = $state(false)
+	let reactionLoading = $state(false)
 
-	export let usersCommentReaction: ReviewCommentReaction | undefined = undefined
+	interface Props {
+		comment: ReviewComment;
+		usersCommentReaction?: ReviewCommentReaction | undefined;
+	}
+
+	let { comment, usersCommentReaction = undefined }: Props = $props();
 
 	let reactionState: 'agree' | 'disagree' | undefined =
-		usersCommentReaction?.agree === true
+		$state(usersCommentReaction?.agree === true
 			? 'agree'
 			: usersCommentReaction?.agree === false
 				? 'disagree'
-				: undefined
+				: undefined)
 </script>
 
 <div
 	class="card flex w-full flex-col gap-2 bg-base-200 p-4 hover:outline outline-primary"
 	role='none'
-	on:mouseenter={() => {
+	onmouseenter={() => {
 		focused = true
 	}}
-	on:touchstart={() => {
+	ontouchstart={() => {
 		focused = !focused
 	}}
-	on:mouseleave={() => {
+	onmouseleave={() => {
 		focused = false
 	}}
 >

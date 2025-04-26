@@ -1,8 +1,17 @@
 <script lang="ts">
-	export let href: string
-	export let titleText: string
-	export let bodyText: string
-	export let buttonText: string
+	interface Props {
+		href: string;
+		titleText: string;
+		bodyText: string;
+		buttonText: string;
+	}
+
+	let {
+		href,
+		titleText,
+		bodyText,
+		buttonText
+	}: Props = $props();
 </script>
 
 <div class="card bg-base-200 p-4 lg:p-8 lg:w-1/3">

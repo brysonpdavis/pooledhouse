@@ -2,7 +2,11 @@
 	import ExploreMap from './ExploreMap.svelte'
 	import type { PageData } from './$types'
 	import { browser } from '$app/environment'
-	export let data: PageData
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <div class="h-full w-full">

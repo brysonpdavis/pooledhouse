@@ -1,8 +1,13 @@
 <script lang="ts">
-	export let type: 'primary' | 'secondary' = 'primary'
-	export let href: string = ''
+	interface Props {
+		type?: 'primary' | 'secondary';
+		href?: string;
+		children?: import('svelte').Snippet;
+	}
+
+	let { type = 'primary', href = '', children }: Props = $props();
 </script>
 
 <a class={`hover:btn-${type}-focus btn-${type} btn`} {href}>
-	<slot />
+	{@render children?.()}
 </a>

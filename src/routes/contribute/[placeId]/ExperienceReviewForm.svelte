@@ -1,8 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
 
-	export let placeId: string
-	export let successfullyPosted: boolean = false
+	interface Props {
+		placeId: string;
+		successfullyPosted?: boolean;
+	}
+
+	let { placeId, successfullyPosted = false }: Props = $props();
 </script>
 
 {#if successfullyPosted}
@@ -16,7 +20,7 @@
 			class="textarea-bordered textarea h-32 w-full max-w-lg"
 			name="general"
 			placeholder="well, you see..."
-		/>
+		></textarea>
 		<label for="rating" class="label">how much did you enjoy working here?</label>
 		<div class="rating gap-1">
 			<input value={0} type="radio" name="rating" class="mask mask-star-2 bg-red-400" />
