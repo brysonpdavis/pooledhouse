@@ -18,7 +18,7 @@
 				placeholder="you@example.com"
 				class="input-bordered input w-full"
 			/>
-			<span class="w-20 flex-shrink-0">email</span>
+			<span class="w-20 shrink-0">email</span>
 		</label>
 		<label class="input-group" for="phone">
 			<input
@@ -40,9 +40,9 @@
 				inputmode="numeric"
 				maxlength="10"
 				placeholder="3141592653"
-				class="input-bordered input min-w-0 flex-grow"
+				class="input-bordered input min-w-0 grow"
 			/>
-			<span class="w-20 flex-shrink-0">phone</span>
+			<span class="w-20 shrink-0">phone</span>
 		</label>
 		<label class="label">
 			<span class="label-text text-accent">have a verification code?</span>
@@ -62,7 +62,7 @@
 					maxlength="6"
 					minlength="6"
 				/>
-				<span class="w-20 flex-shrink-0">code</span>
+				<span class="w-20 shrink-0">code</span>
 			</label>
 		{/if}
 		<button type="submit" class="btn-secondary btn" class:loading disabled={loading}>

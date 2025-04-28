@@ -57,7 +57,7 @@
 
 	<div class="flex w-full flex-col gap-4">
 		{#if showSection === 'workplace'}
-			<div transition:slide={{ axis: 'y' }} class="flex flex-grow overflow-hidden p-4">
+			<div transition:slide={{ axis: 'y' }} class="flex grow overflow-hidden p-4">
 				<div class="flex w-full flex-col gap-4">
 					<div class="flex flex-col items-center gap-4 xl:flex-row xl:justify-between">
 						<div
@@ -104,7 +104,7 @@
 		{/if}
 
 		{#if showSection === 'experience'}
-			<div transition:slide={{ axis: 'y' }} class="flex flex-grow overflow-hidden p-4">
+			<div transition:slide={{ axis: 'y' }} class="flex grow overflow-hidden p-4">
 				<div class="flex w-full flex-col gap-4">
 					<div class="flex flex-col items-center gap-4 xl:flex-row xl:justify-between">
 						<div
@@ -127,7 +127,7 @@
 						</div>
 					</div>
 
-					<div class="w-full flex-grow bg-base-200 p-4 text-center tracking-wider text-accent">
+					<div class="w-full grow bg-base-200 p-4 text-center tracking-wider text-accent">
 						customer reviews from verified restaurant workers... coming soon
 					</div>
 					<!-- {#if data.comments.experience.general.length === 0}

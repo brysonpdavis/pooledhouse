@@ -3,7 +3,7 @@
 	import NavWrapper from '$lib/components/NavWrapper.svelte'
 	import Loading from '$lib/components/Loading.svelte'
 	import type { LayoutProps } from './$types'
-	import { navigating } from '$app/stores'
+	import { navigating } from '$app/state'
 	import { dev } from '$app/environment'
 	import '../app.css'
 
@@ -18,10 +18,10 @@
 
 <div class="flex min-h-[100dvh] flex-col justify-between">
 	<NavWrapper loggedIn={data.session !== null}>
-		<main class="flex w-full flex-grow">
+		<main class="flex w-full grow">
 			<div class="dynamic-layout p-4">
 				<content class="prose w-full">
-					{#if $navigating}
+					{#if !!navigating.to}
 						<Loading />
 					{:else}
 						{@render children?.()}

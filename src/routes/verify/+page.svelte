@@ -46,7 +46,7 @@
 							<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline-blank"></iconify-icon>
 						{/if}
 						<div
-							class="justify-characters flex-grow font-mono text-2xl"
+							class="justify-characters grow font-mono text-2xl"
 							class:line-through={token.consumed}
 						>
 							{token.token}
@@ -65,7 +65,7 @@
 				<div class="card-bordered card w-full max-w-md p-4 shadow-md">
 					<div class="flex h-full animate-pulse flex-row items-center justify-center space-x-5">
 						<iconify-icon class="text-2xl" icon="material-symbols:check-box-outline-blank"></iconify-icon>
-						<div class="h-6 w-36 flex-grow rounded-md bg-gray-300"></div>
+						<div class="h-6 w-36 grow rounded-md bg-gray-300"></div>
 						<button class="btn-neutral btn">
 							<iconify-icon class="text-lg" icon="material-symbols:content-copy-outline"></iconify-icon>
 						</button>
@@ -128,7 +128,7 @@
 		}}
 	>
 		<div class="flex w-full max-w-lg flex-row gap-4">
-			<label class="input-group flex-grow">
+			<label class="input-group grow">
 				<input
 					class="input-bordered input w-full"
 					name="verificationToken"

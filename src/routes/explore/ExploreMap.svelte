@@ -346,7 +346,7 @@
 		</div>
 	{/if}
 
-	<div id="map" class="flex w-full flex-grow"></div>
+	<div id="map" class="flex w-full grow"></div>
 </div>
 
 <div id="pac-input-container" class="animate-fade">
@@ -376,7 +376,7 @@
 	<!-- TODO: ADD OTHER INFO ITEMS TO DISPLAY -->
 	<div id="place-name" class="font-sans text-lg font-semibold">
 		<a id="place-link" class="text-accent hover:no-underline" href={popUpInfoWindowPlacePageUrl}>
-			{popUpInfoWindowPlace?.name || 'name'}
+			{'name'}
 		</a>
 	</div>
 	<div class="font-sans text-base-100" id="place-address">
@@ -486,5 +486,9 @@
 
 	:global(.bounce) {
 		animation: bounce 0.2s linear normal;
+	}
+
+	:global(.gm-style-iw-ch) {
+		display: none;
 	}
 </style>

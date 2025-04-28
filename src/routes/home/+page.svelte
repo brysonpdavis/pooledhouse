@@ -20,7 +20,7 @@
 		<SplashSection
 			href="/explore"
 			titleText="discover & compare"
-			bodyText="dive into real insights from fellow industry professionals. browse honest reviews and compare workplaces across NYC to find your ideal job match."
+			bodyText="find real insights from fellow industry professionals. browse honest reviews and compare workplaces across NYC to find your ideal job match."
 			buttonText="explore"
 		/>
 		<SplashSection

@@ -1,10 +1,10 @@
 <script lang="ts">
 	interface Props {
-		loggedIn: boolean;
-		children?: import('svelte').Snippet;
+		loggedIn: boolean
+		children?: import('svelte').Snippet
 	}
 
-	let { loggedIn, children }: Props = $props();
+	let { loggedIn, children }: Props = $props()
 
 	let navOpen: boolean = $state(false)
 
@@ -35,10 +35,10 @@
 	<div class="drawer-content flex flex-col">
 		<!-- Navbar -->
 		<div class="navbar w-full bg-base-300">
-			<div class="dynamic-layout justify-between">
-				<div class="flex-shrink">
-					<a href="/" class="flex font-mono text-xl font-bold text-accent hover:text-accent"
-						>pooled<span class="text-white">house</span></a
+			<div class="dynamic-layout justify-between items-center">
+				<div class="shrink">
+					<a href="/" class="flex font-mono text-xl font-bold text-accent hover:text-accent">
+						pooled<span class="text-white">house</span></a
 					>
 				</div>
 				<div class="flex-none lg:hidden">
@@ -58,7 +58,7 @@
 					</label>
 				</div>
 				<div class="hidden flex-none lg:block">
-					<ul class="menu menu-horizontal">
+					<ul class="menu menu-horizontal menu-lg">
 						<!-- Navbar menu content here -->
 						{#each menuOptions as { href, name }}
 							<li><a {href}>{name}</a></li>
@@ -75,7 +75,13 @@
 		<ul class="menu h-full w-80 bg-base-200 p-4">
 			<!-- Sidebar content here -->
 			{#each menuOptions as { href, name }}
-				<li><a onclick={() => (navOpen = false)} {href}>{name}</a></li>
+				<li>
+					<a
+						class="uppercase tracking-wider font-extrabold hover:text-accent text-base p-3"
+						onclick={() => (navOpen = false)}
+						{href}>{name}</a
+					>
+				</li>
 			{/each}
 		</ul>
 	</div>

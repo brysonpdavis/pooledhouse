@@ -20,6 +20,5 @@ module.exports = {
 				mono: ['DM Mono', 'monospace']
 			}
 		}
-	},
-	plugins: [require('@tailwindcss/typography')]
+	}
 }
